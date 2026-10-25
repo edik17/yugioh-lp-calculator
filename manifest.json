@@ -1,0 +1,18 @@
+{
+  "name": "DUEL DISK PRO // Yu-Gi-Oh! Life Points",
+  "short_name": "Duel Disk",
+  "description": "Calcolatore Life Points 8000, Segnalini, Token, Dado, Moneta e Timer per Duelli Yu-Gi-Oh!",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#060911",
+  "theme_color": "#080b14",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
