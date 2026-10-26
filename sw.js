@@ -1,11 +1,23 @@
-const CACHE_NAME = 'dueldisk-cache-v2';
+const CACHE_NAME = 'dueldisk-cache-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './styles.css',
   './app.js',
   './manifest.json',
-  './icon.svg'
+  './icon.svg',
+  './sounds/damage.mp3',
+  './sounds/lp_count_loop.mp3',
+  './sounds/lp_stop.mp3',
+  './sounds/lp_drop.mp3',
+  './sounds/gainlp.mp3',
+  './sounds/directattack.mp3',
+  './sounds/destroyed.mp3',
+  './sounds/activate.mp3',
+  './sounds/summon.mp3',
+  './sounds/coinflip.mp3',
+  './sounds/diceroll.mp3',
+  './sounds/nextturn.mp3'
 ];
 
 self.addEventListener('install', (event) => {

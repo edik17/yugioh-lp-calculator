@@ -9,7 +9,6 @@ function createDefaultState(startLp = 8000) {
   return {
     startLp,
     soundEnabled: true,
-    soundProfile: 'dm', // 'dm' | 'gx' | 'md'
     soundVolume: 0.85,
     tabletopMode: false,
     turn: 1,
@@ -68,9 +67,28 @@ let timerInterval = null;
 let timerRunning = false;
 
 // ============================================================================
-// 1. WEB AUDIO SYNTHESIZER (AUTHENTIC YU-GI-OH! ANIME LP COUNTER & DAMAGE SFX)
+// ============================================================================
+// 1. ORIGINAL YU-GI-OH! AUDIO ENGINE & SOUNDPACK LOADER
 // ============================================================================
 let audioCtx = null;
+
+const SOUND_FILES = {
+  damage: './sounds/damage.mp3',
+  directattack: './sounds/directattack.mp3',
+  lp_count_loop: './sounds/lp_count_loop.mp3',
+  lp_stop: './sounds/lp_stop.mp3',
+  lp_drop: './sounds/lp_drop.mp3',
+  gainlp: './sounds/gainlp.mp3',
+  activate: './sounds/activate.mp3',
+  summon: './sounds/summon.mp3',
+  destroyed: './sounds/destroyed.mp3',
+  coinflip: './sounds/coinflip.mp3',
+  diceroll: './sounds/diceroll.mp3',
+  nextturn: './sounds/nextturn.mp3'
+};
+
+const audioBufferCache = {};
+let activeLpCountSource = null;
 
 function getAudioCtx() {
   if (!audioCtx) {
@@ -89,15 +107,59 @@ function getMasterVolume() {
   return typeof state.soundVolume === 'number' ? state.soundVolume : 0.85;
 }
 
-function createNoiseBuffer(ctx, durationSec = 0.5) {
-  const sampleRate = ctx.sampleRate;
-  const frameCount = Math.floor(sampleRate * durationSec);
-  const buffer = ctx.createBuffer(1, frameCount, sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < frameCount; i++) {
-    data[i] = Math.random() * 2 - 1;
+function preloadSound(key) {
+  if (audioBufferCache[key]) return Promise.resolve(audioBufferCache[key]);
+  const url = SOUND_FILES[key];
+  if (!url) return Promise.resolve(null);
+
+  return fetch(url)
+    .then((r) => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.arrayBuffer();
+    })
+    .then((buf) => {
+      const ctx = getAudioCtx();
+      return ctx ? ctx.decodeAudioData(buf) : null;
+    })
+    .then((decoded) => {
+      if (decoded) audioBufferCache[key] = decoded;
+      return decoded;
+    })
+    .catch((err) => {
+      console.warn(`Fallback audio for ${key}:`, err);
+      return null;
+    });
+}
+
+function preloadAllSounds() {
+  Object.keys(SOUND_FILES).forEach((k) => preloadSound(k));
+}
+
+function playOriginalSound(key, loop = false) {
+  if (!state.soundEnabled) return null;
+  const ctx = getAudioCtx();
+  if (!ctx) return null;
+
+  const vol = getMasterVolume();
+  const buffer = audioBufferCache[key];
+
+  if (!buffer) {
+    preloadSound(key);
+    return null;
   }
-  return buffer;
+
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  source.loop = loop;
+
+  const gainNode = ctx.createGain();
+  gainNode.gain.setValueAtTime(vol, ctx.currentTime);
+
+  source.connect(gainNode);
+  gainNode.connect(ctx.destination);
+  source.start(0);
+
+  return source;
 }
 
 function triggerScreenDamageEffect(type = 'red', heavyShake = false) {
@@ -120,94 +182,45 @@ function triggerScreenDamageEffect(type = 'red', heavyShake = false) {
 // 1A. Monster Attack / Damage Explosion Impact SFX
 function playDamageImpactSfx(damageAmount = 1000) {
   if (!state.soundEnabled) return;
+  const sfxKey = damageAmount >= 2000 ? 'directattack' : 'damage';
+  const played = playOriginalSound(sfxKey);
+  if (!played) {
+    playDamageSynthesizerFallback(damageAmount);
+  }
+}
+
+// Fallback synthesizer if audio is still fetching
+function playDamageSynthesizerFallback(damageAmount = 1000) {
   const ctx = getAudioCtx();
   if (!ctx) return;
-
   const vol = getMasterVolume();
   const now = ctx.currentTime;
   const isHeavy = damageAmount >= 1500;
 
-  // Sub-bass shockwave boom
   const subOsc = ctx.createOscillator();
   const subGain = ctx.createGain();
   subOsc.type = 'sawtooth';
   subOsc.frequency.setValueAtTime(isHeavy ? 165 : 130, now);
-  subOsc.frequency.exponentialRampToValueAtTime(28, now + (isHeavy ? 0.42 : 0.26));
+  subOsc.frequency.exponentialRampToValueAtTime(28, now + 0.35);
 
   subGain.gain.setValueAtTime(0.38 * vol, now);
-  subGain.gain.exponentialRampToValueAtTime(0.001, now + (isHeavy ? 0.45 : 0.28));
+  subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
   subOsc.connect(subGain);
   subGain.connect(ctx.destination);
   subOsc.start(now);
-  subOsc.stop(now + (isHeavy ? 0.46 : 0.29));
-
-  // Explosive filtered noise burst
-  const noiseSrc = ctx.createBufferSource();
-  noiseSrc.buffer = createNoiseBuffer(ctx, isHeavy ? 0.48 : 0.28);
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'bandpass';
-  filter.frequency.setValueAtTime(isHeavy ? 1100 : 1400, now);
-  filter.frequency.exponentialRampToValueAtTime(180, now + (isHeavy ? 0.44 : 0.25));
-  filter.Q.value = 1.8;
-
-  const noiseGain = ctx.createGain();
-  noiseGain.gain.setValueAtTime(0.42 * vol, now);
-  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + (isHeavy ? 0.46 : 0.27));
-
-  noiseSrc.connect(filter);
-  filter.connect(noiseGain);
-  noiseGain.connect(ctx.destination);
-  noiseSrc.start(now);
-
-  // High-voltage electric crackle on direct hit
-  const zapOsc = ctx.createOscillator();
-  const zapGain = ctx.createGain();
-  zapOsc.type = 'square';
-  zapOsc.frequency.setValueAtTime(2600, now);
-  zapOsc.frequency.exponentialRampToValueAtTime(320, now + 0.14);
-  zapGain.gain.setValueAtTime(0.16 * vol, now);
-  zapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-  zapOsc.connect(zapGain);
-  zapGain.connect(ctx.destination);
-  zapOsc.start(now);
-  zapOsc.stop(now + 0.16);
+  subOsc.stop(now + 0.39);
 }
 
-// 1B. Half LP (÷2 Solemn Judgment / Dinomorphia) Laser Guillotine Slash SFX
+// 1B. Half LP (÷2 Solemn Judgment / Dinomorphia) Slash SFX
 function playSlashHalfSfx() {
   if (!state.soundEnabled) return;
-  const ctx = getAudioCtx();
-  if (!ctx) return;
-
-  const vol = getMasterVolume();
-  const now = ctx.currentTime;
-
-  // Metallic laser slice sweep
-  const osc1 = ctx.createOscillator();
-  const osc2 = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  osc1.type = 'sawtooth';
-  osc2.type = 'square';
-  osc1.frequency.setValueAtTime(3400, now);
-  osc1.frequency.exponentialRampToValueAtTime(140, now + 0.28);
-  osc2.frequency.setValueAtTime(1700, now);
-  osc2.frequency.exponentialRampToValueAtTime(70, now + 0.28);
-
-  gain.gain.setValueAtTime(0.32 * vol, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.31);
-
-  osc1.connect(gain);
-  osc2.connect(gain);
-  gain.connect(ctx.destination);
-
-  osc1.start(now);
-  osc2.start(now);
-  osc1.stop(now + 0.32);
-  osc2.stop(now + 0.32);
+  const played = playOriginalSound('damage');
+  if (!played) {
+    playDamageSynthesizerFallback(2000);
+  }
 }
 
-// 1C. Iconic Yu-Gi-Oh! Anime Life Point Counter Cascade Tick
+// 1C. Iconic Yu-Gi-Oh! Anime Life Point Counter Cascade Tick (fallback if loop not loaded)
 function playAnimeLpTick(isHeal = false, stepIdx = 0) {
   if (!state.soundEnabled) return;
   const ctx = getAudioCtx();
@@ -215,10 +228,8 @@ function playAnimeLpTick(isHeal = false, stepIdx = 0) {
 
   const vol = getMasterVolume();
   const now = ctx.currentTime;
-  const profile = state.soundProfile || 'dm';
 
   if (isHeal) {
-    // Shimmering crystal recovery cascade
     const healNotes = [1046.5, 1318.5, 1567.98, 2093.0];
     const freq = healNotes[stepIdx % healNotes.length];
     const osc = ctx.createOscillator();
@@ -235,71 +246,46 @@ function playAnimeLpTick(isHeal = false, stepIdx = 0) {
     return;
   }
 
-  if (profile === 'dm') {
-    // Classic Yu-Gi-Oh! Duel Monsters ("Pi-ri-ri-ri-ri-ri!") dual metallic chime
-    const dmNotes = [1864.66, 2489.02, 2217.46, 2793.83];
-    const baseFreq = dmNotes[stepIdx % dmNotes.length];
+  // Classic Yu-Gi-Oh! Duel Monsters dual metallic chime
+  const dmNotes = [1864.66, 2489.02, 2217.46, 2793.83];
+  const baseFreq = dmNotes[stepIdx % dmNotes.length];
 
-    const osc1 = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
-    const gain = ctx.createGain();
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const gain = ctx.createGain();
 
-    osc1.type = 'square';
-    osc2.type = 'triangle';
-    osc1.frequency.setValueAtTime(baseFreq, now);
-    osc2.frequency.setValueAtTime(baseFreq * 1.5, now);
+  osc1.type = 'square';
+  osc2.type = 'triangle';
+  osc1.frequency.setValueAtTime(baseFreq, now);
+  osc2.frequency.setValueAtTime(baseFreq * 1.5, now);
 
-    gain.gain.setValueAtTime(0.16 * vol, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.042);
+  gain.gain.setValueAtTime(0.16 * vol, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.042);
 
-    osc1.connect(gain);
-    osc2.connect(gain);
-    gain.connect(ctx.destination);
+  osc1.connect(gain);
+  osc2.connect(gain);
+  gain.connect(ctx.destination);
 
-    osc1.start(now);
-    osc2.start(now);
-    osc1.stop(now + 0.045);
-    osc2.stop(now + 0.045);
-  } else if (profile === 'gx') {
-    // Yu-Gi-Oh! GX / 5D's digital Duel Disk counter
-    const gxNotes = [1567.98, 2093.0, 1760.0];
-    const freq = gxNotes[stepIdx % gxNotes.length];
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(freq, now);
-    osc.frequency.setValueAtTime(freq * 0.85, now + 0.02);
-    gain.gain.setValueAtTime(0.15 * vol, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.042);
-  } else {
-    // Master Duel modern cyber tick
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(1318.5, now);
-    osc.frequency.exponentialRampToValueAtTime(780, now + 0.032);
-    gain.gain.setValueAtTime(0.2 * vol, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.038);
-  }
+  osc1.start(now);
+  osc2.start(now);
+  osc1.stop(now + 0.045);
+  osc2.stop(now + 0.045);
 }
 
 // 1D. Iconic Anime LP Counter Stop Lock Chime ("PI-PI -> TING!")
 function playLpStopChime(isHeal = false) {
   if (!state.soundEnabled) return;
+  const played = playOriginalSound('lp_stop');
+  if (!played) {
+    playLpStopChimeFallback(isHeal);
+  }
+}
+
+function playLpStopChimeFallback(isHeal = false) {
   const ctx = getAudioCtx();
   if (!ctx) return;
-
   const vol = getMasterVolume();
   const now = ctx.currentTime;
-
   const notes = isHeal ? [1567.98, 2093.0] : [1760.0, 2349.32];
   notes.forEach((freq, idx) => {
     const start = now + idx * 0.065;
@@ -350,10 +336,8 @@ function playAnimeLpZero() {
   const vol = getMasterVolume();
   const now = ctx.currentTime;
 
-  // 1. Heavy final blast
-  playDamageImpactSfx(4000);
+  playOriginalSound('damage');
 
-  // 2. Classic anime descending power-down synth sweep
   const sweepOsc = ctx.createOscillator();
   const sweepGain = ctx.createGain();
   sweepOsc.type = 'sawtooth';
@@ -367,7 +351,6 @@ function playAnimeLpZero() {
   sweepOsc.start(now + 0.08);
   sweepOsc.stop(now + 0.9);
 
-  // 3. Defeat alarm pulses
   const freqs = [587.33, 440, 329.63, 220];
   freqs.forEach((f, idx) => {
     const t = now + 0.25 + idx * 0.14;
@@ -381,88 +364,6 @@ function playAnimeLpZero() {
     gain.connect(ctx.destination);
     osc.start(t);
     osc.stop(t + 0.29);
-  });
-}
-
-// 1G. Extra Duel Soundboard SFX (Trap Activation, Boss Summon, Monster Shatter)
-function playTrapChainSfx() {
-  if (!state.soundEnabled) return;
-  const ctx = getAudioCtx();
-  if (!ctx) return;
-
-  const vol = getMasterVolume();
-  const now = ctx.currentTime;
-  const chord = [1174.66, 1479.98, 1760.0, 2349.32];
-  chord.forEach((freq, i) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(freq, now + i * 0.045);
-    gain.gain.setValueAtTime(0.22 * vol, now + i * 0.045);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.045 + 0.32);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now + i * 0.045);
-    osc.stop(now + i * 0.045 + 0.34);
-  });
-}
-
-function playBossSummonSfx() {
-  if (!state.soundEnabled) return;
-  const ctx = getAudioCtx();
-  if (!ctx) return;
-
-  const vol = getMasterVolume();
-  const now = ctx.currentTime;
-  const notes = [261.63, 329.63, 392.0, 523.25, 659.25, 1046.5];
-  notes.forEach((freq, i) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(freq, now + i * 0.06);
-    gain.gain.setValueAtTime(0.18 * vol, now + i * 0.06);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.45);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now + i * 0.06);
-    osc.stop(now + i * 0.06 + 0.46);
-  });
-}
-
-function playMonsterShatterSfx() {
-  if (!state.soundEnabled) return;
-  const ctx = getAudioCtx();
-  if (!ctx) return;
-
-  const vol = getMasterVolume();
-  const now = ctx.currentTime;
-
-  // Glass/hologram shatter noise + high crystal shards
-  const noiseSrc = ctx.createBufferSource();
-  noiseSrc.buffer = createNoiseBuffer(ctx, 0.35);
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'highpass';
-  filter.frequency.setValueAtTime(1800, now);
-  const nGain = ctx.createGain();
-  nGain.gain.setValueAtTime(0.32 * vol, now);
-  nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
-  noiseSrc.connect(filter);
-  filter.connect(nGain);
-  nGain.connect(ctx.destination);
-  noiseSrc.start(now);
-
-  [2637, 2093, 1567, 1174].forEach((freq, idx) => {
-    const t = now + idx * 0.05;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, t);
-    gain.gain.setValueAtTime(0.18 * vol, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(t);
-    osc.stop(t + 0.15);
   });
 }
 
@@ -618,11 +519,22 @@ function animateLpDigits(playerNum, fromVal, toVal) {
   }
 
   const absDiff = Math.abs(toVal - fromVal);
-  const duration = absDiff >= 2000 ? 960 : 740;
+  const duration = absDiff >= 2000 ? 1100 : 850;
   const startTime = performance.now();
   const isHeal = toVal > fromVal;
   let lastTickTime = 0;
   let tickStep = 0;
+
+  // Start authentic Yu-Gi-Oh! anime audio
+  if (!isHeal) {
+    if (activeLpCountSource) {
+      try { activeLpCountSource.stop(); } catch (e) {}
+      activeLpCountSource = null;
+    }
+    activeLpCountSource = playOriginalSound('lp_count_loop', true);
+  } else {
+    playOriginalSound('gainlp');
+  }
 
   function step(now) {
     const elapsed = now - startTime;
@@ -632,7 +544,8 @@ function animateLpDigits(playerNum, fromVal, toVal) {
 
     displayEl.textContent = current;
 
-    if (now - lastTickTime > 38 && progress < 0.96) {
+    // Fallback ticker if loop audio buffer is not ready
+    if (!activeLpCountSource && now - lastTickTime > 38 && progress < 0.96) {
       playAnimeLpTick(isHeal, tickStep++);
       lastTickTime = now;
     }
@@ -640,6 +553,10 @@ function animateLpDigits(playerNum, fromVal, toVal) {
     if (progress < 1) {
       activeAnimations[playerNum] = requestAnimationFrame(step);
     } else {
+      if (activeLpCountSource) {
+        try { activeLpCountSource.stop(); } catch (e) {}
+        activeLpCountSource = null;
+      }
       displayEl.textContent = toVal;
       updateLpVisualState(playerNum, toVal);
       if (toVal === 0) {
@@ -980,7 +897,11 @@ function addMarker(playerNum, type, name, icon, stats = '') {
     `${state.players[playerNum].name}: +1 ${name} (${type === 'token' ? 'Segna-Mostro' : 'Segnalino'})`
   );
   saveState();
-  playUiBeep(880, 0.05);
+  if (type === 'token') {
+    playOriginalSound('summon') || playUiBeep(880, 0.05);
+  } else {
+    playOriginalSound('activate') || playUiBeep(880, 0.05);
+  }
 }
 
 // ============================================================================
@@ -994,7 +915,7 @@ function launchCoins(count = 1) {
   coinVisual.classList.remove('flipping', 'tails-coin');
   void coinVisual.offsetWidth;
   coinVisual.classList.add('flipping');
-  playUiBeep(980, 0.08);
+  playOriginalSound('coinflip') || playUiBeep(980, 0.08);
 
   const results = [];
   for (let i = 0; i < count; i++) {
@@ -1024,7 +945,7 @@ function rollDice(count = 1) {
   diceVisual.classList.remove('rolling');
   void diceVisual.offsetWidth;
   diceVisual.classList.add('rolling');
-  playUiBeep(620, 0.08);
+  playOriginalSound('diceroll') || playUiBeep(620, 0.08);
 
   const results = [];
   for (let i = 0; i < count; i++) {
@@ -1086,7 +1007,7 @@ function advanceTurn() {
   renderFlags();
   addLogEntry(0, `⏭ Inizia il Turno ${state.turn} (${state.players[state.activePlayer].name})`);
   showToast(`Turno ${state.turn} — Tocca a ${state.players[state.activePlayer].name}`);
-  playUiBeep(920, 0.07);
+  playOriginalSound('nextturn') || playUiBeep(920, 0.07);
   saveState();
 }
 
@@ -1229,11 +1150,6 @@ function renderAll() {
   document.getElementById('soundIcon').textContent = state.soundEnabled ? '🔊' : '🔇';
   document.getElementById('soundToggleBtn').classList.toggle('active-chip', state.soundEnabled);
 
-  const profileSelect = document.getElementById('sfxProfileSelect');
-  if (profileSelect) {
-    profileSelect.value = state.soundProfile || 'dm';
-  }
-
   const volSlider = document.getElementById('volumeSlider');
   const volText = document.getElementById('volumeValueText');
   if (volSlider && volText) {
@@ -1261,7 +1177,6 @@ function resetDuel(newStartLp = state.startLp) {
   const p1Stars = state.players[1].stars;
   const p2Stars = state.players[2].stars;
   const soundEnabled = state.soundEnabled;
-  const soundProfile = state.soundProfile || 'dm';
   const soundVolume = getMasterVolume();
   const tabletopMode = state.tabletopMode;
 
@@ -1271,7 +1186,6 @@ function resetDuel(newStartLp = state.startLp) {
   state.players[1].stars = p1Stars;
   state.players[2].stars = p2Stars;
   state.soundEnabled = soundEnabled;
-  state.soundProfile = soundProfile;
   state.soundVolume = soundVolume;
   state.tabletopMode = tabletopMode;
 
@@ -1623,19 +1537,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Sound Profile Selector & Volume Slider
-  const profileSelect = document.getElementById('sfxProfileSelect');
-  if (profileSelect) {
-    profileSelect.addEventListener('change', () => {
-      state.soundProfile = profileSelect.value;
-      saveState();
-      playAnimeLpTick(false, 0);
-      setTimeout(() => playAnimeLpTick(false, 1), 45);
-      setTimeout(() => playLpStopChime(false), 110);
-      showToast(`🔊 Profilo Audio: ${profileSelect.options[profileSelect.selectedIndex].text}`);
-    });
-  }
-
   const volSlider = document.getElementById('volumeSlider');
   const volText = document.getElementById('volumeValueText');
   if (volSlider && volText) {
@@ -1647,20 +1548,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Demo Full Anime Damage Sequence Button
+  // Preload all authentic Yu-Gi-Oh! anime sound files
+  preloadAllSounds();
+
+  // Demo Original Anime Damage Sequence Button
   function playDemoDamageSequence() {
     state.soundEnabled = true;
     renderAll();
     playDamageImpactSfx(2500);
     triggerScreenDamageEffect('red', true);
-    let step = 0;
-    const demoInterval = setInterval(() => {
-      playAnimeLpTick(false, step++);
-      if (step >= 14) {
-        clearInterval(demoInterval);
-        setTimeout(() => playLpStopChime(false), 45);
+    const loopSrc = playOriginalSound('lp_count_loop', true);
+    setTimeout(() => {
+      if (loopSrc) {
+        try { loopSrc.stop(); } catch (e) {}
       }
-    }, 40);
+      playLpStopChime(false);
+    }, 1400);
   }
 
   const testDmgBtn = document.getElementById('testDamageSfxBtn');
@@ -1668,39 +1571,33 @@ document.addEventListener('DOMContentLoaded', () => {
     testDmgBtn.addEventListener('click', playDemoDamageSequence);
   }
 
-  // Duel SFX Soundboard Buttons
+  // Duel SFX Soundboard Buttons (Original Anime Clips)
   document.querySelectorAll('[data-sfx]').forEach((btn) => {
     btn.addEventListener('click', () => {
       state.soundEnabled = true;
       renderAll();
       const sfx = btn.getAttribute('data-sfx');
-      if (sfx === 'heavy-hit') {
-        playDemoDamageSequence();
-      } else if (sfx === 'slash-half') {
-        playSlashHalfSfx();
-        triggerScreenDamageEffect('electric', true);
-        let step = 0;
-        const intv = setInterval(() => {
-          playAnimeLpTick(false, step++);
-          if (step >= 12) {
-            clearInterval(intv);
-            setTimeout(() => playLpStopChime(false), 45);
-          }
-        }, 40);
-      } else if (sfx === 'trap-chain') {
-        playTrapChainSfx();
-        showToast('🪤 Carta Trappola / Effetto Rapido Attivato!');
-      } else if (sfx === 'boss-summon') {
-        playBossSummonSfx();
-        showToast('🌟 Evocazione Speciale Mostro Boss!');
-      } else if (sfx === 'shatter') {
-        playMonsterShatterSfx();
+      if (sfx === 'damage') {
+        playDamageImpactSfx(1000);
+        triggerScreenDamageEffect('red', false);
+        showToast('💥 Danno Anime Originale');
+      } else if (sfx === 'directattack') {
+        playDamageImpactSfx(3000);
+        triggerScreenDamageEffect('red', true);
+        showToast('⚡ Attacco Diretto Anime!');
+      } else if (sfx === 'activate') {
+        playOriginalSound('activate') || playTrapChainSfx();
+        showToast('🪤 Attivazione Magia / Trappola!');
+      } else if (sfx === 'summon') {
+        playOriginalSound('summon') || playBossSummonSfx();
+        showToast('🌟 Mostro Evocato sul Terreno!');
+      } else if (sfx === 'destroyed') {
+        playOriginalSound('destroyed') || playMonsterShatterSfx();
         triggerScreenDamageEffect('red', false);
         showToast('💎 Mostro Distrutto!');
-      } else if (sfx === 'zero-ko') {
-        triggerScreenDamageEffect('red', true);
-        playAnimeLpZero();
-        showToast('🚨 0 LIFE POINTS — K.O.!');
+      } else if (sfx === 'lp-drop') {
+        playOriginalSound('lp_drop');
+        showToast('📟 Conteggio Life Points Originale Anime');
       }
     });
   });
