@@ -4,13 +4,13 @@
 
 const STORAGE_KEY = 'yugioh_duel_disk_state_v1';
 
-// Default Initial State
+// Default Initial State (Face-to-Face Tabletop Mode enabled by default)
 function createDefaultState(startLp = 8000) {
   return {
     startLp,
     soundEnabled: true,
     soundVolume: 0.85,
-    tabletopMode: false,
+    tabletopMode: true,
     turn: 1,
     activePlayer: 1,
     phase: 'DP',
@@ -23,18 +23,14 @@ function createDefaultState(startLp = 8000) {
         lp: startLp,
         stars: 0,
         flags: { ns: false, lock: false, droll: false, shifter: false, maxxc: false },
-        markers: [
-          { id: 'c-init-1', type: 'counter', name: 'Segnalino Magia', icon: '✨', count: 0 }
-        ]
+        markers: []
       },
       2: {
         name: 'Giocatore 2',
         lp: startLp,
         stars: 0,
         flags: { ns: false, lock: false, droll: false, shifter: false, maxxc: false },
-        markers: [
-          { id: 'c-init-2', type: 'counter', name: 'Segnalino Kaiju', icon: '🦖', count: 0 }
-        ]
+        markers: []
       }
     },
     log: [
@@ -470,6 +466,9 @@ function loadState() {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed && parsed.players && parsed.players[1] && parsed.players[2]) {
+        if (parsed.tabletopMode === undefined) {
+          parsed.tabletopMode = true;
+        }
         return parsed;
       }
     }
@@ -718,24 +717,44 @@ function openCalculator(playerNum = 1) {
   calcTargetPlayer = playerNum;
   calcMode = 'sub';
   calcInputStr = '0';
-  document.getElementById('calcReasonInput').value = '';
+  const reasonInput = document.getElementById('calcReasonInput');
+  if (reasonInput) reasonInput.value = '';
+
+  const dlg = document.getElementById('calcDialog');
+  if (dlg) {
+    if (state.tabletopMode && playerNum === 2) {
+      dlg.classList.add('tabletop-p2');
+    } else {
+      dlg.classList.remove('tabletop-p2');
+    }
+  }
+
   syncCalculatorTabs();
   updateCalculatorScreen();
-  const dlg = document.getElementById('calcDialog');
-  if (!dlg.open) dlg.showModal();
+  if (dlg && !dlg.open) dlg.showModal();
   playUiBeep(820, 0.05);
 }
 
 function syncCalculatorTabs() {
   const tab1 = document.getElementById('calcTabP1');
   const tab2 = document.getElementById('calcTabP2');
-  tab1.classList.toggle('active', calcTargetPlayer === 1);
-  tab2.classList.toggle('active', calcTargetPlayer === 2);
+  if (tab1) tab1.classList.toggle('active', calcTargetPlayer === 1);
+  if (tab2) tab2.classList.toggle('active', calcTargetPlayer === 2);
 
-  document.getElementById('calcTabP1Name').textContent = state.players[1].name;
-  document.getElementById('calcTabP1Lp').textContent = `${state.players[1].lp} LP`;
-  document.getElementById('calcTabP2Name').textContent = state.players[2].name;
-  document.getElementById('calcTabP2Lp').textContent = `${state.players[2].lp} LP`;
+  const t1Name = document.getElementById('calcTabP1Name');
+  if (t1Name) t1Name.textContent = state.players[1].name;
+  const t1Lp = document.getElementById('calcTabP1Lp');
+  if (t1Lp) t1Lp.textContent = `${state.players[1].lp} LP`;
+
+  const t2Name = document.getElementById('calcTabP2Name');
+  if (t2Name) t2Name.textContent = state.players[2].name;
+  const t2Lp = document.getElementById('calcTabP2Lp');
+  if (t2Lp) t2Lp.textContent = `${state.players[2].lp} LP`;
+
+  const dlg = document.getElementById('calcDialog');
+  if (dlg && state.tabletopMode) {
+    dlg.classList.toggle('tabletop-p2', calcTargetPlayer === 2);
+  }
 }
 
 function updateCalculatorScreen() {
@@ -967,44 +986,23 @@ function rollDice(count = 1) {
 }
 
 // ============================================================================
-// 8. TURN, PHASE & NIBIRU TRACKER
+// 8. TURN & DUELIST TRACKER
 // ============================================================================
 function renderTurnAndPhase() {
-  document.getElementById('turnNumber').textContent = state.turn;
-  const activeName = state.players[state.activePlayer].name;
-  const pill = document.getElementById('activePlayerToggle');
-  document.getElementById('activePlayerLabel').textContent = activeName;
-  pill.classList.toggle('p2-active', state.activePlayer === 2);
+  const turnEl = document.getElementById('turnNumber');
+  if (turnEl) turnEl.textContent = state.turn;
 
-  document.getElementById('playerCard1').classList.toggle('active-turn-card', state.activePlayer === 1);
-  document.getElementById('playerCard2').classList.toggle('active-turn-card', state.activePlayer === 2);
-
-  document.querySelectorAll('.phase-btn').forEach((btn) => {
-    btn.classList.toggle('active', btn.getAttribute('data-phase') === state.phase);
-  });
-
-  // Nibiru Counter
-  const nibCountEl = document.getElementById('nibCount');
-  const nibWidget = document.getElementById('nibiruWidget');
-  nibCountEl.textContent = state.nibiruCount;
-  nibWidget.classList.toggle('nibiru-live', state.nibiruCount >= 5);
+  const card1 = document.getElementById('playerCard1');
+  const card2 = document.getElementById('playerCard2');
+  if (card1) card1.classList.toggle('active-turn-card', state.activePlayer === 1);
+  if (card2) card2.classList.toggle('active-turn-card', state.activePlayer === 2);
 }
 
 function advanceTurn() {
   state.turn += 1;
   state.activePlayer = state.activePlayer === 1 ? 2 : 1;
-  state.phase = 'DP';
-  state.nibiruCount = 0;
-
-  // Reset single-turn status flags (Normal Summon, Droll, Maxx C/Fuwalos)
-  [1, 2].forEach((pNum) => {
-    state.players[pNum].flags.ns = false;
-    state.players[pNum].flags.droll = false;
-    state.players[pNum].flags.maxxc = false;
-  });
 
   renderTurnAndPhase();
-  renderFlags();
   addLogEntry(0, `⏭ Inizia il Turno ${state.turn} (${state.players[state.activePlayer].name})`);
   showToast(`Turno ${state.turn} — Tocca a ${state.players[state.activePlayer].name}`);
   playOriginalSound('nextturn') || playUiBeep(920, 0.07);
@@ -1027,12 +1025,16 @@ function renderTimer() {
   const mins = Math.floor(state.timerRemainingSec / 60);
   const secs = state.timerRemainingSec % 60;
   const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  document.getElementById('timerDigits').textContent = formatted;
+  const digitsEl = document.getElementById('timerDigits');
+  if (digitsEl) digitsEl.textContent = formatted;
 
   const widget = document.getElementById('timerWidget');
-  widget.classList.toggle('timer-running', timerRunning);
-  widget.classList.toggle('timer-expired', state.timerRemainingSec === 0);
-  document.getElementById('timerPlayIcon').textContent = timerRunning ? '⏸' : '▶';
+  if (widget) {
+    widget.classList.toggle('timer-running', timerRunning);
+    widget.classList.toggle('timer-expired', state.timerRemainingSec === 0);
+  }
+  const playIcon = document.getElementById('timerPlayIcon');
+  if (playIcon) playIcon.textContent = timerRunning ? '⏸' : '▶';
 }
 
 function toggleTimer() {
@@ -1052,7 +1054,7 @@ function toggleTimer() {
           clearInterval(timerInterval);
           timerRunning = false;
           playAnimeLpZero();
-          showToast('⏰ TEMPO SCADuto! Procedura di Fine Match (Controlla i LP alla fine della fase!)');
+          showToast('⏰ TEMPO SCADUTO! Procedura di Fine Match!');
           addLogEntry(0, '⏰ TEMPO DEL ROUND SCADUTO (End of Match Procedure)');
           renderTimer();
         }
@@ -1081,7 +1083,7 @@ function addLogEntry(playerNum, text) {
   const entry = {
     id: Date.now() + Math.random(),
     turn: state.turn,
-    phase: state.phase,
+    phase: state.phase || 'DP',
     player: playerNum,
     text,
     time: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
@@ -1092,36 +1094,20 @@ function addLogEntry(playerNum, text) {
 }
 
 function renderLogs() {
-  const miniList = document.getElementById('miniLogList');
   const fullContainer = document.getElementById('fullLogContainer');
-  const countEl = document.getElementById('miniLogCount');
-
-  countEl.textContent = `${state.log.length} eventi`;
+  if (!fullContainer) return;
 
   if (state.log.length === 0) {
-    miniList.innerHTML = `<li class="mini-log-empty">Nessun evento registrato.</li>`;
     fullContainer.innerHTML = `<div class="marker-empty">Nessun evento registrato.</div>`;
     return;
   }
-
-  miniList.innerHTML = state.log
-    .slice(0, 12)
-    .map((item) => {
-      const pClass = item.player === 1 ? 'log-p1' : item.player === 2 ? 'log-p2' : '';
-      return `
-        <li class="mini-log-item ${pClass}">
-          <span><strong>[T${item.turn}-${item.phase}]</strong> ${escapeHtml(item.text)}</span>
-        </li>
-      `;
-    })
-    .join('');
 
   fullContainer.innerHTML = state.log
     .map((item) => {
       const pClass = item.player === 1 ? 'log-p1' : item.player === 2 ? 'log-p2' : '';
       return `
         <div class="mini-log-item ${pClass}">
-          <span><strong>[Turno ${item.turn} • ${item.phase}]</strong> ${escapeHtml(item.text)}</span>
+          <span><strong>[T${item.turn}]</strong> ${escapeHtml(item.text)}</span>
           <small style="color:#94a3b8">${item.time}</small>
         </div>
       `;
@@ -1138,17 +1124,24 @@ function renderMatchStars() {
 }
 
 function renderAll() {
-  document.getElementById('p1Name').value = state.players[1].name;
-  document.getElementById('p2Name').value = state.players[2].name;
+  const p1Name = document.getElementById('p1Name');
+  const p2Name = document.getElementById('p2Name');
+  if (p1Name) p1Name.value = state.players[1].name;
+  if (p2Name) p2Name.value = state.players[2].name;
 
-  document.getElementById('p1LpDisplay').textContent = state.players[1].lp;
-  document.getElementById('p2LpDisplay').textContent = state.players[2].lp;
+  const p1LpDisp = document.getElementById('p1LpDisplay');
+  const p2LpDisp = document.getElementById('p2LpDisplay');
+  if (p1LpDisp) p1LpDisp.textContent = state.players[1].lp;
+  if (p2LpDisp) p2LpDisp.textContent = state.players[2].lp;
   updateLpVisualState(1, state.players[1].lp);
   updateLpVisualState(2, state.players[2].lp);
 
-  document.getElementById('formatBadgeText').textContent = `${state.startLp} LP`;
-  document.getElementById('soundIcon').textContent = state.soundEnabled ? '🔊' : '🔇';
-  document.getElementById('soundToggleBtn').classList.toggle('active-chip', state.soundEnabled);
+  const formatBadge = document.getElementById('formatBadgeText');
+  if (formatBadge) formatBadge.textContent = `${state.startLp}`;
+  const soundIcon = document.getElementById('soundIcon');
+  if (soundIcon) soundIcon.textContent = state.soundEnabled ? '🔊' : '🔇';
+  const soundBtn = document.getElementById('soundToggleBtn');
+  if (soundBtn) soundBtn.classList.toggle('active-chip', state.soundEnabled);
 
   const volSlider = document.getElementById('volumeSlider');
   const volText = document.getElementById('volumeValueText');
@@ -1158,8 +1151,10 @@ function renderAll() {
     volText.textContent = `${pct}%`;
   }
 
-  document.getElementById('duelArena').classList.toggle('tabletop-mode', state.tabletopMode);
-  document.getElementById('tabletopModeBtn').classList.toggle('active-chip', state.tabletopMode);
+  const arena = document.getElementById('duelArena');
+  if (arena) arena.classList.toggle('tabletop-mode', state.tabletopMode);
+  const ttBtn = document.getElementById('tabletopModeBtn');
+  if (ttBtn) ttBtn.classList.toggle('active-chip', state.tabletopMode);
 
   renderTurnAndPhase();
   renderFlags();
@@ -1239,9 +1234,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Clicking LP Visor opens Calculator for that player
-  document.getElementById('p1LpVisor').addEventListener('click', () => openCalculator(1));
-  document.getElementById('p2LpVisor').addEventListener('click', () => openCalculator(2));
-  document.getElementById('openCalcCenterBtn').addEventListener('click', () => openCalculator(state.activePlayer));
+  const p1Visor = document.getElementById('p1LpVisor');
+  const p2Visor = document.getElementById('p2LpVisor');
+  if (p1Visor) p1Visor.addEventListener('click', () => openCalculator(1));
+  if (p2Visor) p2Visor.addEventListener('click', () => openCalculator(2));
+  const openCalcBtn = document.getElementById('openCalcCenterBtn');
+  if (openCalcBtn) openCalcBtn.addEventListener('click', () => openCalculator(state.activePlayer));
 
   // Quick LP Buttons on each player card
   document.querySelectorAll('.qlp-btn').forEach((btn) => {
@@ -1289,40 +1287,50 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Battle Damage Difference Helper
-  document.getElementById('useBattleDiffBtn').addEventListener('click', () => {
-    const atk1 = parseInt(document.getElementById('battleAtk1').value, 10) || 0;
-    const atk2 = parseInt(document.getElementById('battleAtk2').value, 10) || 0;
-    const diff = Math.abs(atk1 - atk2);
-    calcMode = 'sub';
-    calcInputStr = String(diff);
-    document.getElementById('calcReasonInput').value = `Danno Battaglia (${atk1} vs ${atk2})`;
-    updateCalculatorScreen();
-    playUiBeep(860, 0.05);
-  });
+  const useBattleDiffBtn = document.getElementById('useBattleDiffBtn');
+  if (useBattleDiffBtn) {
+    useBattleDiffBtn.addEventListener('click', () => {
+      const atk1 = parseInt(document.getElementById('battleAtk1').value, 10) || 0;
+      const atk2 = parseInt(document.getElementById('battleAtk2').value, 10) || 0;
+      const diff = Math.abs(atk1 - atk2);
+      calcMode = 'sub';
+      calcInputStr = String(diff);
+      const reasonEl = document.getElementById('calcReasonInput');
+      if (reasonEl) reasonEl.value = `Danno Battaglia (${atk1} vs ${atk2})`;
+      updateCalculatorScreen();
+      playUiBeep(860, 0.05);
+    });
+  }
 
-  document.getElementById('calcApplyBtn').addEventListener('click', submitCalculator);
+  const calcApplyBtn = document.getElementById('calcApplyBtn');
+  if (calcApplyBtn) calcApplyBtn.addEventListener('click', submitCalculator);
 
   // Undo / Redo
-  document.getElementById('undoBtn').addEventListener('click', handleUndo);
-  document.getElementById('redoBtn').addEventListener('click', handleRedo);
+  const undoBtn = document.getElementById('undoBtn');
+  const redoBtn = document.getElementById('redoBtn');
+  if (undoBtn) undoBtn.addEventListener('click', handleUndo);
+  if (redoBtn) redoBtn.addEventListener('click', handleRedo);
 
-  // Turn & Phases
-  document.getElementById('turnCounterBtn').addEventListener('click', advanceTurn);
-  document.getElementById('nextTurnBtn').addEventListener('click', advanceTurn);
-  document.getElementById('activePlayerToggle').addEventListener('click', () => {
-    state.activePlayer = state.activePlayer === 1 ? 2 : 1;
-    renderTurnAndPhase();
-    saveState();
-  });
+  // Turn advance badge
+  const turnCounterBtn = document.getElementById('turnCounterBtn');
+  if (turnCounterBtn) turnCounterBtn.addEventListener('click', advanceTurn);
 
+  const nextTurnBtn = document.getElementById('nextTurnBtn');
+  if (nextTurnBtn) nextTurnBtn.addEventListener('click', advanceTurn);
+
+  const activePlayerToggle = document.getElementById('activePlayerToggle');
+  if (activePlayerToggle) {
+    activePlayerToggle.addEventListener('click', () => {
+      state.activePlayer = state.activePlayer === 1 ? 2 : 1;
+      renderTurnAndPhase();
+      saveState();
+    });
+  }
+
+  // Phase buttons (if present)
   document.querySelectorAll('.phase-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       const phase = btn.getAttribute('data-phase');
-      if (state.turn === 1 && phase === 'BP') {
-        showToast('⚠️ Regola Yu-Gi-Oh!: Nessuna Battle Phase nel Turno 1!');
-        playUiBeep(320, 0.12);
-        return;
-      }
       state.phase = phase;
       renderTurnAndPhase();
       saveState();
@@ -1330,24 +1338,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Nibiru Summon Counter
-  document.getElementById('nibPlusBtn').addEventListener('click', () => {
-    state.nibiruCount += 1;
-    renderTurnAndPhase();
-    if (state.nibiruCount === 5) {
-      showToast('☄️ 5ª EVOCAZIONE! Nibiru, l\'Essere Primordiale è ora attivabile!');
-      playUiBeep(420, 0.18);
-    } else {
-      playUiBeep(720, 0.04);
-    }
-    saveState();
-  });
-
-  document.getElementById('nibMinusBtn').addEventListener('click', () => {
-    state.nibiruCount = Math.max(0, state.nibiruCount - 1);
-    renderTurnAndPhase();
-    saveState();
-  });
+  // Nibiru Summon Counter (if present)
+  const nibPlusBtn = document.getElementById('nibPlusBtn');
+  if (nibPlusBtn) {
+    nibPlusBtn.addEventListener('click', () => {
+      state.nibiruCount += 1;
+      renderTurnAndPhase();
+      saveState();
+    });
+  }
+  const nibMinusBtn = document.getElementById('nibMinusBtn');
+  if (nibMinusBtn) {
+    nibMinusBtn.addEventListener('click', () => {
+      state.nibiruCount = Math.max(0, state.nibiruCount - 1);
+      renderTurnAndPhase();
+      saveState();
+    });
+  }
 
   // Turn Status Flags
   document.querySelectorAll('.flag-chip').forEach((chip) => {
@@ -1477,24 +1484,33 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Storico svuotato.');
   });
 
-  // Top Bar Controls
-  document.getElementById('tabletopModeBtn').addEventListener('click', () => {
-    state.tabletopMode = !state.tabletopMode;
-    renderAll();
-    saveState();
-    showToast(state.tabletopMode ? '⇅ Modalità Tavolo 180° Attivata' : 'Modalità Standard Attivata');
-  });
+  // Center Bar Controls
+  const ttBtn = document.getElementById('tabletopModeBtn');
+  if (ttBtn) {
+    ttBtn.addEventListener('click', () => {
+      state.tabletopMode = !state.tabletopMode;
+      renderAll();
+      saveState();
+      showToast(state.tabletopMode ? '⇅ Modalità Fronte a Fronte (180°) Attivata' : 'Modalità Standard Attivata');
+    });
+  }
 
-  document.getElementById('soundToggleBtn').addEventListener('click', () => {
-    state.soundEnabled = !state.soundEnabled;
-    renderAll();
-    saveState();
-    showToast(state.soundEnabled ? '🔊 Effetti Sonori Anime Attivati' : '🔇 Audio Disattivato');
-  });
+  const sndBtn = document.getElementById('soundToggleBtn');
+  if (sndBtn) {
+    sndBtn.addEventListener('click', () => {
+      state.soundEnabled = !state.soundEnabled;
+      renderAll();
+      saveState();
+      showToast(state.soundEnabled ? '🔊 Effetti Sonori Attivati' : '🔇 Audio Disattivato');
+    });
+  }
 
-  document.getElementById('newDuelBtn').addEventListener('click', () => {
-    resetDuel(state.startLp);
-  });
+  const newDuelBtn = document.getElementById('newDuelBtn');
+  if (newDuelBtn) {
+    newDuelBtn.addEventListener('click', () => {
+      resetDuel(state.startLp);
+    });
+  }
 
   // Timer Controls
   document.getElementById('timerPlayPauseBtn').addEventListener('click', toggleTimer);

@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Duel Disk" />
-  <title>DUEL DISK OS // Yu-Gi-Oh! Life Points &amp; Duel Companion</title>
+  <title>DUEL DISK // Yu-Gi-Oh! Face-to-Face LP Companion</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/svg+xml" href="icon.svg" />
   <link rel="apple-touch-icon" href="icon.svg" />
@@ -17,234 +17,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body class="duel-app-body">
   <div class="bg-grid" aria-hidden="true"></div>
   <div class="bg-glow bg-glow-p1" aria-hidden="true"></div>
   <div class="bg-glow bg-glow-p2" aria-hidden="true"></div>
   <div class="damage-flash-overlay" id="damageFlashOverlay" aria-hidden="true"></div>
 
-  <!-- TOP COMMAND BAR -->
-  <header class="top-bar">
-    <div class="brand">
-      <div class="millennium-icon" aria-hidden="true">
-        <svg viewBox="0 0 36 36" fill="none">
-          <polygon points="18,3 33,31 3,31" stroke="url(#goldGrad)" stroke-width="2.2" fill="rgba(245,183,49,0.12)" />
-          <ellipse cx="18" cy="20" rx="6" ry="3.8" stroke="url(#goldGrad)" stroke-width="1.8" />
-          <circle cx="18" cy="20" r="2" fill="#f5b731" />
-          <defs>
-            <linearGradient id="goldGrad" x1="0" y1="0" x2="36" y2="36">
-              <stop offset="0%" stop-color="#ffe27a" />
-              <stop offset="50%" stop-color="#f5b731" />
-              <stop offset="100%" stop-color="#b87a08" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-      <div>
-        <span class="brand-title">DUEL DISK <span class="gold-accent">PRO</span></span>
-        <span class="brand-subtitle">Yu-Gi-Oh! Tactical LP &amp; Field System</span>
-      </div>
-    </div>
+  <!-- MAIN FACE-TO-FACE ARENA (100% VIEWPORT HEIGHT, ZERO SCROLL) -->
+  <main class="duel-arena tabletop-mode" id="duelArena">
 
-    <!-- TOURNAMENT TIMER -->
-    <div class="timer-widget" id="timerWidget">
-      <button class="icon-btn timer-toggle-btn" id="timerPlayPauseBtn" title="Avvia/Pausa Timer Torneo" aria-label="Avvia o metti in pausa il timer">
-        <span id="timerPlayIcon">▶</span>
-      </button>
-      <div class="timer-display-wrap" id="timerDisplayWrap" title="Clicca per impostare la durata del round">
-        <span class="timer-label">ROUND TIMER</span>
-        <span class="timer-digits" id="timerDigits">45:00</span>
-      </div>
-      <button class="icon-btn timer-reset-btn" id="timerResetBtn" title="Resetta Timer" aria-label="Resetta il timer">↺</button>
-    </div>
-
-    <!-- SYSTEM CONTROLS -->
-    <div class="top-actions">
-      <button class="action-chip" id="tabletopModeBtn" title="Modalità Tavolo (Ruota Giocatore 2 di 180°)">
-        <span class="chip-icon">⇅</span>
-        <span class="chip-text">Tavolo 180°</span>
-      </button>
-      <button class="action-chip" id="soundToggleBtn" title="Attiva/Disattiva Effetti Sonori Anime">
-        <span class="chip-icon" id="soundIcon">🔊</span>
-        <span class="chip-text">Audio</span>
-      </button>
-      <button class="action-chip" id="settingsOpenBtn" title="Impostazioni Formato LP">
-        <span class="chip-icon">⚙️</span>
-        <span class="chip-text" id="formatBadgeText">8000 LP</span>
-      </button>
-      <button class="action-chip danger-chip" id="newDuelBtn" title="Nuovo Duello / Reset">
-        <span class="chip-icon">⚡</span>
-        <span class="chip-text">Nuovo Duello</span>
-      </button>
-    </div>
-  </header>
-
-  <!-- TURN & PHASE TRACKER BAR -->
-  <section class="phase-bar" aria-label="Controllo Turno e Fasi">
-    <div class="turn-indicator">
-      <button class="turn-badge" id="turnCounterBtn" title="Clicca per avanzare al prossimo turno">
-        <span class="turn-small">TURNO</span>
-        <span class="turn-num" id="turnNumber">1</span>
-      </button>
-      <button class="active-player-pill" id="activePlayerToggle" title="Cambia giocatore di turno">
-        Di turno: <strong id="activePlayerLabel">Giocatore 1</strong>
-      </button>
-    </div>
-
-    <div class="phases-track" role="group" aria-label="Fasi del Duello">
-      <button class="phase-btn active" data-phase="DP" title="Draw Phase - Fase di Pescata">DP</button>
-      <button class="phase-btn" data-phase="SP" title="Standby Phase - Fase di Attesa">SP</button>
-      <button class="phase-btn" data-phase="MP1" title="Main Phase 1">MP1</button>
-      <button class="phase-btn" data-phase="BP" title="Battle Phase - Fase di Battaglia">BP</button>
-      <button class="phase-btn" data-phase="MP2" title="Main Phase 2">MP2</button>
-      <button class="phase-btn" data-phase="EP" title="End Phase - Fase Finale">EP</button>
-      <button class="next-turn-btn" id="nextTurnBtn" title="Passa il Turno e azzera i contatori di turno">
-        Fine Turno ⏭
-      </button>
-    </div>
-
-    <!-- NIBIRU & TURN STATUS TRACKER -->
-    <div class="turn-trackers">
-      <div class="nibiru-widget" id="nibiruWidget" title="Contatore Evocazioni nel turno corrente (Allerta Nibiru a 5!)">
-        <span class="nib-icon">☄️</span>
-        <span class="nib-label">Evocazioni (Nibiru):</span>
-        <button class="nib-step" id="nibMinusBtn" aria-label="Riduci evocazioni">−</button>
-        <span class="nib-count" id="nibCount">0</span>
-        <button class="nib-step" id="nibPlusBtn" aria-label="Aumenta evocazioni">+</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- MAIN DUEL ARENA -->
-  <main class="duel-arena" id="duelArena">
-    <!-- PLAYER 1 CARD -->
-    <article class="player-card player-1 active-turn-card" id="playerCard1" data-player="1">
-      <div class="player-header">
-        <div class="player-identity">
-          <span class="player-tag p1-tag">DUELIST 01</span>
-          <input type="text" class="player-name-input" id="p1Name" value="Giocatore 1" maxlength="20" aria-label="Nome Giocatore 1" />
-        </div>
-        <div class="match-stars" title="Vittorie nel Match (Best of 3)">
-          <span class="match-label">MATCH</span>
-          <button class="star-btn" data-player="1" data-star="1" aria-label="Vittoria 1 Giocatore 1">★</button>
-          <button class="star-btn" data-player="1" data-star="2" aria-label="Vittoria 2 Giocatore 1">★</button>
-        </div>
-      </div>
-
-      <!-- LIFE POINTS DISPLAY -->
-      <div class="lp-visor" id="p1LpVisor" role="button" tabindex="0" aria-label="Modifica Life Points Giocatore 1">
-        <div class="lp-visor-top">
-          <span class="lp-title">LIFE POINTS</span>
-          <span class="lp-delta" id="p1Delta" aria-live="polite"></span>
-        </div>
-        <div class="lp-number-row">
-          <span class="lp-digits" id="p1LpDisplay">8000</span>
-          <span class="lp-calc-hint">🖩 Calcola</span>
-        </div>
-        <div class="lp-bar-track">
-          <div class="lp-bar-fill" id="p1LpBar" style="width: 100%"></div>
-        </div>
-      </div>
-
-      <!-- QUICK LP BUTTONS -->
-      <div class="quick-lp-grid">
-        <button class="qlp-btn dmg" data-player="1" data-op="add" data-val="-100">−100</button>
-        <button class="qlp-btn dmg" data-player="1" data-op="add" data-val="-500">−500</button>
-        <button class="qlp-btn dmg" data-player="1" data-op="add" data-val="-1000">−1000</button>
-        <button class="qlp-btn dmg" data-player="1" data-op="add" data-val="-1500" title="Es. Colpo Solenne">−1500</button>
-        <button class="qlp-btn dmg" data-player="1" data-op="add" data-val="-2000" title="Es. Avvertimento Solenne">−2000</button>
-        <button class="qlp-btn special-half" data-player="1" data-op="half" title="Dimezza LP (Es. Giudizio Solenne / Dinomorphia)">÷2</button>
-        <button class="qlp-btn heal" data-player="1" data-op="add" data-val="500">+500</button>
-        <button class="qlp-btn heal" data-player="1" data-op="add" data-val="1000" title="Es. Goblin Parvenu">+1000</button>
-        <button class="qlp-btn special-double" data-player="1" data-op="double" title="Raddoppia LP">×2</button>
-        <button class="qlp-btn calc-open-btn" data-player="1">Tastierino ±</button>
-      </div>
-
-      <!-- PLAYER 1 TURN FLAGS & LINGERING EFFECTS -->
-      <div class="status-flags" aria-label="Stati attivi Giocatore 1">
-        <button class="flag-chip" data-player="1" data-flag="ns">⚡ Normal Summon</button>
-        <button class="flag-chip" data-player="1" data-flag="lock">🔒 Extra/Spec Lock</button>
-        <button class="flag-chip" data-player="1" data-flag="droll">🐦 Droll &amp; Lock</button>
-        <button class="flag-chip" data-player="1" data-flag="shifter">🌌 Shifter (Bandito)</button>
-        <button class="flag-chip" data-player="1" data-flag="maxxc">🐞 Pescata/Fuwalos</button>
-      </div>
-
-      <!-- PLAYER 1 COUNTERS & TOKENS MINI BOARD -->
-      <div class="field-markers">
-        <div class="markers-header">
-          <span>🔮 Segnalini &amp; Segna-Mostro (G1)</span>
-          <div class="markers-actions">
-            <button class="mini-add-btn" data-action="add-counter" data-player="1">+ Segnalino</button>
-            <button class="mini-add-btn" data-action="add-token" data-player="1">+ Token</button>
-          </div>
-        </div>
-        <div class="markers-list" id="p1MarkersList"></div>
-      </div>
-    </article>
-
-    <!-- CENTER TACTICAL CONSOLE -->
-    <aside class="center-console" aria-label="Console Tattica Centrale">
-      <div class="console-card">
-        <div class="console-section-title">STRUMENTI RAPIDI</div>
-        <div class="tool-buttons-stack">
-          <button class="console-btn primary-console-btn" id="openCalcCenterBtn">
-            <span class="cbtn-icon">🖩</span>
-            <span class="cbtn-label">Calcolatrice LP</span>
-          </button>
-          <button class="console-btn" id="openCoinDiceBtn">
-            <span class="cbtn-icon">🪙</span>
-            <span class="cbtn-label">Moneta &amp; Dado</span>
-          </button>
-          <button class="console-btn" id="openCountersModalBtn">
-            <span class="cbtn-icon">🧿</span>
-            <span class="cbtn-label">Segnalini &amp; Token</span>
-          </button>
-          <button class="console-btn" id="openLogModalBtn">
-            <span class="cbtn-icon">📜</span>
-            <span class="cbtn-label">Storico Duello</span>
-          </button>
-        </div>
-
-        <div class="undo-redo-row">
-          <button class="ur-btn" id="undoBtn" disabled title="Annulla ultima modifica LP (Ctrl+Z)">↩ Annulla</button>
-          <button class="ur-btn" id="redoBtn" disabled title="Ripeti modifica LP (Ctrl+Y)">↪ Ripeti</button>
-        </div>
-
-        <!-- YU-GI-OH! DUEL SFX SOUNDBOARD -->
-        <div class="sfx-board-box">
-          <div class="sfx-board-header">
-            <span>🔊 SUONI ORIGINALI ANIME YU-GI-OH!</span>
-            <span class="sfx-badge">ORIGINALI</span>
-          </div>
-          <div class="sfx-buttons-grid">
-            <button class="sfx-pad-btn sfx-dmg" data-sfx="damage" title="Suono Danno Originale Anime">💥 Danno</button>
-            <button class="sfx-pad-btn sfx-dmg" data-sfx="directattack" title="Attacco Diretto Anime">⚡ Attacco</button>
-            <button class="sfx-pad-btn sfx-chain" data-sfx="activate" title="Attivazione Magia / Trappola">🪤 Trappola</button>
-            <button class="sfx-pad-btn sfx-summon" data-sfx="summon" title="Evocazione Mostro">🌟 Evocazione</button>
-            <button class="sfx-pad-btn sfx-shatter" data-sfx="destroyed" title="Mostro Distrutto">💎 Distrutto</button>
-            <button class="sfx-pad-btn sfx-zero" data-sfx="lp-drop" title="Conteggio Life Points Anime">📟 Conta LP</button>
-          </div>
-        </div>
-
-        <!-- LIVE MINI DUEL LOG -->
-        <div class="mini-log-box">
-          <div class="mini-log-header">
-            <span>CRONOLOGIA LP</span>
-            <span class="mini-log-count" id="miniLogCount">0 mosse</span>
-          </div>
-          <ul class="mini-log-list" id="miniLogList">
-            <li class="mini-log-empty">Il duello ha inizio! 8000 LP.</li>
-          </ul>
-        </div>
-      </div>
-    </aside>
-
-    <!-- PLAYER 2 CARD -->
+    <!-- ================================================================== -->
+    <!-- PLAYER 2 (TOP ZONE - ROTATED 180° IN TABLETOP MODE)               -->
+    <!-- ================================================================== -->
     <article class="player-card player-2" id="playerCard2" data-player="2">
-      <div class="player-header">
+      <!-- Top header row -->
+      <div class="player-meta-row">
         <div class="player-identity">
-          <span class="player-tag p2-tag">DUELIST 02</span>
-          <input type="text" class="player-name-input" id="p2Name" value="Giocatore 2" maxlength="20" aria-label="Nome Giocatore 2" />
+          <span class="player-tag p2-tag">P2</span>
+          <input type="text" class="player-name-input" id="p2Name" value="Giocatore 2" maxlength="16" aria-label="Nome Giocatore 2" />
         </div>
         <div class="match-stars" title="Vittorie nel Match (Best of 3)">
           <span class="match-label">MATCH</span>
@@ -253,60 +43,149 @@
         </div>
       </div>
 
-      <!-- LIFE POINTS DISPLAY -->
-      <div class="lp-visor" id="p2LpVisor" role="button" tabindex="0" aria-label="Modifica Life Points Giocatore 2">
-        <div class="lp-visor-top">
+      <!-- Hero LP Display (Tap to open calculator) -->
+      <div class="lp-hero" id="p2LpVisor" role="button" tabindex="0" aria-label="Modifica Life Points Giocatore 2 (Tocca per calcolare)">
+        <div class="lp-hero-meta">
           <span class="lp-title">LIFE POINTS</span>
           <span class="lp-delta" id="p2Delta" aria-live="polite"></span>
         </div>
-        <div class="lp-number-row">
+        <div class="lp-digits-wrap">
           <span class="lp-digits" id="p2LpDisplay">8000</span>
-          <span class="lp-calc-hint">🖩 Calcola</span>
         </div>
         <div class="lp-bar-track">
           <div class="lp-bar-fill" id="p2LpBar" style="width: 100%"></div>
         </div>
       </div>
 
-      <!-- QUICK LP BUTTONS -->
+      <!-- Fast Action LP Buttons -->
       <div class="quick-lp-grid">
         <button class="qlp-btn dmg" data-player="2" data-op="add" data-val="-100">−100</button>
         <button class="qlp-btn dmg" data-player="2" data-op="add" data-val="-500">−500</button>
         <button class="qlp-btn dmg" data-player="2" data-op="add" data-val="-1000">−1000</button>
-        <button class="qlp-btn dmg" data-player="2" data-op="add" data-val="-1500" title="Es. Colpo Solenne">−1500</button>
-        <button class="qlp-btn dmg" data-player="2" data-op="add" data-val="-2000" title="Es. Avvertimento Solenne">−2000</button>
-        <button class="qlp-btn special-half" data-player="2" data-op="half" title="Dimezza LP (Es. Giudizio Solenne / Dinomorphia)">÷2</button>
+        <button class="qlp-btn special-half" data-player="2" data-op="half" title="Dimezza LP (Giudizio Solenne / Dinomorphia)">÷2</button>
+        
         <button class="qlp-btn heal" data-player="2" data-op="add" data-val="500">+500</button>
-        <button class="qlp-btn heal" data-player="2" data-op="add" data-val="1000" title="Es. Goblin Parvenu">+1000</button>
-        <button class="qlp-btn special-double" data-player="2" data-op="double" title="Raddoppia LP">×2</button>
-        <button class="qlp-btn calc-open-btn" data-player="2">Tastierino ±</button>
-      </div>
-
-      <!-- PLAYER 2 TURN FLAGS & LINGERING EFFECTS -->
-      <div class="status-flags" aria-label="Stati attivi Giocatore 2">
-        <button class="flag-chip" data-player="2" data-flag="ns">⚡ Normal Summon</button>
-        <button class="flag-chip" data-player="2" data-flag="lock">🔒 Extra/Spec Lock</button>
-        <button class="flag-chip" data-player="2" data-flag="droll">🐦 Droll &amp; Lock</button>
-        <button class="flag-chip" data-player="2" data-flag="shifter">🌌 Shifter (Bandito)</button>
-        <button class="flag-chip" data-player="2" data-flag="maxxc">🐞 Pescata/Fuwalos</button>
-      </div>
-
-      <!-- PLAYER 2 COUNTERS & TOKENS MINI BOARD -->
-      <div class="field-markers">
-        <div class="markers-header">
-          <span>🔮 Segnalini &amp; Segna-Mostro (G2)</span>
-          <div class="markers-actions">
-            <button class="mini-add-btn" data-action="add-counter" data-player="2">+ Segnalino</button>
-            <button class="mini-add-btn" data-action="add-token" data-player="2">+ Token</button>
-          </div>
-        </div>
-        <div class="markers-list" id="p2MarkersList"></div>
+        <button class="qlp-btn heal" data-player="2" data-op="add" data-val="1000">+1000</button>
+        <button class="qlp-btn dmg" data-player="2" data-op="add" data-val="-2000">−2000</button>
+        <button class="qlp-btn calc-open-btn" data-player="2">🖩 Calcola</button>
       </div>
     </article>
+
+    <!-- ================================================================== -->
+    <!-- SLIM CENTER TACTICAL DIVIDER (ACCESSIBLE TO BOTH PLAYERS)         -->
+    <!-- ================================================================== -->
+    <nav class="center-duel-bar" id="centerDuelBar" aria-label="Console Tattica Centrale">
+      <!-- Left: Round Timer & Turn -->
+      <div class="cbar-cluster cbar-left">
+        <div class="cbar-timer" id="timerWidget">
+          <button class="cbar-icon-btn" id="timerPlayPauseBtn" title="Avvia/Pausa Timer Torneo" aria-label="Timer">
+            <span id="timerPlayIcon">▶</span>
+          </button>
+          <div class="cbar-timer-text" id="timerDisplayWrap" title="Clicca per modificare durata timer">
+            <span class="timer-digits" id="timerDigits">45:00</span>
+          </div>
+          <button class="cbar-icon-btn" id="timerResetBtn" title="Resetta Timer" aria-label="Reset Timer">↺</button>
+        </div>
+        <button class="cbar-turn-badge" id="turnCounterBtn" title="Avanza Turno (Tocca per passare il turno)">
+          <span class="turn-label">TURNO</span>
+          <span class="turn-num" id="turnNumber">1</span>
+        </button>
+      </div>
+
+      <!-- Center: RNG & Duel History -->
+      <div class="cbar-cluster cbar-mid">
+        <button class="cbar-tool-btn" id="openCoinDiceBtn" title="Lancia Dado o Moneta">
+          <span class="btn-icon">🪙🎲</span>
+          <span class="btn-lbl">Dado</span>
+        </button>
+        <button class="cbar-tool-btn" id="undoBtn" disabled title="Annulla ultima modifica LP (Ctrl+Z)">
+          <span class="btn-icon">↩</span>
+          <span class="btn-lbl">Annulla</span>
+        </button>
+        <button class="cbar-tool-btn" id="redoBtn" disabled title="Ripeti modifica LP (Ctrl+Y)">
+          <span class="btn-icon">↪</span>
+          <span class="btn-lbl">Ripeti</span>
+        </button>
+        <button class="cbar-tool-btn" id="openLogModalBtn" title="Cronologia del Duello">
+          <span class="btn-icon">📜</span>
+          <span class="btn-lbl">Storico</span>
+        </button>
+        <button class="cbar-tool-btn" id="openCountersModalBtn" title="Segnalini & Token">
+          <span class="btn-icon">🧿</span>
+          <span class="btn-lbl">Token</span>
+        </button>
+      </div>
+
+      <!-- Right: System, Audio & Reset -->
+      <div class="cbar-cluster cbar-right">
+        <button class="cbar-tool-btn active-chip" id="tabletopModeBtn" title="Modalità Fronte a Fronte (Ruota G2 di 180°)">
+          <span class="btn-icon">⇅</span>
+          <span class="btn-lbl">Tavolo</span>
+        </button>
+        <button class="cbar-tool-btn" id="soundToggleBtn" title="Effetti Sonori Originali Anime">
+          <span class="btn-icon" id="soundIcon">🔊</span>
+          <span class="btn-lbl">Audio</span>
+        </button>
+        <button class="cbar-tool-btn" id="settingsOpenBtn" title="Impostazioni Duello & LP Iniziali">
+          <span class="btn-icon">⚙️</span>
+          <span class="btn-lbl" id="formatBadgeText">8000</span>
+        </button>
+        <button class="cbar-tool-btn danger-tool-btn" id="newDuelBtn" title="Nuovo Duello / Reset LP">
+          <span class="btn-icon">⚡</span>
+          <span class="btn-lbl">Reset</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- ================================================================== -->
+    <!-- PLAYER 1 (BOTTOM ZONE - FACING NEAR PLAYER)                       -->
+    <!-- ================================================================== -->
+    <article class="player-card player-1 active-turn-card" id="playerCard1" data-player="1">
+      <!-- Top header row -->
+      <div class="player-meta-row">
+        <div class="player-identity">
+          <span class="player-tag p1-tag">P1</span>
+          <input type="text" class="player-name-input" id="p1Name" value="Giocatore 1" maxlength="16" aria-label="Nome Giocatore 1" />
+        </div>
+        <div class="match-stars" title="Vittorie nel Match (Best of 3)">
+          <span class="match-label">MATCH</span>
+          <button class="star-btn" data-player="1" data-star="1" aria-label="Vittoria 1 Giocatore 1">★</button>
+          <button class="star-btn" data-player="1" data-star="2" aria-label="Vittoria 2 Giocatore 1">★</button>
+        </div>
+      </div>
+
+      <!-- Hero LP Display (Tap to open calculator) -->
+      <div class="lp-hero" id="p1LpVisor" role="button" tabindex="0" aria-label="Modifica Life Points Giocatore 1 (Tocca per calcolare)">
+        <div class="lp-hero-meta">
+          <span class="lp-title">LIFE POINTS</span>
+          <span class="lp-delta" id="p1Delta" aria-live="polite"></span>
+        </div>
+        <div class="lp-digits-wrap">
+          <span class="lp-digits" id="p1LpDisplay">8000</span>
+        </div>
+        <div class="lp-bar-track">
+          <div class="lp-bar-fill" id="p1LpBar" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <!-- Fast Action LP Buttons -->
+      <div class="quick-lp-grid">
+        <button class="qlp-btn dmg" data-player="1" data-op="add" data-val="-100">−100</button>
+        <button class="qlp-btn dmg" data-player="1" data-op="add" data-val="-500">−500</button>
+        <button class="qlp-btn dmg" data-player="1" data-op="add" data-val="-1000">−1000</button>
+        <button class="qlp-btn special-half" data-player="1" data-op="half" title="Dimezza LP (Giudizio Solenne / Dinomorphia)">÷2</button>
+        
+        <button class="qlp-btn heal" data-player="1" data-op="add" data-val="500">+500</button>
+        <button class="qlp-btn heal" data-player="1" data-op="add" data-val="1000">+1000</button>
+        <button class="qlp-btn dmg" data-player="1" data-op="add" data-val="-2000">−2000</button>
+        <button class="qlp-btn calc-open-btn" data-player="1">🖩 Calcola</button>
+      </div>
+    </article>
+
   </main>
 
   <!-- ====================================================================== -->
-  <!-- MODAL 1: ADVANCED LIFE POINTS CALCULATOR & ATK-VS-ATK DIFF CALCULATOR  -->
+  <!-- MODAL 1: ADVANCED LIFE POINTS NUMPAD CALCULATOR (NEURON STYLE)        -->
   <!-- ====================================================================== -->
   <dialog class="duel-dialog" id="calcDialog" closedby="any" aria-labelledby="calcDialogTitle">
     <div class="dialog-inner">
@@ -334,20 +213,20 @@
           <span class="calc-op-badge minus" id="calcOpBadge">− DANNO / PAGA</span>
           <span class="calc-current-input" id="calcCurrentInput">0</span>
         </div>
-        <input type="text" class="calc-note-input" id="calcReasonInput" placeholder="Nota opzionale (es. Attacco Drago Bianco, Giudizio Solenne...)" maxlength="40" />
+        <input type="text" class="calc-note-input" id="calcReasonInput" placeholder="Nota opzionale (es. Attacco, Colpo Solenne...)" maxlength="40" />
       </div>
 
-      <!-- MODE SELECTOR: SUBTRACT / ADD / SET / BATTLE DIFF -->
+      <!-- MODE SELECTOR: SUBTRACT / ADD / HALF / SET -->
       <div class="calc-mode-row">
-        <button class="cmode-btn active-minus" data-cmode="sub">− Sottrai LP</button>
-        <button class="cmode-btn" data-cmode="add">+ Aggiungi LP</button>
+        <button class="cmode-btn active-minus" data-cmode="sub">− Sottrai</button>
+        <button class="cmode-btn" data-cmode="add">+ Aggiungi</button>
         <button class="cmode-btn" data-cmode="half">÷2 Dimezza</button>
-        <button class="cmode-btn" data-cmode="set">= Imposta LP</button>
+        <button class="cmode-btn" data-cmode="set">= Imposta</button>
       </div>
 
-      <!-- BATTLE DAMAGE DIFFERENCE HELPER (ATK vs ATK/DEF) -->
+      <!-- BATTLE DAMAGE DIFFERENCE HELPER -->
       <details class="battle-diff-helper">
-        <summary>⚔️ Calcolo Danno da Battaglia (ATK vs ATK/DEF)</summary>
+        <summary>⚔️ Calcolo Danno Battaglia (ATK vs ATK/DEF)</summary>
         <div class="battle-diff-inputs">
           <label>
             <span>Mostro Attaccante (ATK)</span>
@@ -382,7 +261,7 @@
         <button class="num-key" data-key="0">0</button>
         <button class="num-key double-zero" data-key="00">00</button>
         <button class="num-key triple-zero" data-key="000">000</button>
-        <button class="num-key preset-key" data-preset="100">±100</button>
+        <button class="num-key preset-key" data-preset="1000">+1000</button>
       </div>
 
       <div class="calc-submit-row">
@@ -392,7 +271,7 @@
   </dialog>
 
   <!-- ====================================================================== -->
-  <!-- MODAL 2: COIN TOSS & DICE ROLLER (SINGLE & MULTI)                      -->
+  <!-- MODAL 2: COIN TOSS & DICE ROLLER                                      -->
   <!-- ====================================================================== -->
   <dialog class="duel-dialog" id="coinDiceDialog" closedby="any" aria-labelledby="coinDiceTitle">
     <div class="dialog-inner">
@@ -405,7 +284,7 @@
         <!-- COIN SECTION -->
         <div class="rng-box">
           <h3>Lancio Moneta</h3>
-          <p class="rng-desc">Per effetti come <em>Drago Revolver</em>, <em>Coppa di Assi</em>, <em>Origami Goddess</em>.</p>
+          <p class="rng-desc">Per effetti come <em>Drago Revolver</em>, <em>Coppa di Assi</em>.</p>
           <div class="coin-stage" id="coinStage">
             <div class="coin-visual" id="coinVisual">
               <span class="coin-symbol">千年</span>
@@ -413,7 +292,7 @@
             </div>
           </div>
           <div class="rng-controls">
-            <button class="rng-btn primary-rng" data-coin-count="1">Lancia 1 Moneta</button>
+            <button class="rng-btn primary-rng" data-coin-count="1">1 Moneta</button>
             <button class="rng-btn" data-coin-count="2">2 Monete</button>
             <button class="rng-btn" data-coin-count="3">3 Monete</button>
           </div>
@@ -423,13 +302,13 @@
         <!-- DICE SECTION -->
         <div class="rng-box">
           <h3>Lancio Dado (D6)</h3>
-          <p class="rng-desc">Per effetti come <em>Cacciatore di Precisione</em>, <em>Sesto Senso</em>, <em>Dado Grazioso</em>.</p>
+          <p class="rng-desc">Per effetti come <em>Cacciatore di Precisione</em>, <em>Dado Grazioso</em>.</p>
           <div class="dice-stage" id="diceStage">
             <div class="dice-visual" id="diceVisual" data-face="6">🎲</div>
             <span class="dice-label" id="diceResultText">PRONTO</span>
           </div>
           <div class="rng-controls">
-            <button class="rng-btn primary-rng" data-dice-count="1">Lancia 1 Dado</button>
+            <button class="rng-btn primary-rng" data-dice-count="1">1 Dado</button>
             <button class="rng-btn" data-dice-count="2">2 Dadi</button>
             <button class="rng-btn" data-dice-count="3">3 Dadi</button>
           </div>
@@ -440,12 +319,86 @@
   </dialog>
 
   <!-- ====================================================================== -->
-  <!-- MODAL 3: COUNTERS (SEGNALINI) & MONSTER TOKENS (SEGNA-MOSTRO)          -->
+  <!-- MODAL 3: FULL DUEL HISTORY LOG & EXPORT                                -->
+  <!-- ====================================================================== -->
+  <dialog class="duel-dialog" id="logDialog" closedby="any" aria-labelledby="logDialogTitle">
+    <div class="dialog-inner">
+      <div class="dialog-header">
+        <h2 id="logDialogTitle">📜 Registro del Duello</h2>
+        <button class="dialog-close-btn" data-close-dialog="logDialog" aria-label="Chiudi finestra">✕</button>
+      </div>
+
+      <div class="log-actions-bar">
+        <button class="secondary-btn" id="copyLogBtn">📋 Copia Registro</button>
+        <button class="secondary-btn danger-text" id="clearLogBtn">🗑️ Svuota Storico</button>
+      </div>
+
+      <div class="full-log-container" id="fullLogContainer"></div>
+    </div>
+  </dialog>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 4: SETTINGS & FORMATS (8000 / 4000 / TIMER)                      -->
+  <!-- ====================================================================== -->
+  <dialog class="duel-dialog" id="settingsDialog" closedby="any" aria-labelledby="settingsDialogTitle">
+    <div class="dialog-inner">
+      <div class="dialog-header">
+        <h2 id="settingsDialogTitle">⚙️ Impostazioni Duello</h2>
+        <button class="dialog-close-btn" data-close-dialog="settingsDialog" aria-label="Chiudi finestra">✕</button>
+      </div>
+
+      <div class="settings-section">
+        <h3>Life Points Iniziali</h3>
+        <div class="format-cards">
+          <button class="format-card active" data-start-lp="8000">
+            <strong>8000 LP</strong>
+            <span>TCG / Master Duel</span>
+          </button>
+          <button class="format-card" data-start-lp="4000">
+            <strong>4000 LP</strong>
+            <span>Speed Duel / Anime</span>
+          </button>
+          <button class="format-card" data-start-lp="16000">
+            <strong>16000 LP</strong>
+            <span>Tag Duel</span>
+          </button>
+        </div>
+
+        <div class="custom-lp-row">
+          <label for="customStartLpInput">LP personalizzati:</label>
+          <input type="number" id="customStartLpInput" min="100" max="999999" step="100" value="8000" />
+          <button class="secondary-btn" id="applyCustomStartLpBtn">Imposta</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Durata Timer Torneo</h3>
+        <div class="timer-presets-row">
+          <button class="secondary-btn timer-preset-btn" data-minutes="40">40 Min</button>
+          <button class="secondary-btn timer-preset-btn" data-minutes="45">45 Min (TCG)</button>
+          <button class="secondary-btn timer-preset-btn" data-minutes="50">50 Min</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Audio &amp; Effetti Sonori Yu-Gi-Oh!</h3>
+        <div class="custom-lp-row">
+          <label for="volumeSlider">Volume Audio:</label>
+          <input type="range" id="volumeSlider" min="0" max="100" value="85" />
+          <span id="volumeValueText">85%</span>
+          <button type="button" class="secondary-btn" id="testDamageSfxBtn">🔊 Prova Danno</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 5: COUNTERS & TOKENS MODAL                                       -->
   <!-- ====================================================================== -->
   <dialog class="duel-dialog wide-dialog" id="countersDialog" closedby="any" aria-labelledby="countersDialogTitle">
     <div class="dialog-inner">
       <div class="dialog-header">
-        <h2 id="countersDialogTitle">🧿 Gestione Segnalini &amp; Segna-Mostro</h2>
+        <h2 id="countersDialogTitle">🧿 Segnalini &amp; Token</h2>
         <button class="dialog-close-btn" data-close-dialog="countersDialog" aria-label="Chiudi finestra">✕</button>
       </div>
 
@@ -456,180 +409,56 @@
       </div>
 
       <div class="presets-columns">
-        <!-- SEGNALINI PRESETS -->
         <div class="preset-col">
-          <h3>🔮 Aggiungi Segnalino Ufficiale (Counter)</h3>
+          <h3>🔮 Aggiungi Segnalino</h3>
           <div class="preset-cards-grid">
             <button class="preset-card" data-add-type="counter" data-name="Segnalino Magia" data-icon="✨">
               <span class="pcard-icon">✨</span>
-              <div>
-                <strong>Segnalino Magia</strong>
-                <small>Endymion, Selene, Biblioteca Reale</small>
-              </div>
+              <div><strong>Segnalino Magia</strong><small>Endymion, Selene</small></div>
             </button>
             <button class="preset-card" data-add-type="counter" data-name="Segnalino Kaiju" data-icon="🦖">
               <span class="pcard-icon">🦖</span>
-              <div>
-                <strong>Segnalino Kaiju</strong>
-                <small>Lungomare di Kyoutou, Gameciel</small>
-              </div>
+              <div><strong>Segnalino Kaiju</strong><small>Kyoutou, Gameciel</small></div>
             </button>
             <button class="preset-card" data-add-type="counter" data-name="Segnalino Bushido" data-icon="⚔️">
               <span class="pcard-icon">⚔️</span>
-              <div>
-                <strong>Segnalino Bushido</strong>
-                <small>Portale dei Sei, Sei Samurai</small>
-              </div>
-            </button>
-            <button class="preset-card" data-add-type="counter" data-name="Segnalino Predatore" data-icon="🌿">
-              <span class="pcard-icon">🌿</span>
-              <div>
-                <strong>Segnalino Predatore</strong>
-                <small>Predapianta, Dragostapelia</small>
-              </div>
-            </button>
-            <button class="preset-card" data-add-type="counter" data-name="Segnalino Orologio/Destino" data-icon="⏳">
-              <span class="pcard-icon">⏳</span>
-              <div>
-                <strong>Orologio / Conto alla Rovescia</strong>
-                <small>Final Countdown, Prigione Torre Orologio</small>
-              </div>
-            </button>
-            <button class="preset-card" data-add-type="counter" data-name="Segnalino A-Alieno / Veleno" data-icon="☣️">
-              <span class="pcard-icon">☣️</span>
-              <div>
-                <strong>Segnalino A / Veleno</strong>
-                <small>Alieni, Vennominaga, Rettiliani</small>
-              </div>
+              <div><strong>Segnalino Bushido</strong><small>Portale dei Sei</small></div>
             </button>
           </div>
-
           <div class="custom-marker-form">
-            <input type="text" id="customCounterName" placeholder="Nome segnalino o carta (es. Accesscode, Terreno...)" maxlength="28" />
+            <input type="text" id="customCounterName" placeholder="Nome segnalino..." maxlength="28" />
             <button class="add-custom-btn" id="addCustomCounterBtn">+ Crea Segnalino</button>
           </div>
         </div>
 
-        <!-- SEGNA-MOSTRO PRESETS -->
         <div class="preset-col">
-          <h3>👾 Evoca Segna-Mostro (Monster Token)</h3>
+          <h3>👾 Evoca Token</h3>
           <div class="preset-cards-grid">
-            <button class="preset-card" data-add-type="token" data-name="Segna-Essere Primordiale (Nibiru)" data-stats="ATK ? / DEF ? • Lv.11 Luce" data-icon="☄️">
+            <button class="preset-card" data-add-type="token" data-name="Token Nibiru" data-stats="ATK ? / DEF ?" data-icon="☄️">
               <span class="pcard-icon">☄️</span>
-              <div>
-                <strong>Token Nibiru</strong>
-                <small>Roccia / Luce / Lv.11 (ATK/DEF Variabili)</small>
-              </div>
+              <div><strong>Token Nibiru</strong><small>Lv.11 Luce Roccia</small></div>
             </button>
-            <button class="preset-card" data-add-type="token" data-name="Segna-Spadafrantumata" data-stats="ATK 0 / DEF 0 • Lv.4 Tuner Acqua" data-icon="🗡️">
-              <span class="pcard-icon">🗡️</span>
-              <div>
-                <strong>Token Spadafrantumata</strong>
-                <small>Wyrm / Tuner / Acqua / Lv.4 (0/0)</small>
-              </div>
-            </button>
-            <button class="preset-card" data-add-type="token" data-name="Segna-Avventuriero" data-stats="ATK 2000 / DEF 2000 • Lv.4 Terra" data-icon="🛡️">
+            <button class="preset-card" data-add-type="token" data-name="Token Avventuriero" data-stats="2000/2000" data-icon="🛡️">
               <span class="pcard-icon">🛡️</span>
-              <div>
-                <strong>Token Avventuriero</strong>
-                <small>ata Rito di Aramesir • Lv.4 (2000/2000)</small>
-              </div>
+              <div><strong>Token Avventuriero</strong><small>Lv.4 Terra (2000/2000)</small></div>
             </button>
-            <button class="preset-card" data-add-type="token" data-name="Segna-Capra (Scapegoat)" data-stats="ATK 0 / DEF 0 • Lv.1 Terra" data-icon="🐑">
+            <button class="preset-card" data-add-type="token" data-name="Token Capra" data-stats="0/0" data-icon="🐑">
               <span class="pcard-icon">🐑</span>
-              <div>
-                <strong>Token Capra</strong>
-                <small>Bestia / Terra / Lv.1 (0/0)</small>
-              </div>
-            </button>
-            <button class="preset-card" data-add-type="token" data-name="Segna-Ghiacciogiada / Generico" data-stats="ATK 0 / DEF 0 • Lv.3" data-icon="👾">
-              <span class="pcard-icon">👾</span>
-              <div>
-                <strong>Token Generico</strong>
-                <small>Posizione ATK / DEF commutabile</small>
-              </div>
+              <div><strong>Token Capra</strong><small>Lv.1 Bestia (0/0)</small></div>
             </button>
           </div>
-
           <div class="custom-marker-form">
-            <input type="text" id="customTokenName" placeholder="Nome Token (es. Token Mecha, ATK 3500/2000)" maxlength="32" />
+            <input type="text" id="customTokenName" placeholder="Nome Token..." maxlength="32" />
             <button class="add-custom-btn" id="addCustomTokenBtn">+ Evoca Token</button>
           </div>
         </div>
       </div>
-    </div>
-  </dialog>
 
-  <!-- ====================================================================== -->
-  <!-- MODAL 4: FULL DUEL HISTORY LOG & EXPORT                                -->
-  <!-- ====================================================================== -->
-  <dialog class="duel-dialog" id="logDialog" closedby="any" aria-labelledby="logDialogTitle">
-    <div class="dialog-inner">
-      <div class="dialog-header">
-        <h2 id="logDialogTitle">📜 Registro Completo del Duello</h2>
-        <button class="dialog-close-btn" data-close-dialog="logDialog" aria-label="Chiudi finestra">✕</button>
-      </div>
-
-      <div class="log-actions-bar">
-        <button class="secondary-btn" id="copyLogBtn">📋 Copia Riepilogo Testo</button>
-        <button class="secondary-btn danger-text" id="clearLogBtn">🗑️ Svuota Storico</button>
-      </div>
-
-      <div class="full-log-container" id="fullLogContainer"></div>
-    </div>
-  </dialog>
-
-  <!-- ====================================================================== -->
-  <!-- MODAL 5: SETTINGS & DUEL FORMATS (8000 / 4000 / 16000 / CUSTOM)        -->
-  <!-- ====================================================================== -->
-  <dialog class="duel-dialog" id="settingsDialog" closedby="any" aria-labelledby="settingsDialogTitle">
-    <div class="dialog-inner">
-      <div class="dialog-header">
-        <h2 id="settingsDialogTitle">⚙️ Impostazioni Duello &amp; Formato</h2>
-        <button class="dialog-close-btn" data-close-dialog="settingsDialog" aria-label="Chiudi finestra">✕</button>
-      </div>
-
-      <div class="settings-section">
-        <h3>Life Points Iniziali (Formato Ufficiale)</h3>
-        <div class="format-cards">
-          <button class="format-card active" data-start-lp="8000">
-            <strong>8000 LP</strong>
-            <span>Master Duel / TCG Standard</span>
-          </button>
-          <button class="format-card" data-start-lp="4000">
-            <strong>4000 LP</strong>
-            <span>Speed Duel / Rush Duel / Anime</span>
-          </button>
-          <button class="format-card" data-start-lp="16000">
-            <strong>16000 LP</strong>
-            <span>Tag Duel (2 vs 2)</span>
-          </button>
-        </div>
-
-        <div class="custom-lp-row">
-          <label for="customStartLpInput">Oppure LP personalizzati:</label>
-          <input type="number" id="customStartLpInput" min="100" max="999999" step="100" value="8000" />
-          <button class="secondary-btn" id="applyCustomStartLpBtn">Imposta &amp; Riavvia</button>
-        </div>
-      </div>
-
-      <div class="settings-section">
-        <h3>Durata Timer Torneo (Minuti)</h3>
-        <div class="timer-presets-row">
-          <button class="secondary-btn timer-preset-btn" data-minutes="40">40 Min</button>
-          <button class="secondary-btn timer-preset-btn" data-minutes="45">45 Min (TCG Ufficiale)</button>
-          <button class="secondary-btn timer-preset-btn" data-minutes="50">50 Min</button>
-        </div>
-      </div>
-
-      <div class="settings-section">
-        <h3>Audio &amp; Sound Effects Yu-Gi-Oh!</h3>
-        <div class="custom-lp-row">
-          <label for="volumeSlider">Volume Effetti Sonori:</label>
-          <input type="range" id="volumeSlider" min="0" max="100" value="85" />
-          <span id="volumeValueText">85%</span>
-          <button type="button" class="secondary-btn" id="testDamageSfxBtn">🔊 Prova Danno Anime</button>
-        </div>
+      <!-- Active markers list in modal -->
+      <div class="modal-markers-summary">
+        <h4>Segnalini Attivi:</h4>
+        <div class="markers-list" id="p1MarkersList"></div>
+        <div class="markers-list" id="p2MarkersList"></div>
       </div>
     </div>
   </dialog>
