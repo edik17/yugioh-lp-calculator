@@ -4,6 +4,152 @@
 
 const STORAGE_KEY = 'yugioh_duel_disk_state_v1';
 
+// ============================================================================
+// ARCHETYPES & ICONIC FIELD SPELLS CATALOGUE
+// ============================================================================
+const ARCHETYPES = {
+  monarch: {
+    id: 'monarch',
+    name: 'Monarchi',
+    icon: '👑',
+    fieldSpellName: 'Dominio dei Veri Monarchi',
+    fieldCardCode: '84171830',
+    artUrl: './images/fields/monarch.jpg',
+    cardUrl: './images/fields/monarch_card.jpg',
+    desc: 'Se non hai carte nel tuo Extra Deck e controlli un mostro Evocato tramite Tributo, il tuo avversario non può Evocare Specialmente dall\'Extra Deck. I mostri con Tributo guadagnano 800 ATK durante il calcolo dei danni.',
+    accentColor: '#f59e0b',
+    borderColor: 'rgba(245, 158, 11, 0.55)',
+    glowColor: 'rgba(245, 158, 11, 0.3)',
+    particleType: 'lightning_monarch'
+  },
+  blueeyes: {
+    id: 'blueeyes',
+    name: 'Occhi Blu',
+    icon: '🐉',
+    fieldSpellName: 'Mausoleo di Bianco',
+    fieldCardCode: '24382602',
+    artUrl: './images/fields/blueeyes.jpg',
+    cardUrl: './images/fields/blueeyes_card.jpg',
+    desc: 'Durante la tua Main Phase, puoi Evocare Normalmente 1 mostro Tuner LUCE di Livello 1 in aggiunta alla tua Evocazione Normale. Puoi mandare 1 Mostro Normale al Cimitero.',
+    accentColor: '#38bdf8',
+    borderColor: 'rgba(56, 189, 248, 0.55)',
+    glowColor: 'rgba(56, 189, 248, 0.3)',
+    particleType: 'blue_stars'
+  },
+  darkmagician: {
+    id: 'darkmagician',
+    name: 'Mago Nero',
+    icon: '🔮',
+    fieldSpellName: 'Villaggio Segreto degl\'Incantatori',
+    fieldCardCode: '68462976',
+    artUrl: './images/fields/darkmagician.jpg',
+    cardUrl: './images/fields/darkmagician_card.jpg',
+    desc: 'Se controlli un mostro Incantatore e il tuo avversario no, il tuo avversario non può attivare Carte Magia.',
+    accentColor: '#c084fc',
+    borderColor: 'rgba(192, 132, 252, 0.55)',
+    glowColor: 'rgba(192, 132, 252, 0.3)',
+    particleType: 'arcane_glyphs'
+  },
+  hero: {
+    id: 'hero',
+    name: 'EROE Elementale',
+    icon: '🦸',
+    fieldSpellName: 'Città Grattacielo',
+    fieldCardCode: '63035430',
+    artUrl: './images/fields/hero.jpg',
+    cardUrl: './images/fields/hero_card.jpg',
+    desc: 'I mostri "EROE Elementale" guadagnano 1000 ATK durante il solo calcolo dei danni se attaccano un mostro con ATK superiore.',
+    accentColor: '#ef4444',
+    borderColor: 'rgba(239, 68, 68, 0.55)',
+    glowColor: 'rgba(239, 68, 68, 0.3)',
+    particleType: 'hero_searchlights'
+  },
+  branded: {
+    id: 'branded',
+    name: 'Brandito / Despia',
+    icon: '🎭',
+    fieldSpellName: 'Teatro Marchiato dei Despia',
+    fieldCardCode: '99543666',
+    artUrl: './images/fields/branded.jpg',
+    cardUrl: './images/fields/branded_card.jpg',
+    desc: 'Durante la tua Main Phase: puoi Evocare tramite Fusione 1 Mostro Fusione di Livello 8 o superiore dal tuo Extra Deck usando mostri dalla tua mano o Terreno.',
+    accentColor: '#fb7185',
+    borderColor: 'rgba(251, 113, 133, 0.55)',
+    glowColor: 'rgba(251, 113, 133, 0.3)',
+    particleType: 'abyss_flames'
+  },
+  cyber: {
+    id: 'cyber',
+    name: 'Cyber Drago',
+    icon: '🤖',
+    fieldSpellName: 'Notte dell\'Ingranaggio',
+    fieldCardCode: '55948544',
+    artUrl: './images/fields/cyber.jpg',
+    cardUrl: './images/fields/cyber.jpg',
+    desc: 'Tutti i mostri sul Terreno diventano Macchina. I mostri Macchina che controlli guadagnano 500 ATK/DEF.',
+    accentColor: '#10b981',
+    borderColor: 'rgba(16, 185, 129, 0.55)',
+    glowColor: 'rgba(16, 185, 129, 0.3)',
+    particleType: 'cyber_grid'
+  },
+  zombie: {
+    id: 'zombie',
+    name: 'Mondo Zombie',
+    icon: '🧟',
+    fieldSpellName: 'Mondo Zombie',
+    fieldCardCode: '4064256',
+    artUrl: './images/fields/zombie.jpg',
+    cardUrl: './images/fields/zombie.jpg',
+    desc: 'Tutti i mostri sul Terreno e nei Cimiteri diventano Zombie. Nessun giocatore può Evocare tramite Tributo, eccetto mostri Zombie.',
+    accentColor: '#84cc16',
+    borderColor: 'rgba(132, 204, 22, 0.55)',
+    glowColor: 'rgba(132, 204, 22, 0.3)',
+    particleType: 'toxic_mist'
+  },
+  umi: {
+    id: 'umi',
+    name: 'Umi / Oceano',
+    icon: '🌊',
+    fieldSpellName: 'Un Oceano Leggendario',
+    fieldCardCode: '295517',
+    artUrl: './images/fields/umi.jpg',
+    cardUrl: './images/fields/umi.jpg',
+    desc: 'Il nome di questa carta è considerato "Umi". Tutti i mostri ACQUA guadagnano 200 ATK/DEF. Riduci il Livello di tutti i mostri ACQUA di 1.',
+    accentColor: '#0ea5e9',
+    borderColor: 'rgba(14, 165, 233, 0.55)',
+    glowColor: 'rgba(14, 165, 233, 0.3)',
+    particleType: 'ocean_bubbles'
+  },
+  sanctuary: {
+    id: 'sanctuary',
+    name: 'Fate / Luce',
+    icon: '🏛️',
+    fieldSpellName: 'Il Santuario nel Cielo',
+    fieldCardCode: '56433456',
+    artUrl: './images/fields/sanctuary.jpg',
+    cardUrl: './images/fields/sanctuary.jpg',
+    desc: 'Il danno da combattimento al controllore di un mostro Fata da una battaglia che coinvolge quel mostro diventa 0.',
+    accentColor: '#facc15',
+    borderColor: 'rgba(250, 204, 21, 0.55)',
+    glowColor: 'rgba(250, 204, 21, 0.3)',
+    particleType: 'divine_sunbeams'
+  },
+  classic: {
+    id: 'classic',
+    name: 'Arena KaibaCorp',
+    icon: '🌌',
+    fieldSpellName: 'Stadio Olografico KC',
+    fieldCardCode: '00000000',
+    artUrl: '',
+    cardUrl: '',
+    desc: 'Stadio di combattimento virtuale ad altissima definizione della Kaiba Corporation.',
+    accentColor: '#38bdf8',
+    borderColor: 'rgba(56, 189, 248, 0.45)',
+    glowColor: 'rgba(56, 189, 248, 0.25)',
+    particleType: 'kc_arena'
+  }
+};
+
 // Default Initial State (Face-to-Face Tabletop Mode enabled by default)
 function createDefaultState(startLp = 8000) {
   return {
@@ -16,17 +162,23 @@ function createDefaultState(startLp = 8000) {
     phase: 'DP',
     timerDurationSec: 45 * 60,
     timerRemainingSec: 45 * 60,
+    fieldSpellActive: false,
+    activeField: 'monarch',
+    fieldActivator: 1,
+    particlesEnabled: true,
     players: {
       1: {
         name: 'Giocatore 1',
         lp: startLp,
         stars: 0,
+        archetype: 'monarch',
         markers: []
       },
       2: {
         name: 'Giocatore 2',
         lp: startLp,
         stars: 0,
+        archetype: 'blueeyes',
         markers: []
       }
     },
@@ -469,6 +621,12 @@ function loadState() {
         delete parsed.nibiruCount;
         if (parsed.players[1]?.flags) delete parsed.players[1].flags;
         if (parsed.players[2]?.flags) delete parsed.players[2].flags;
+        if (parsed.fieldSpellActive === undefined) parsed.fieldSpellActive = false;
+        if (!parsed.activeField || !ARCHETYPES[parsed.activeField]) parsed.activeField = 'monarch';
+        if (parsed.fieldActivator === undefined) parsed.fieldActivator = 1;
+        if (parsed.particlesEnabled === undefined) parsed.particlesEnabled = true;
+        if (parsed.players[1] && !parsed.players[1].archetype) parsed.players[1].archetype = 'monarch';
+        if (parsed.players[2] && !parsed.players[2].archetype) parsed.players[2].archetype = 'blueeyes';
         return parsed;
       }
     }
@@ -1143,6 +1301,440 @@ function renderMatchStars() {
   });
 }
 
+// ============================================================================
+// 10. FIELD SPELL & DYNAMIC ANIMATED BACKGROUND SYSTEM
+// ============================================================================
+function renderField() {
+  const currentArch = ARCHETYPES[state.activeField] || ARCHETYPES.monarch;
+  const isFieldActive = Boolean(state.fieldSpellActive);
+
+  // 1. Container & Artwork Layer
+  const bgContainer = document.getElementById('fieldBgContainer');
+  const artLayer = document.getElementById('fieldArtLayer');
+  if (bgContainer) {
+    bgContainer.classList.toggle('field-spell-active', isFieldActive);
+  }
+  if (artLayer) {
+    if (isFieldActive && currentArch.artUrl) {
+      artLayer.style.backgroundImage = `url('${currentArch.artUrl}')`;
+    } else {
+      artLayer.style.backgroundImage = 'none';
+    }
+  }
+
+  // 2. Arena Frosted Tint & Colors
+  const arena = document.getElementById('duelArena');
+  if (arena) {
+    arena.classList.toggle('field-spell-active', isFieldActive);
+    if (isFieldActive) {
+      arena.style.setProperty('--field-border', currentArch.borderColor || 'rgba(245, 183, 49, 0.5)');
+      arena.style.setProperty('--field-glow', currentArch.glowColor || 'rgba(245, 183, 49, 0.25)');
+    } else {
+      arena.style.removeProperty('--field-border');
+      arena.style.removeProperty('--field-glow');
+    }
+  }
+
+  // 3. Central Bar Field Spell Tool Button
+  const fieldBtn = document.getElementById('openFieldSpellBtn');
+  const fieldIcon = document.getElementById('fieldSpellBtnIcon');
+  const fieldLbl = document.getElementById('fieldSpellBtnLbl');
+  if (fieldBtn) {
+    fieldBtn.classList.toggle('active-field-spell', isFieldActive);
+    if (fieldIcon) {
+      fieldIcon.textContent = isFieldActive ? currentArch.icon : '🏟️';
+    }
+    if (fieldLbl) {
+      fieldLbl.textContent = isFieldActive ? currentArch.name.split(' ')[0] : 'Terreno';
+    }
+  }
+
+  // 4. Player Cards Archetype Badges
+  const p1Arch = ARCHETYPES[state.players[1]?.archetype] || ARCHETYPES.monarch;
+  const p2Arch = ARCHETYPES[state.players[2]?.archetype] || ARCHETYPES.blueeyes;
+
+  const p1Icon = document.getElementById('p1ArchetypeIcon');
+  const p1Name = document.getElementById('p1ArchetypeName');
+  if (p1Icon) p1Icon.textContent = p1Arch.icon;
+  if (p1Name) p1Name.textContent = p1Arch.name;
+
+  const p2Icon = document.getElementById('p2ArchetypeIcon');
+  const p2Name = document.getElementById('p2ArchetypeName');
+  if (p2Icon) p2Icon.textContent = p2Arch.icon;
+  if (p2Name) p2Name.textContent = p2Arch.name;
+
+  // 5. Field Dialog Status Box
+  const statusThumb = document.getElementById('fieldStatusThumb');
+  const statusPill = document.getElementById('fieldStatusPill');
+  const statusTitle = document.getElementById('fieldStatusCardName');
+  const statusDesc = document.getElementById('fieldStatusDesc');
+  const insertBtnText = document.getElementById('fieldSpellInsertBtnText');
+  const removeBtn = document.getElementById('fieldSpellRemoveBtn');
+  const particlesCheck = document.getElementById('particlesToggleCheck');
+
+  if (statusThumb) {
+    statusThumb.src = currentArch.artUrl || './icon.svg';
+  }
+  if (statusPill) {
+    if (isFieldActive) {
+      statusPill.textContent = `✨ ATTIVA SUL CAMPO (${state.players[state.fieldActivator || 1]?.name})`;
+      statusPill.classList.add('pill-active');
+    } else {
+      statusPill.textContent = 'NESSUNA MAGIA TERRENO ATTIVA';
+      statusPill.classList.remove('pill-active');
+    }
+  }
+  if (statusTitle) {
+    statusTitle.textContent = currentArch.fieldSpellName;
+  }
+  if (statusDesc) {
+    statusDesc.textContent = currentArch.desc;
+  }
+  if (insertBtnText) {
+    insertBtnText.textContent = isFieldActive ? 'Rinnova / Cambia Terreno' : 'Magia Terreno Inserita';
+  }
+  if (removeBtn) {
+    removeBtn.style.display = isFieldActive ? 'inline-flex' : 'none';
+  }
+  if (particlesCheck) {
+    particlesCheck.checked = Boolean(state.particlesEnabled);
+  }
+
+  // 6. Highlight active archetype in modal grid
+  renderArchetypesSelectionGrid();
+}
+
+function activateFieldSpell(archetypeKey, activatorPlayer = 1, showBanner = true) {
+  const arch = ARCHETYPES[archetypeKey] || ARCHETYPES.monarch;
+  state.fieldSpellActive = true;
+  state.activeField = arch.id;
+  state.fieldActivator = activatorPlayer;
+
+  // Play official card activation sound effect
+  playOriginalSound('activate') || playTrapChainSfx();
+
+  // Show Anime Activation Banner
+  if (showBanner) {
+    const banner = document.getElementById('fieldActivationBanner');
+    const bannerImg = document.getElementById('bannerCardImg');
+    const bannerName = document.getElementById('bannerCardName');
+
+    if (bannerImg) bannerImg.src = arch.cardUrl || arch.artUrl || './images/fields/monarch.jpg';
+    if (bannerName) bannerName.textContent = arch.fieldSpellName;
+
+    if (banner) {
+      banner.classList.add('show-banner');
+      setTimeout(() => {
+        banner.classList.remove('show-banner');
+      }, 1900);
+    }
+  }
+
+  const actPlayerName = state.players[activatorPlayer]?.name || `Giocatore ${activatorPlayer}`;
+  addLogEntry(activatorPlayer, `🏟️ Magia Terreno Inserita: ${arch.fieldSpellName} (${actPlayerName})`);
+  showToast(`✨ Magia Terreno: ${arch.fieldSpellName} Attiva!`);
+
+  renderField();
+  saveState();
+}
+
+function deactivateFieldSpell() {
+  state.fieldSpellActive = false;
+  playUiBeep(440, 0.08);
+
+  addLogEntry(0, `💥 Magia Terreno Rimossa / Distrutta dal Terreno`);
+  showToast(`💥 Magia Terreno Rimossa dal Campo`);
+
+  renderField();
+  saveState();
+}
+
+let archTargetPlayer = 1;
+
+function renderArchetypesSelectionGrid() {
+  const grid = document.getElementById('archetypesSelectionGrid');
+  if (!grid) return;
+
+  const targetPlayer = archTargetPlayer || 1;
+  const currentAssignedArch = state.players[targetPlayer]?.archetype || 'monarch';
+
+  grid.innerHTML = Object.values(ARCHETYPES)
+    .map((arch) => {
+      const isSelectedForPlayer = arch.id === currentAssignedArch;
+
+      return `
+        <button type="button" class="arch-card ${isSelectedForPlayer ? 'active' : ''}" data-arch-id="${arch.id}" title="${escapeHtml(arch.desc)}">
+          <div class="arch-card-top">
+            <span class="arch-card-icon">${arch.icon}</span>
+            <span class="arch-card-name">${escapeHtml(arch.name)}</span>
+          </div>
+          <div class="arch-card-thumb-wrap">
+            <img class="arch-card-thumb" src="${arch.artUrl || './icon.svg'}" alt="${escapeHtml(arch.fieldSpellName)}" loading="lazy" />
+          </div>
+          <div class="arch-field-title">${escapeHtml(arch.fieldSpellName)}</div>
+        </button>
+      `;
+    })
+    .join('');
+}
+
+// ============================================================================
+// CANVAS PARTICLES & AMBIENT ANIMATION ENGINE
+// ============================================================================
+let canvasEl = null;
+let canvasCtx = null;
+let animFrameId = null;
+let particles = [];
+let lightningCooldown = 0;
+
+function initFieldParticlesCanvas() {
+  canvasEl = document.getElementById('fieldCanvas');
+  if (!canvasEl) return;
+  canvasCtx = canvasEl.getContext('2d');
+  if (!canvasCtx) return;
+
+  function resizeCanvas() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvasEl.width = window.innerWidth * dpr;
+    canvasEl.height = window.innerHeight * dpr;
+    canvasCtx.scale(dpr, dpr);
+    createParticlesPool();
+  }
+
+  window.addEventListener('resize', resizeCanvas, { passive: true });
+  resizeCanvas();
+  startAnimationLoop();
+}
+
+function createParticlesPool() {
+  particles = [];
+  const count = 35;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      size: Math.random() * 2.8 + 1.2,
+      speedX: (Math.random() - 0.5) * 0.5,
+      speedY: -(Math.random() * 0.8 + 0.3),
+      alpha: Math.random() * 0.7 + 0.2,
+      baseAlpha: Math.random() * 0.7 + 0.2,
+      pulseSpeed: Math.random() * 0.03 + 0.015,
+      sineAngle: Math.random() * Math.PI * 2,
+      glyphRadius: Math.random() * 22 + 14
+    });
+  }
+}
+
+function triggerLightningFlash() {
+  const flashEl = document.getElementById('fieldLightningFlash');
+  if (flashEl) {
+    flashEl.classList.add('flash-active');
+    setTimeout(() => {
+      flashEl.classList.remove('flash-active');
+    }, 90);
+  }
+}
+
+function drawLightningBolt(ctx, x1, y1, x2, y2, displace) {
+  if (displace < 4) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    return;
+  }
+  const midX = (x1 + x2) / 2 + (Math.random() - 0.5) * displace;
+  const midY = (y1 + y2) / 2 + (Math.random() - 0.5) * displace;
+  drawLightningBolt(ctx, x1, y1, midX, midY, displace / 2);
+  drawLightningBolt(ctx, midX, midY, x2, y2, displace / 2);
+}
+
+function startAnimationLoop() {
+  let tick = 0;
+
+  function renderFrame() {
+    animFrameId = requestAnimationFrame(renderFrame);
+
+    if (!canvasCtx || !state.particlesEnabled) {
+      if (canvasCtx) canvasCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      return;
+    }
+
+    tick++;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    canvasCtx.clearRect(0, 0, w, h);
+
+    const activeArch = ARCHETYPES[state.activeField] || ARCHETYPES.monarch;
+    const pType = activeArch.particleType || 'lightning_monarch';
+    const isFieldActive = Boolean(state.fieldSpellActive);
+
+    // 1. MONARCH LIGHTNING & DIVINE EMBER PARTICLES
+    if (pType === 'lightning_monarch') {
+      particles.forEach((p) => {
+        p.sineAngle += 0.02;
+        p.x += Math.sin(p.sineAngle) * 0.4 + p.speedX;
+        p.y += p.speedY;
+        if (p.y < -10) {
+          p.y = h + 10;
+          p.x = Math.random() * w;
+        }
+
+        const alpha = Math.sin(tick * p.pulseSpeed) * 0.3 + p.baseAlpha;
+        canvasCtx.save();
+        canvasCtx.beginPath();
+        canvasCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        canvasCtx.fillStyle = `rgba(251, 191, 36, ${Math.max(0.1, alpha)})`;
+        canvasCtx.shadowColor = '#f59e0b';
+        canvasCtx.shadowBlur = 8;
+        canvasCtx.fill();
+        canvasCtx.restore();
+      });
+
+      if (isFieldActive) {
+        lightningCooldown++;
+        if (lightningCooldown > 220) {
+          lightningCooldown = 0;
+          triggerLightningFlash();
+
+          canvasCtx.save();
+          canvasCtx.strokeStyle = '#fffbeb';
+          canvasCtx.shadowColor = '#f59e0b';
+          canvasCtx.shadowBlur = 18;
+          canvasCtx.lineWidth = 2.5;
+
+          const startX = Math.random() * (w * 0.7) + w * 0.15;
+          const endX = startX + (Math.random() - 0.5) * 120;
+          drawLightningBolt(canvasCtx, startX, 0, endX, h * 0.65, 55);
+          canvasCtx.restore();
+        }
+      }
+    } else if (pType === 'blue_stars') {
+      particles.forEach((p) => {
+        p.y += p.speedY * 0.7;
+        if (p.y < -10) {
+          p.y = h + 10;
+          p.x = Math.random() * w;
+        }
+        const alpha = Math.sin(tick * p.pulseSpeed + p.sineAngle) * 0.4 + 0.5;
+        canvasCtx.save();
+        canvasCtx.beginPath();
+        canvasCtx.arc(p.x, p.y, p.size * 1.2, 0, Math.PI * 2);
+        canvasCtx.fillStyle = `rgba(56, 189, 248, ${Math.max(0.1, alpha)})`;
+        canvasCtx.shadowColor = '#38bdf8';
+        canvasCtx.shadowBlur = 10;
+        canvasCtx.fill();
+        canvasCtx.restore();
+      });
+    } else if (pType === 'arcane_glyphs') {
+      particles.slice(0, 3).forEach((p, idx) => {
+        canvasCtx.save();
+        canvasCtx.translate(w * (0.25 + idx * 0.25), h * 0.5);
+        canvasCtx.rotate(tick * 0.003 * (idx % 2 === 0 ? 1 : -1));
+        canvasCtx.strokeStyle = 'rgba(192, 132, 252, 0.18)';
+        canvasCtx.lineWidth = 1.2;
+        canvasCtx.beginPath();
+        canvasCtx.arc(0, 0, p.glyphRadius * 2.5, 0, Math.PI * 2);
+        canvasCtx.stroke();
+        canvasCtx.beginPath();
+        canvasCtx.rect(-p.glyphRadius * 1.6, -p.glyphRadius * 1.6, p.glyphRadius * 3.2, p.glyphRadius * 3.2);
+        canvasCtx.stroke();
+        canvasCtx.restore();
+      });
+
+      particles.forEach((p) => {
+        p.y += p.speedY * 0.8;
+        if (p.y < -10) {
+          p.y = h + 10;
+          p.x = Math.random() * w;
+        }
+        canvasCtx.fillStyle = `rgba(192, 132, 252, ${p.baseAlpha})`;
+        canvasCtx.fillRect(p.x, p.y, p.size, p.size);
+      });
+    } else if (pType === 'hero_searchlights') {
+      canvasCtx.save();
+      const sweepAngle1 = Math.sin(tick * 0.015) * 0.35 - 0.4;
+      const grad1 = canvasCtx.createLinearGradient(0, h, Math.cos(sweepAngle1) * w, 0);
+      grad1.addColorStop(0, 'rgba(251, 191, 36, 0.22)');
+      grad1.addColorStop(1, 'rgba(251, 191, 36, 0)');
+      canvasCtx.fillStyle = grad1;
+      canvasCtx.beginPath();
+      canvasCtx.moveTo(0, h);
+      canvasCtx.lineTo(Math.cos(sweepAngle1) * w * 0.9, 0);
+      canvasCtx.lineTo(Math.cos(sweepAngle1 + 0.15) * w * 1.1, 0);
+      canvasCtx.closePath();
+      canvasCtx.fill();
+      canvasCtx.restore();
+
+      particles.forEach((p) => {
+        p.y += p.speedY * 1.1;
+        if (p.y < -10) {
+          p.y = h + 10;
+          p.x = Math.random() * w;
+        }
+        canvasCtx.fillStyle = `rgba(239, 68, 68, ${p.baseAlpha})`;
+        canvasCtx.beginPath();
+        canvasCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        canvasCtx.fill();
+      });
+    } else if (pType === 'abyss_flames') {
+      particles.forEach((p) => {
+        p.y += p.speedY * 1.4;
+        p.x += (Math.random() - 0.5) * 0.8;
+        if (p.y < -10) {
+          p.y = h + 10;
+          p.x = Math.random() * w;
+        }
+        const alpha = (p.y / h) * 0.8;
+        canvasCtx.save();
+        canvasCtx.fillStyle = `rgba(244, 63, 94, ${alpha})`;
+        canvasCtx.shadowColor = '#e11d48';
+        canvasCtx.shadowBlur = 6;
+        canvasCtx.beginPath();
+        canvasCtx.arc(p.x, p.y, p.size * (p.y / h + 0.5), 0, Math.PI * 2);
+        canvasCtx.fill();
+        canvasCtx.restore();
+      });
+    } else if (pType === 'ocean_bubbles') {
+      particles.forEach((p) => {
+        p.sineAngle += 0.03;
+        p.x += Math.sin(p.sineAngle) * 0.6;
+        p.y += p.speedY * 1.2;
+        if (p.y < -10) {
+          p.y = h + 10;
+          p.x = Math.random() * w;
+        }
+        canvasCtx.save();
+        canvasCtx.strokeStyle = 'rgba(14, 165, 233, 0.45)';
+        canvasCtx.fillStyle = 'rgba(14, 165, 233, 0.12)';
+        canvasCtx.lineWidth = 1.2;
+        canvasCtx.beginPath();
+        canvasCtx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+        canvasCtx.fill();
+        canvasCtx.stroke();
+        canvasCtx.restore();
+      });
+    } else {
+      particles.forEach((p) => {
+        p.y += p.speedY * 0.6;
+        if (p.y < -10) {
+          p.y = h + 10;
+          p.x = Math.random() * w;
+        }
+        canvasCtx.fillStyle = `rgba(56, 189, 248, ${p.baseAlpha * 0.6})`;
+        canvasCtx.beginPath();
+        canvasCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        canvasCtx.fill();
+      });
+    }
+  }
+
+  animFrameId = requestAnimationFrame(renderFrame);
+}
+
 function renderAll() {
   const p1Name = document.getElementById('p1Name');
   const p2Name = document.getElementById('p2Name');
@@ -1183,6 +1775,7 @@ function renderAll() {
   renderTimer();
   renderLogs();
   updateUndoRedoButtons();
+  renderField();
 }
 
 function resetDuel(newStartLp = state.startLp) {
@@ -1190,6 +1783,11 @@ function resetDuel(newStartLp = state.startLp) {
   const p2Name = state.players[2].name;
   const p1Stars = state.players[1].stars;
   const p2Stars = state.players[2].stars;
+  const p1Arch = state.players[1].archetype;
+  const p2Arch = state.players[2].archetype;
+  const activeField = state.activeField;
+  const fieldSpellActive = state.fieldSpellActive;
+  const particlesEnabled = state.particlesEnabled;
   const soundEnabled = state.soundEnabled;
   const soundVolume = getMasterVolume();
   const tabletopMode = state.tabletopMode;
@@ -1199,6 +1797,11 @@ function resetDuel(newStartLp = state.startLp) {
   state.players[2].name = p2Name;
   state.players[1].stars = p1Stars;
   state.players[2].stars = p2Stars;
+  state.players[1].archetype = p1Arch || 'monarch';
+  state.players[2].archetype = p2Arch || 'blueeyes';
+  state.activeField = activeField || 'monarch';
+  state.fieldSpellActive = fieldSpellActive;
+  state.particlesEnabled = particlesEnabled;
   state.soundEnabled = soundEnabled;
   state.soundVolume = soundVolume;
   state.tabletopMode = tabletopMode;
@@ -1228,6 +1831,98 @@ function escapeHtml(str) {
 document.addEventListener('DOMContentLoaded', () => {
   setupModernDialogs();
   renderAll();
+  initFieldParticlesCanvas();
+
+  // Field Spell & Archetypes Dialog Controls
+  function openFieldDialog(targetPlayer = 1) {
+    archTargetPlayer = targetPlayer;
+    const p1Pill = document.getElementById('archTargetP1');
+    const p2Pill = document.getElementById('archTargetP2');
+    if (p1Pill) p1Pill.classList.toggle('active', archTargetPlayer === 1);
+    if (p2Pill) p2Pill.classList.toggle('active', archTargetPlayer === 2);
+    renderField();
+    const dlg = document.getElementById('fieldDialog');
+    if (dlg) dlg.showModal();
+  }
+
+  const openFieldBtn = document.getElementById('openFieldSpellBtn');
+  if (openFieldBtn) {
+    openFieldBtn.addEventListener('click', () => openFieldDialog(state.activePlayer || 1));
+  }
+
+  const p1ArchBtn = document.getElementById('p1ArchetypeBtn');
+  if (p1ArchBtn) {
+    p1ArchBtn.addEventListener('click', () => openFieldDialog(1));
+  }
+
+  const p2ArchBtn = document.getElementById('p2ArchetypeBtn');
+  if (p2ArchBtn) {
+    p2ArchBtn.addEventListener('click', () => openFieldDialog(2));
+  }
+
+  const fieldInsertBtn = document.getElementById('fieldSpellInsertBtn');
+  if (fieldInsertBtn) {
+    fieldInsertBtn.addEventListener('click', () => {
+      const targetArch = state.players[archTargetPlayer]?.archetype || state.activeField || 'monarch';
+      activateFieldSpell(targetArch, archTargetPlayer, true);
+    });
+  }
+
+  const fieldRemoveBtn = document.getElementById('fieldSpellRemoveBtn');
+  if (fieldRemoveBtn) {
+    fieldRemoveBtn.addEventListener('click', () => {
+      deactivateFieldSpell();
+    });
+  }
+
+  const archTargetP1Btn = document.getElementById('archTargetP1');
+  const archTargetP2Btn = document.getElementById('archTargetP2');
+  if (archTargetP1Btn && archTargetP2Btn) {
+    archTargetP1Btn.addEventListener('click', () => {
+      archTargetPlayer = 1;
+      archTargetP1Btn.classList.add('active');
+      archTargetP2Btn.classList.remove('active');
+      renderArchetypesSelectionGrid();
+    });
+    archTargetP2Btn.addEventListener('click', () => {
+      archTargetPlayer = 2;
+      archTargetP2Btn.classList.add('active');
+      archTargetP1Btn.classList.remove('active');
+      renderArchetypesSelectionGrid();
+    });
+  }
+
+  const archGrid = document.getElementById('archetypesSelectionGrid');
+  if (archGrid) {
+    archGrid.addEventListener('click', (e) => {
+      const card = e.target.closest('[data-arch-id]');
+      if (!card) return;
+      const archId = card.getAttribute('data-arch-id');
+      const arch = ARCHETYPES[archId];
+      if (!arch) return;
+
+      state.players[archTargetPlayer].archetype = archId;
+      state.activeField = archId;
+
+      if (state.fieldSpellActive) {
+        activateFieldSpell(archId, archTargetPlayer, true);
+      } else {
+        renderField();
+        saveState();
+        playUiBeep(880, 0.04);
+        showToast(`Mazzo ${state.players[archTargetPlayer].name}: ${arch.name}`);
+      }
+    });
+  }
+
+  const particlesCheck = document.getElementById('particlesToggleCheck');
+  if (particlesCheck) {
+    particlesCheck.addEventListener('change', (e) => {
+      state.particlesEnabled = e.target.checked;
+      saveState();
+      showToast(state.particlesEnabled ? 'Effetti Particellari Attivati ⚡' : 'Effetti Particellari Disattivati');
+    });
+  }
 
   // Player Names
   ['1', '2'].forEach((pNum) => {

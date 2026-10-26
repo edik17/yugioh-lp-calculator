@@ -1405,3 +1405,450 @@ dialog#calcDialog.tabletop-p2 .dialog-inner {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* ========================================================================= */
+/* 10. DYNAMIC FIELD SPELL & ANIMATED BACKGROUND SYSTEM                      */
+/* ========================================================================= */
+.field-bg-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.field-art-layer {
+  position: absolute;
+  inset: -15px;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  filter: saturate(1.22) contrast(1.12) brightness(0.68);
+  opacity: 0;
+  transform: scale(1.06);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.field-bg-container.field-spell-active .field-art-layer {
+  opacity: 0.70;
+  transform: scale(1);
+}
+
+.field-vignette-layer {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(6, 9, 17, 0.2) 20%, rgba(6, 9, 17, 0.9) 85%);
+  pointer-events: none;
+}
+
+.field-particles-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.field-lightning-flash {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 238, 170, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.08s ease-out;
+}
+
+.field-lightning-flash.flash-active {
+  opacity: 1;
+}
+
+/* ARENA FROSTED GLASS WHEN FIELD SPELL IS ACTIVE */
+.duel-arena.field-spell-active .player-card {
+  background: rgba(14, 20, 36, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-color: var(--field-border, rgba(245, 183, 49, 0.5));
+  box-shadow: 0 0 25px var(--field-glow, rgba(245, 183, 49, 0.25));
+}
+
+/* PLAYER ARCHETYPE TAG */
+.player-archetype-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--text-main);
+  padding: 0.12rem 0.42rem;
+  border-radius: 6px;
+  font-family: var(--font-hud);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+}
+
+.player-archetype-tag:hover,
+.player-archetype-tag:active {
+  background: rgba(245, 183, 49, 0.2);
+  border-color: var(--gold);
+  color: var(--gold-bright);
+}
+
+.player-archetype-tag .archetype-icon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.player-archetype-tag .archetype-name {
+  line-height: 1;
+}
+
+/* CENTER BAR FIELD SPELL BUTTON */
+.cbar-tool-btn.active-field-spell {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.28), rgba(5, 150, 105, 0.38));
+  border-color: #10b981;
+  color: #34d399;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  animation: fieldPulseGlow 2.5s infinite ease-in-out;
+}
+
+.cbar-tool-btn.active-field-spell .btn-lbl {
+  color: #a7f3d0;
+  font-weight: 800;
+}
+
+@keyframes fieldPulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.65);
+  }
+}
+
+/* ========================================================================= */
+/* 11. ANIME FIELD SPELL ACTIVATION BANNER                                   */
+/* ========================================================================= */
+.field-activation-banner {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, rgba(16, 185, 129, 0.25) 0%, rgba(6, 9, 17, 0.88) 75%);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
+}
+
+.field-activation-banner.show-banner {
+  opacity: 1;
+  visibility: visible;
+}
+
+.field-activation-card-frame {
+  background: rgba(10, 16, 28, 0.95);
+  border: 2px solid #10b981;
+  border-radius: 16px;
+  padding: 1rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 0 45px rgba(16, 185, 129, 0.6), inset 0 0 20px rgba(16, 185, 129, 0.2);
+  transform: scale(0.85);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 90vw;
+}
+
+.field-activation-banner.show-banner .field-activation-card-frame {
+  transform: scale(1);
+}
+
+.field-activation-header-badge {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #34d399;
+  text-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
+}
+
+.field-activation-img-box {
+  width: 130px;
+  height: 130px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid rgba(16, 185, 129, 0.6);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+}
+
+.field-activation-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.field-activation-card-title {
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-weight: 900;
+  color: #f1f5f9;
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(245, 183, 49, 0.4);
+}
+
+/* ========================================================================= */
+/* 12. FIELD DIALOG MODAL STYLES                                             */
+/* ========================================================================= */
+.field-status-box {
+  display: flex;
+  gap: 0.8rem;
+  background: rgba(18, 26, 46, 0.85);
+  border: 1px solid rgba(245, 183, 49, 0.3);
+  border-radius: 12px;
+  padding: 0.75rem;
+  margin-bottom: 0.9rem;
+  align-items: center;
+}
+
+.field-status-preview-wrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid var(--gold);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.field-status-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.field-status-type-badge {
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
+  background: rgba(5, 150, 105, 0.92);
+  font-size: 0.48rem;
+  font-weight: 800;
+  text-align: center;
+  color: #fff;
+  letter-spacing: 0.05em;
+  padding: 0.12rem 0;
+}
+
+.field-status-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.field-status-pill {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--gold-bright);
+  background: rgba(245, 183, 49, 0.15);
+  border: 1px solid rgba(245, 183, 49, 0.3);
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.field-status-pill.pill-active {
+  color: #a7f3d0;
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+}
+
+.field-status-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.2rem;
+}
+
+.field-status-desc {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.field-actions-row {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.field-main-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #fff;
+  border: 1px solid #34d399;
+  border-radius: 9px;
+  padding: 0.65rem 1rem;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+  transition: all 0.18s ease;
+}
+
+.field-main-btn:active {
+  transform: scale(0.98);
+}
+
+.field-remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(244, 63, 94, 0.18);
+  color: #fda4af;
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  border-radius: 9px;
+  padding: 0.65rem 0.9rem;
+  font-family: var(--font-hud);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.field-remove-btn:hover,
+.field-remove-btn:active {
+  background: rgba(244, 63, 94, 0.3);
+  color: #fff;
+}
+
+.arch-target-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.arch-section-title h4 {
+  font-size: 0.78rem;
+  color: var(--gold-bright);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.55rem;
+}
+
+.archetypes-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.arch-card {
+  background: rgba(22, 32, 54, 0.85);
+  border: 1px solid rgba(148, 163, 196, 0.2);
+  border-radius: 10px;
+  padding: 0.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: left;
+}
+
+.arch-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+
+.arch-card.active {
+  border-color: var(--gold);
+  background: rgba(245, 183, 49, 0.15);
+  box-shadow: 0 0 12px rgba(245, 183, 49, 0.25);
+}
+
+.arch-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.arch-card-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.arch-card-name {
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.arch-card-thumb-wrap {
+  width: 100%;
+  height: 56px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #000;
+  position: relative;
+}
+
+.arch-card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.arch-card:hover .arch-card-thumb {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.arch-field-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--gold-bright);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.field-settings-bar {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.field-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-main);
+  cursor: pointer;
+}

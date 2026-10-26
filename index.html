@@ -18,10 +18,29 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="duel-app-body">
+  <!-- DYNAMIC FIELD SPELL & ANIMATED BACKGROUND CONTAINER -->
+  <div class="field-bg-container" id="fieldBgContainer" aria-hidden="true">
+    <div class="field-art-layer" id="fieldArtLayer"></div>
+    <div class="field-vignette-layer"></div>
+    <canvas class="field-particles-canvas" id="fieldCanvas"></canvas>
+    <div class="field-lightning-flash" id="fieldLightningFlash"></div>
+  </div>
+
   <div class="bg-grid" aria-hidden="true"></div>
   <div class="bg-glow bg-glow-p1" aria-hidden="true"></div>
   <div class="bg-glow bg-glow-p2" aria-hidden="true"></div>
   <div class="damage-flash-overlay" id="damageFlashOverlay" aria-hidden="true"></div>
+
+  <!-- FIELD SPELL ANIME ACTIVATION BANNER -->
+  <div class="field-activation-banner" id="fieldActivationBanner" aria-hidden="true">
+    <div class="field-activation-card-frame">
+      <div class="field-activation-header-badge">MAGIA TERRENO ATTIVATA</div>
+      <div class="field-activation-img-box">
+        <img class="field-activation-card-img" id="bannerCardImg" src="./images/fields/monarch.jpg" alt="Carta Terreno" />
+      </div>
+      <div class="field-activation-card-title" id="bannerCardName">Dominio dei Veri Monarchi</div>
+    </div>
+  </div>
 
   <!-- MAIN FACE-TO-FACE ARENA (100% VIEWPORT HEIGHT, ZERO SCROLL) -->
   <main class="duel-arena tabletop-mode" id="duelArena">
@@ -35,6 +54,10 @@
         <div class="player-identity">
           <span class="player-tag p2-tag">P2</span>
           <input type="text" class="player-name-input" id="p2Name" value="Giocatore 2" maxlength="16" aria-label="Nome Giocatore 2" />
+          <button class="player-archetype-tag" id="p2ArchetypeBtn" data-player="2" title="Mazzo Giocatore 2 (Tocca per cambiare o attivare Terreno)">
+            <span class="archetype-icon" id="p2ArchetypeIcon">🐉</span>
+            <span class="archetype-name" id="p2ArchetypeName">Occhi Blu</span>
+          </button>
         </div>
         <div class="match-stars" title="Vittorie nel Match (Best of 3)">
           <span class="match-label">MATCH</span>
@@ -98,6 +121,10 @@
           <span class="btn-icon">🪙🎲</span>
           <span class="btn-lbl">Dado</span>
         </button>
+        <button class="cbar-tool-btn field-spell-tool-btn" id="openFieldSpellBtn" title="Magia Terreno & Sfondo Animato">
+          <span class="btn-icon" id="fieldSpellBtnIcon">🏟️</span>
+          <span class="btn-lbl" id="fieldSpellBtnLbl">Terreno</span>
+        </button>
         <button class="cbar-tool-btn" id="undoBtn" disabled title="Annulla ultima modifica LP (Ctrl+Z)">
           <span class="btn-icon">↩</span>
           <span class="btn-lbl">Annulla</span>
@@ -146,6 +173,10 @@
         <div class="player-identity">
           <span class="player-tag p1-tag">P1</span>
           <input type="text" class="player-name-input" id="p1Name" value="Giocatore 1" maxlength="16" aria-label="Nome Giocatore 1" />
+          <button class="player-archetype-tag" id="p1ArchetypeBtn" data-player="1" title="Mazzo Giocatore 1 (Tocca per cambiare o attivare Terreno)">
+            <span class="archetype-icon" id="p1ArchetypeIcon">👑</span>
+            <span class="archetype-name" id="p1ArchetypeName">Monarchi</span>
+          </button>
         </div>
         <div class="match-stars" title="Vittorie nel Match (Best of 3)">
           <span class="match-label">MATCH</span>
@@ -602,6 +633,74 @@
         <h4>Segnalini Attivi:</h4>
         <div class="markers-list" id="p1MarkersList"></div>
         <div class="markers-list" id="p2MarkersList"></div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 6: FIELD SPELLS & ARCHETYPES (DOMINIO DEI VERI MONARCHI, ETC.)  -->
+  <!-- ====================================================================== -->
+  <dialog class="duel-dialog wide-dialog" id="fieldDialog" closedby="any" aria-labelledby="fieldDialogTitle">
+    <div class="dialog-inner">
+      <div class="dialog-header">
+        <h2 id="fieldDialogTitle">
+          <svg class="dialog-header-svg" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#f5b731" stroke-width="2"/>
+            <path d="M2 17L12 22L22 17" stroke="#ffe27a" stroke-width="2"/>
+            <path d="M2 12L12 17L22 12" stroke="#f5b731" stroke-width="2"/>
+          </svg>
+          <span>Magia Terreno &amp; Archetipi</span>
+        </h2>
+        <button class="dialog-close-btn" data-close-dialog="fieldDialog" aria-label="Chiudi finestra">✕</button>
+      </div>
+
+      <!-- Current Field Status & Active Card -->
+      <div class="field-status-box" id="fieldStatusBox">
+        <div class="field-status-preview-wrap">
+          <img class="field-status-thumb" id="fieldStatusThumb" src="./images/fields/monarch.jpg" alt="Campo di Battaglia" />
+          <div class="field-status-type-badge">FIELD SPELL</div>
+        </div>
+        <div class="field-status-details">
+          <div class="field-status-pill" id="fieldStatusPill">NESSUNA MAGIA TERRENO ATTIVA</div>
+          <h3 class="field-status-title" id="fieldStatusCardName">Dominio dei Veri Monarchi</h3>
+          <p class="field-status-desc" id="fieldStatusDesc">
+            Se non hai carte nell'Extra Deck e controlli un mostro Evocato tramite Tributo, il tuo avversario non può Evocare Specialmente dall'Extra Deck. I mostri con Tributo guadagnano 800 ATK.
+          </p>
+        </div>
+      </div>
+
+      <!-- Primary Action: Inserisci Terreno / Rimuovi Terreno -->
+      <div class="field-actions-row">
+        <button class="field-main-btn" id="fieldSpellInsertBtn">
+          <span class="fbtn-icon">✨</span>
+          <span class="fbtn-lbl" id="fieldSpellInsertBtnText">Magia Terreno Inserita</span>
+        </button>
+        <button class="field-remove-btn" id="fieldSpellRemoveBtn">
+          <span>💥 Rimuovi Terreno</span>
+        </button>
+      </div>
+
+      <!-- Player Selector for Deck Archetype Assignment -->
+      <div class="arch-target-bar">
+        <span>Assegna Mazzo a:</span>
+        <button class="target-pill active" id="archTargetP1" data-atarget="1">Giocatore 1 (P1)</button>
+        <button class="target-pill" id="archTargetP2" data-atarget="2">Giocatore 2 (P2)</button>
+      </div>
+
+      <!-- Archetypes & Field Spells Selection Grid -->
+      <div class="arch-section-title">
+        <h4>Archetipi &amp; Magie Terreno Disponibili:</h4>
+      </div>
+      <div class="archetypes-selection-grid" id="archetypesSelectionGrid">
+        <!-- Rendered by app.js -->
+      </div>
+
+      <!-- Settings & Visual Effects Toggle -->
+      <div class="field-settings-bar">
+        <label class="field-toggle-label">
+          <input type="checkbox" id="particlesToggleCheck" checked />
+          <span>Effetti Particellari &amp; Animazioni Sfondo</span>
+        </label>
       </div>
     </div>
   </dialog>
