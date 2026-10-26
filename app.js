@@ -931,9 +931,12 @@ function launchCoins(count = 1) {
   const coinText = document.getElementById('coinResultText');
   const multiContainer = document.getElementById('coinMultiResults');
 
-  coinVisual.classList.remove('flipping', 'tails-coin');
-  void coinVisual.offsetWidth;
-  coinVisual.classList.add('flipping');
+  if (coinVisual) {
+    coinVisual.classList.remove('flipping');
+    void coinVisual.offsetWidth;
+    coinVisual.classList.add('flipping');
+  }
+
   playOriginalSound('coinflip') || playUiBeep(980, 0.08);
 
   const results = [];
@@ -943,27 +946,40 @@ function launchCoins(count = 1) {
 
   setTimeout(() => {
     const primary = results[0];
-    coinText.textContent = primary;
-    coinVisual.classList.toggle('tails-coin', primary === 'CROCE');
+    if (coinVisual) {
+      coinVisual.classList.remove('flipping');
+      coinVisual.classList.toggle('tails-coin', primary === 'CROCE');
+    }
 
-    multiContainer.innerHTML = results
-      .map((r, idx) => `<span class="rng-pill">Moneta ${idx + 1}: <strong>${r}</strong></span>`)
-      .join('');
+    if (coinText) {
+      coinText.className = 'coin-result-banner ' + (primary === 'TESTA' ? 'res-head' : 'res-tail');
+      coinText.textContent = primary === 'TESTA' ? 'TESTA (Occhio del Millennio)' : 'CROCE (Puzzle del Millennio)';
+    }
+
+    if (multiContainer) {
+      multiContainer.innerHTML = results
+        .map((r, idx) => `<span class="rng-pill ${r === 'TESTA' ? 'pill-head' : 'pill-tail'}">Moneta ${idx + 1}: <strong>${r}</strong></span>`)
+        .join('');
+    }
 
     addLogEntry(0, `🪙 Lancio Moneta (${count}): ${results.join(', ')}`);
     saveState();
-  }, 320);
+  }, 480);
 }
 
 function rollDice(count = 1) {
   const diceVisual = document.getElementById('diceVisual');
+  const dicePipFace = document.getElementById('dicePipFace');
   const diceText = document.getElementById('diceResultText');
   const multiContainer = document.getElementById('diceMultiResults');
   const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 
-  diceVisual.classList.remove('rolling');
-  void diceVisual.offsetWidth;
-  diceVisual.classList.add('rolling');
+  if (diceVisual) {
+    diceVisual.classList.remove('rolling');
+    void diceVisual.offsetWidth;
+    diceVisual.classList.add('rolling');
+  }
+
   playOriginalSound('diceroll') || playUiBeep(620, 0.08);
 
   const results = [];
@@ -972,17 +988,29 @@ function rollDice(count = 1) {
   }
 
   setTimeout(() => {
+    if (diceVisual) diceVisual.classList.remove('rolling');
     const primary = results[0];
-    diceVisual.textContent = diceFaces[primary - 1];
-    diceText.textContent = `RISULTATO: ${primary}`;
 
-    multiContainer.innerHTML = results
-      .map((r, idx) => `<span class="rng-pill">Dado ${idx + 1}: <strong>${r}</strong></span>`)
-      .join('');
+    if (dicePipFace) {
+      dicePipFace.textContent = diceFaces[primary - 1];
+    } else if (diceVisual) {
+      diceVisual.textContent = diceFaces[primary - 1];
+    }
+
+    if (diceText) {
+      diceText.className = 'dice-result-banner res-dice';
+      diceText.textContent = `RISULTATO: ${primary}`;
+    }
+
+    if (multiContainer) {
+      multiContainer.innerHTML = results
+        .map((r, idx) => `<span class="rng-pill">Dado ${idx + 1}: <strong>${r}</strong></span>`)
+        .join('');
+    }
 
     addLogEntry(0, `🎲 Lancio Dado D6 (${count}): ${results.join(', ')}`);
     saveState();
-  }, 280);
+  }, 380);
 }
 
 // ============================================================================
@@ -1446,10 +1474,20 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast(`Evocato "${name}" per ${state.players[markerTargetPlayer].name}`);
   });
 
-  // Coin & Dice Modal
+  // Coin & Dice Modal & Direct Click
   document.getElementById('openCoinDiceBtn').addEventListener('click', () => {
     document.getElementById('coinDiceDialog').showModal();
   });
+
+  const coinVisualEl = document.getElementById('coinVisual');
+  if (coinVisualEl) {
+    coinVisualEl.addEventListener('click', () => launchCoins(1));
+  }
+
+  const diceVisualEl = document.getElementById('diceVisual');
+  if (diceVisualEl) {
+    diceVisualEl.addEventListener('click', () => rollDice(1));
+  }
 
   document.querySelectorAll('[data-coin-count]').forEach((btn) => {
     btn.addEventListener('click', () => {

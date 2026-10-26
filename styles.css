@@ -690,9 +690,19 @@ dialog#calcDialog.tabletop-p2 .dialog-inner {
 }
 
 .dialog-header h2 {
-  font-family: var(--font-display);
+  font-family: var(--font-display), 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
   font-size: 0.95rem;
   color: var(--gold-bright);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dialog-header-svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px var(--gold-glow));
 }
 
 .dialog-close-btn {
@@ -915,7 +925,7 @@ dialog#calcDialog.tabletop-p2 .dialog-inner {
 }
 
 /* ========================================================================= */
-/* RNG & OTHER DIALOGS                                                       */
+/* RNG DIALOG: 3D YU-GI-OH! MILLENNIUM COIN & TACTICAL DICE                  */
 /* ========================================================================= */
 .rng-grid {
   display: grid;
@@ -928,50 +938,188 @@ dialog#calcDialog.tabletop-p2 .dialog-inner {
 }
 
 .rng-box {
-  background: rgba(12, 18, 34, 0.8);
+  background: rgba(12, 18, 34, 0.85);
   border: 1px solid var(--border-subtle);
-  border-radius: 10px;
-  padding: 0.75rem;
+  border-radius: 12px;
+  padding: 0.85rem 0.65rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.5rem;
+}
+
+.rng-box-title {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.rng-title-text {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--gold-bright);
+  letter-spacing: 0.05em;
 }
 
 .rng-desc {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+/* 3D MILLENNIUM COIN */
+.coin-stage {
+  perspective: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0.35rem 0;
+  gap: 0.55rem;
+}
+
+.ygo-coin {
+  width: 96px;
+  height: 96px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.2, 0.85, 0.3, 1.2);
+  cursor: pointer;
+}
+
+.ygo-coin:hover {
+  filter: drop-shadow(0 0 14px var(--gold-glow));
+}
+
+.ygo-coin.flipping {
+  animation: coinFlip3D 0.5s ease-in-out;
+}
+
+@keyframes coinFlip3D {
+  0% { transform: scale(1) rotateY(0deg) translateY(0); }
+  45% { transform: scale(1.32) rotateY(900deg) translateY(-28px); }
+  85% { transform: scale(1.1) rotateY(1620deg) translateY(-6px); }
+  100% { transform: scale(1) rotateY(1800deg) translateY(0); }
+}
+
+.ygo-coin.tails-coin {
+  transform: rotateY(180deg);
+}
+
+.ygo-coin-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.65));
+}
+
+.ygo-coin-front {
+  transform: rotateY(0deg);
+}
+
+.ygo-coin-back {
+  transform: rotateY(180deg);
+}
+
+.coin-svg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: block;
+}
+
+.coin-result-banner, .dice-result-banner {
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  background: rgba(10, 15, 28, 0.9);
+  border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   text-align: center;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.coin-visual, .dice-visual {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
+.coin-result-banner.res-head {
+  color: var(--gold-bright);
+  border-color: var(--gold);
+  background: rgba(245, 183, 49, 0.18);
+  box-shadow: 0 0 14px var(--gold-glow);
+}
+
+.coin-result-banner.res-tail {
+  color: #fdba74;
+  border-color: #ea580c;
+  background: rgba(234, 88, 12, 0.18);
+  box-shadow: 0 0 14px rgba(234, 88, 12, 0.35);
+}
+
+.dice-result-banner.res-dice {
+  color: #7dd3fc;
+  border-color: var(--p1-primary);
+  background: rgba(0, 210, 255, 0.15);
+  box-shadow: 0 0 14px var(--p1-glow);
+}
+
+/* DICE */
+.dice-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0.35rem 0;
+  gap: 0.55rem;
+}
+
+.ygo-dice {
+  width: 76px;
+  height: 76px;
+  background: linear-gradient(145deg, #ffffff, #e2e8f0);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.9), inset 0 -3px 6px rgba(0, 0, 0, 0.15);
   display: grid;
   place-items: center;
-  font-size: 1.8rem;
-  font-weight: 900;
+  cursor: pointer;
+  border: 2px solid rgba(0, 210, 255, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 
-.coin-visual {
-  background: radial-gradient(circle, #fde047, #d97706);
-  color: #451a03;
-  box-shadow: 0 0 16px var(--gold-glow);
+.ygo-dice:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 16px var(--p1-glow);
 }
 
-.dice-visual {
-  border-radius: 12px;
-  background: #ffffff;
+.ygo-dice.rolling {
+  animation: diceRollShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes diceRollShake {
+  0% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.2) rotate(45deg); }
+  50% { transform: scale(1.15) rotate(-35deg); }
+  75% { transform: scale(1.22) rotate(20deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.dice-pip-face {
+  font-size: 3.4rem;
+  line-height: 1;
   color: #0f172a;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-}
-
-.coin-label, .dice-label {
-  font-family: var(--font-display);
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: var(--gold-bright);
 }
 
 .rng-controls {
