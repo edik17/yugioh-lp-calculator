@@ -267,6 +267,32 @@ body.duel-app-body {
   letter-spacing: 0.12em;
 }
 
+.player-turn-badge {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 0.12rem 0.48rem;
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.25s ease;
+}
+
+.player-turn-badge.badge-active {
+  color: #a7f3d0;
+  background: rgba(16, 185, 129, 0.22);
+  border-color: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  animation: turnBadgePulse 2s infinite alternate;
+}
+
+@keyframes turnBadgePulse {
+  from { box-shadow: 0 0 4px rgba(16, 185, 129, 0.3); }
+  to { box-shadow: 0 0 12px rgba(16, 185, 129, 0.7); }
+}
+
 .lp-delta {
   font-family: var(--font-display);
   font-size: 0.88rem;
@@ -669,9 +695,26 @@ dialog.duel-dialog::backdrop {
   }
 }
 
-/* TABLETOP P2-FACING CALCULATOR ROTATION */
+/* TABLETOP P2-FACING CALCULATOR ROTATION & TOP-ANCHOR */
+dialog#calcDialog.tabletop-p2 {
+  margin: 0 auto auto auto;
+  border-radius: 0 0 20px 20px;
+  border-top: none;
+  border-bottom: 1px solid rgba(245, 183, 49, 0.45);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+}
+
 dialog#calcDialog.tabletop-p2 .dialog-inner {
   transform: rotate(180deg);
+}
+
+:is(dialog#calcDialog.tabletop-p2[open]):where(:not([data-closing])) {
+  transform: translateY(0);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
 }
 
 .dialog-inner {
@@ -1851,4 +1894,158 @@ dialog#calcDialog.tabletop-p2 .dialog-inner {
   font-weight: 700;
   color: var(--text-main);
   cursor: pointer;
+}
+
+/* ========================================================================= */
+/* 13. VERTICAL TABLETOP PHONE RESPONSIVE ERGONOMICS (FACE-TO-FACE)          */
+/* ========================================================================= */
+body.duel-app-body {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-touch-callout: none;
+}
+
+.center-duel-bar {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.center-duel-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.cbar-cluster {
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .duel-arena {
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+    gap: 0.2rem;
+  }
+
+  .player-card {
+    padding: 0.45rem 0.55rem;
+    border-radius: 12px;
+  }
+
+  .player-name-input {
+    width: auto;
+    max-width: 90px;
+    font-size: 0.95rem;
+    padding: 0.1rem 0.2rem;
+  }
+
+  .player-archetype-tag {
+    max-width: 95px;
+    font-size: 0.65rem;
+    padding: 0.1rem 0.3rem;
+  }
+
+  .player-archetype-tag .archetype-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .match-stars {
+    font-size: 0.95rem;
+    gap: 0.15rem;
+  }
+
+  .cbar-tool-btn {
+    min-width: 31px;
+    height: 33px;
+    padding: 0.08rem 0.22rem;
+  }
+
+  .cbar-tool-btn .btn-icon {
+    font-size: 0.78rem;
+  }
+
+  .cbar-tool-btn .btn-lbl {
+    font-size: 0.48rem;
+  }
+
+  .cbar-timer {
+    padding: 0.12rem 0.32rem;
+    gap: 0.18rem;
+  }
+
+  .timer-digits {
+    font-size: 0.92rem;
+  }
+
+  .cbar-turn-badge {
+    padding: 0.16rem 0.32rem;
+    font-size: 0.78rem;
+  }
+
+  .quick-lp-grid {
+    gap: 0.25rem;
+  }
+
+  .qlp-btn {
+    height: 38px;
+    min-height: 38px;
+    font-size: 0.88rem;
+  }
+}
+
+@media (max-height: 740px) {
+  .player-card {
+    padding: 0.35rem 0.5rem;
+  }
+
+  .lp-digits {
+    font-size: clamp(2.4rem, 11vw, 3.6rem);
+  }
+
+  .lp-bar-track {
+    height: 5px;
+    margin-top: 0.15rem;
+  }
+
+  .qlp-btn {
+    height: 35px;
+    min-height: 35px;
+    font-size: 0.84rem;
+  }
+
+  .center-duel-bar {
+    height: 42px;
+    min-height: 42px;
+  }
+}
+
+@media (max-height: 670px) {
+  .player-card {
+    padding: 0.25rem 0.4rem;
+  }
+
+  .lp-digits {
+    font-size: clamp(2.1rem, 9vw, 3.1rem);
+  }
+
+  .qlp-btn {
+    height: 30px;
+    min-height: 30px;
+    font-size: 0.78rem;
+  }
+
+  .center-duel-bar {
+    height: 38px;
+    min-height: 38px;
+  }
+
+  .cbar-tool-btn {
+    height: 30px;
+    min-width: 28px;
+  }
 }

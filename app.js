@@ -1182,6 +1182,17 @@ function renderTurnAndPhase() {
   const card2 = document.getElementById('playerCard2');
   if (card1) card1.classList.toggle('active-turn-card', state.activePlayer === 1);
   if (card2) card2.classList.toggle('active-turn-card', state.activePlayer === 2);
+
+  const b1 = document.getElementById('p1TurnBadge');
+  const b2 = document.getElementById('p2TurnBadge');
+  if (b1) {
+    b1.textContent = state.activePlayer === 1 ? '⚡ TUO TURNO' : '💤 IN ATTESA';
+    b1.classList.toggle('badge-active', state.activePlayer === 1);
+  }
+  if (b2) {
+    b2.textContent = state.activePlayer === 2 ? '⚡ TUO TURNO' : '💤 IN ATTESA';
+    b2.classList.toggle('badge-active', state.activePlayer === 2);
+  }
 }
 
 function advanceTurn() {
