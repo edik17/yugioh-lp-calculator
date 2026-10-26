@@ -225,10 +225,16 @@ body.duel-app-body {
 .star-btn {
   background: none;
   border: none;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   line-height: 1;
   color: rgba(148, 163, 196, 0.25);
   cursor: pointer;
+  padding: 0.35rem 0.25rem;
+  min-width: 28px;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.15s, color 0.15s;
 }
 
@@ -470,6 +476,38 @@ body.duel-app-body {
 /* ========================================================================= */
 /* CENTER TACTICAL DIVIDER BAR (STREAMLINED & REACHABLE BY BOTH PLAYERS)    */
 /* ========================================================================= */
+.center-duel-bar-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.cbar-scroll-indicator {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 38px;
+  background: linear-gradient(to right, transparent, rgba(6, 9, 17, 0.95));
+  color: var(--gold-bright);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 0.95rem;
+  font-weight: 800;
+  pointer-events: none;
+  opacity: 0.9;
+  transition: opacity 0.22s ease;
+  padding-right: 2px;
+  z-index: 12;
+}
+
+.cbar-scroll-indicator.hidden {
+  opacity: 0;
+}
+
 .center-duel-bar {
   height: 48px;
   min-height: 48px;
@@ -1419,6 +1457,64 @@ dialog#calcDialog.tabletop-p2 .dialog-inner {
   display: grid;
   place-items: center;
   font-size: 0.8rem;
+}
+
+/* MINI ACTIVE MARKERS & TOKENS CHIPS ON PLAYMAT */
+.card-mini-markers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  min-height: 0;
+  margin: 0.1rem 0;
+  justify-content: center;
+}
+
+.card-mini-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  background: rgba(22, 32, 54, 0.85);
+  border: 1px solid rgba(245, 183, 49, 0.35);
+  border-radius: 999px;
+  padding: 0.08rem 0.4rem;
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.card-mini-chip:hover {
+  border-color: var(--gold);
+  background: rgba(245, 183, 49, 0.2);
+}
+
+.card-mini-chip .chip-cnt {
+  color: var(--gold-bright);
+  font-weight: 800;
+}
+
+.modal-markers-cols {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.4rem;
+}
+
+.markers-player-block {
+  background: rgba(14, 20, 36, 0.7);
+  border: 1px solid var(--border-subtle);
+  border-radius: 9px;
+  padding: 0.55rem;
+}
+
+.markers-player-hd {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  color: var(--gold-bright);
+  margin-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(245, 183, 49, 0.2);
+  padding-bottom: 0.25rem;
 }
 
 /* ========================================================================= */

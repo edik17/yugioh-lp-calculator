@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=2.2" />
 </head>
 <body class="duel-app-body">
   <!-- DYNAMIC FIELD SPELL & ANIMATED BACKGROUND CONTAINER -->
@@ -31,8 +31,8 @@
   <div class="bg-glow bg-glow-p2" aria-hidden="true"></div>
   <div class="damage-flash-overlay" id="damageFlashOverlay" aria-hidden="true"></div>
 
-  <!-- FIELD SPELL ANIME ACTIVATION BANNER -->
-  <div class="field-activation-banner" id="fieldActivationBanner" aria-hidden="true">
+  <!-- FIELD SPELL ANIME ACTIVATION BANNER (HIDDEN INITIALLY TO PREVENT STALE CACHE FLASH) -->
+  <div class="field-activation-banner" id="fieldActivationBanner" aria-hidden="true" style="display: none;">
     <div class="field-activation-card-frame">
       <div class="field-activation-header-badge">MAGIA TERRENO ATTIVATA</div>
       <div class="field-activation-img-box">
@@ -81,6 +81,9 @@
         </div>
       </div>
 
+      <!-- Active Mini Markers on Playmat -->
+      <div class="card-mini-markers" id="p2CardMarkers" aria-label="Segnalini attivi Giocatore 2"></div>
+
       <!-- Fast Action LP Buttons -->
       <div class="quick-lp-grid">
         <button class="qlp-btn dmg" data-player="2" data-op="add" data-val="-100">−100</button>
@@ -98,72 +101,75 @@
     <!-- ================================================================== -->
     <!-- SLIM CENTER TACTICAL DIVIDER (ACCESSIBLE TO BOTH PLAYERS)         -->
     <!-- ================================================================== -->
-    <nav class="center-duel-bar" id="centerDuelBar" aria-label="Console Tattica Centrale">
-      <!-- Left: Round Timer & Turn -->
-      <div class="cbar-cluster cbar-left">
-        <div class="cbar-timer" id="timerWidget">
-          <button class="cbar-icon-btn" id="timerPlayPauseBtn" title="Avvia/Pausa Timer Torneo" aria-label="Timer">
-            <span id="timerPlayIcon">▶</span>
-          </button>
-          <div class="cbar-timer-text" id="timerDisplayWrap" title="Clicca per modificare durata timer">
-            <span class="timer-digits" id="timerDigits">45:00</span>
+    <div class="center-duel-bar-wrap">
+      <nav class="center-duel-bar" id="centerDuelBar" aria-label="Console Tattica Centrale">
+        <!-- Left: Round Timer & Turn -->
+        <div class="cbar-cluster cbar-left">
+          <div class="cbar-timer" id="timerWidget">
+            <button class="cbar-icon-btn" id="timerPlayPauseBtn" title="Avvia/Pausa Timer Torneo" aria-label="Timer">
+              <span id="timerPlayIcon">▶</span>
+            </button>
+            <div class="cbar-timer-text" id="timerDisplayWrap" title="Clicca per modificare durata timer">
+              <span class="timer-digits" id="timerDigits">45:00</span>
+            </div>
+            <button class="cbar-icon-btn" id="timerResetBtn" title="Resetta Timer" aria-label="Reset Timer">↺</button>
           </div>
-          <button class="cbar-icon-btn" id="timerResetBtn" title="Resetta Timer" aria-label="Reset Timer">↺</button>
+          <button class="cbar-turn-badge" id="turnCounterBtn" title="Avanza Turno (Tocca per passare il turno)">
+            <span class="turn-label">TURNO</span>
+            <span class="turn-num" id="turnNumber">1</span>
+          </button>
         </div>
-        <button class="cbar-turn-badge" id="turnCounterBtn" title="Avanza Turno (Tocca per passare il turno)">
-          <span class="turn-label">TURNO</span>
-          <span class="turn-num" id="turnNumber">1</span>
-        </button>
-      </div>
 
-      <!-- Center: RNG & Duel History -->
-      <div class="cbar-cluster cbar-mid">
-        <button class="cbar-tool-btn" id="openCoinDiceBtn" title="Lancia Dado o Moneta">
-          <span class="btn-icon">🪙🎲</span>
-          <span class="btn-lbl">Dado</span>
-        </button>
-        <button class="cbar-tool-btn field-spell-tool-btn" id="openFieldSpellBtn" title="Magia Terreno & Sfondo Animato">
-          <span class="btn-icon" id="fieldSpellBtnIcon">🏟️</span>
-          <span class="btn-lbl" id="fieldSpellBtnLbl">Terreno</span>
-        </button>
-        <button class="cbar-tool-btn" id="undoBtn" disabled title="Annulla ultima modifica LP (Ctrl+Z)">
-          <span class="btn-icon">↩</span>
-          <span class="btn-lbl">Annulla</span>
-        </button>
-        <button class="cbar-tool-btn" id="redoBtn" disabled title="Ripeti modifica LP (Ctrl+Y)">
-          <span class="btn-icon">↪</span>
-          <span class="btn-lbl">Ripeti</span>
-        </button>
-        <button class="cbar-tool-btn" id="openLogModalBtn" title="Cronologia del Duello">
-          <span class="btn-icon">📜</span>
-          <span class="btn-lbl">Storico</span>
-        </button>
-        <button class="cbar-tool-btn" id="openCountersModalBtn" title="Segnalini & Token">
-          <span class="btn-icon">🧿</span>
-          <span class="btn-lbl">Token</span>
-        </button>
-      </div>
+        <!-- Center: RNG & Duel History -->
+        <div class="cbar-cluster cbar-mid">
+          <button class="cbar-tool-btn" id="openCoinDiceBtn" title="Lancia Dado o Moneta">
+            <span class="btn-icon">🪙🎲</span>
+            <span class="btn-lbl">Dado</span>
+          </button>
+          <button class="cbar-tool-btn field-spell-tool-btn" id="openFieldSpellBtn" title="Magia Terreno & Sfondo Animato">
+            <span class="btn-icon" id="fieldSpellBtnIcon">🏟️</span>
+            <span class="btn-lbl" id="fieldSpellBtnLbl">Terreno</span>
+          </button>
+          <button class="cbar-tool-btn" id="undoBtn" disabled title="Annulla ultima modifica LP (Ctrl+Z)">
+            <span class="btn-icon">↩</span>
+            <span class="btn-lbl">Annulla</span>
+          </button>
+          <button class="cbar-tool-btn" id="redoBtn" disabled title="Ripeti modifica LP (Ctrl+Y)">
+            <span class="btn-icon">↪</span>
+            <span class="btn-lbl">Ripeti</span>
+          </button>
+          <button class="cbar-tool-btn" id="openLogModalBtn" title="Cronologia del Duello">
+            <span class="btn-icon">📜</span>
+            <span class="btn-lbl">Storico</span>
+          </button>
+          <button class="cbar-tool-btn" id="openCountersModalBtn" title="Segnalini & Token">
+            <span class="btn-icon">🧿</span>
+            <span class="btn-lbl">Token</span>
+          </button>
+        </div>
 
-      <!-- Right: System, Audio & Reset -->
-      <div class="cbar-cluster cbar-right">
-        <button class="cbar-tool-btn active-chip" id="tabletopModeBtn" title="Modalità Fronte a Fronte (Ruota G2 di 180°)">
-          <span class="btn-icon">⇅</span>
-          <span class="btn-lbl">Tavolo</span>
-        </button>
-        <button class="cbar-tool-btn" id="soundToggleBtn" title="Effetti Sonori Originali Anime">
-          <span class="btn-icon" id="soundIcon">🔊</span>
-          <span class="btn-lbl">Audio</span>
-        </button>
-        <button class="cbar-tool-btn" id="settingsOpenBtn" title="Impostazioni Duello & LP Iniziali">
-          <span class="btn-icon">⚙️</span>
-          <span class="btn-lbl" id="formatBadgeText">8000</span>
-        </button>
-        <button class="cbar-tool-btn danger-tool-btn" id="newDuelBtn" title="Nuovo Duello / Reset LP">
-          <span class="btn-icon">⚡</span>
-          <span class="btn-lbl">Reset</span>
-        </button>
-      </div>
-    </nav>
+        <!-- Right: System, Audio & Reset -->
+        <div class="cbar-cluster cbar-right">
+          <button class="cbar-tool-btn active-chip" id="tabletopModeBtn" title="Modalità Fronte a Fronte (Ruota G2 di 180°)">
+            <span class="btn-icon">⇅</span>
+            <span class="btn-lbl">Tavolo</span>
+          </button>
+          <button class="cbar-tool-btn" id="soundToggleBtn" title="Effetti Sonori Originali Anime">
+            <span class="btn-icon" id="soundIcon">🔊</span>
+            <span class="btn-lbl">Audio</span>
+          </button>
+          <button class="cbar-tool-btn" id="settingsOpenBtn" title="Impostazioni Duello & LP Iniziali">
+            <span class="btn-icon">⚙️</span>
+            <span class="btn-lbl" id="formatBadgeText">8000</span>
+          </button>
+          <button class="cbar-tool-btn danger-tool-btn" id="newDuelBtn" title="Nuovo Duello / Reset LP">
+            <span class="btn-icon">⚡</span>
+            <span class="btn-lbl">Reset</span>
+          </button>
+        </div>
+      </nav>
+      <div class="cbar-scroll-indicator" id="cbarScrollIndicator" aria-hidden="true" title="Scorri per altri strumenti">›</div>
+    </div>
 
     <!-- ================================================================== -->
     <!-- PLAYER 1 (BOTTOM ZONE - FACING NEAR PLAYER)                       -->
@@ -200,6 +206,9 @@
           <div class="lp-bar-fill" id="p1LpBar" style="width: 100%"></div>
         </div>
       </div>
+
+      <!-- Active Mini Markers on Playmat -->
+      <div class="card-mini-markers" id="p1CardMarkers" aria-label="Segnalini attivi Giocatore 1"></div>
 
       <!-- Fast Action LP Buttons -->
       <div class="quick-lp-grid">
@@ -632,9 +641,17 @@
 
       <!-- Active markers list in modal -->
       <div class="modal-markers-summary">
-        <h4>Segnalini Attivi:</h4>
-        <div class="markers-list" id="p1MarkersList"></div>
-        <div class="markers-list" id="p2MarkersList"></div>
+        <h4>Segnalini Attivi sul Terreno:</h4>
+        <div class="modal-markers-cols">
+          <div class="markers-player-block">
+            <h5 class="markers-player-hd" id="p1MarkersHeader">Giocatore 1 (P1)</h5>
+            <div class="markers-list" id="p1MarkersList"></div>
+          </div>
+          <div class="markers-player-block">
+            <h5 class="markers-player-hd" id="p2MarkersHeader">Giocatore 2 (P2)</h5>
+            <div class="markers-list" id="p2MarkersList"></div>
+          </div>
+        </div>
       </div>
     </div>
   </dialog>
@@ -707,9 +724,32 @@
     </div>
   </dialog>
 
+  <!-- ====================================================================== -->
+  <!-- MODAL 7: RESET CONFIRMATION DIALOG (PREVENTS ACCIDENTAL DATA LOSS)     -->
+  <!-- ====================================================================== -->
+  <dialog class="duel-dialog" id="resetConfirmDialog" closedby="any" aria-labelledby="resetConfirmTitle">
+    <div class="dialog-inner" style="text-align: center; gap: 0.9rem;">
+      <div class="dialog-header">
+        <h2 id="resetConfirmTitle">
+          <svg class="dialog-header-svg" viewBox="0 0 24 24" fill="none">
+            <path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#f43f5e" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span style="color: #fda4af;">Nuovo Duello</span>
+        </h2>
+        <button class="dialog-close-btn" data-close-dialog="resetConfirmDialog" aria-label="Chiudi finestra">✕</button>
+      </div>
+      <p style="font-size: 0.95rem; color: #f1f5f9; font-weight: 700;">Sei sicuro di voler iniziare un <strong>Nuovo Duello</strong>?</p>
+      <p style="font-size: 0.8rem; color: #94a3b8; line-height: 1.4;">I Life Points torneranno al valore iniziale (${state.startLp} LP), i segnalini e la cronologia verranno azzerati.</p>
+      <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 0.4rem;">
+        <button class="secondary-btn" data-close-dialog="resetConfirmDialog" style="flex: 1;">Annulla</button>
+        <button class="field-remove-btn" id="confirmResetBtn" style="flex: 1; background: #e11d48; color: #fff; border-color: #f43f5e; font-weight: 800;">⚡ Conferma Reset</button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- TOAST NOTIFICATION -->
   <div class="duel-toast" id="duelToast" role="status" aria-live="polite"></div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=2.2"></script>
 </body>
 </html>

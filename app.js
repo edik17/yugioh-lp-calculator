@@ -999,11 +999,40 @@ function submitCalculator() {
 // ============================================================================
 function renderMarkers(playerNum) {
   const container = document.getElementById(`p${playerNum}MarkersList`);
+  const header = document.getElementById(`p${playerNum}MarkersHeader`);
+  if (header) {
+    header.textContent = `${state.players[playerNum].name} (P${playerNum})`;
+  }
+
+  // Also render mini markers directly on the player card playmat!
+  const cardMarkers = document.getElementById(`p${playerNum}CardMarkers`);
+  const markers = state.players[playerNum].markers;
+
+  if (cardMarkers) {
+    if (!markers || markers.length === 0) {
+      cardMarkers.innerHTML = '';
+    } else {
+      cardMarkers.innerHTML = markers
+        .map((m) => {
+          const countBadge = m.count > 1 ? `<span class="chip-cnt">×${m.count}</span>` : '';
+          const posBadge = m.type === 'token' ? (m.position === 'DEF' ? '🛡️' : '⚔️') : '';
+          return `
+            <div class="card-mini-chip" data-open-markers="${playerNum}" title="${escapeHtml(m.name)} (Tocca per gestire)">
+              <span>${m.icon || '🔮'}</span>
+              <span>${escapeHtml(m.name)}</span>
+              ${posBadge}
+              ${countBadge}
+            </div>
+          `;
+        })
+        .join('');
+    }
+  }
+
   if (!container) return;
 
-  const markers = state.players[playerNum].markers;
   if (!markers || markers.length === 0) {
-    container.innerHTML = `<div class="marker-empty">Nessun segnalino o token attivo sul terreno.</div>`;
+    container.innerHTML = `<div class="marker-empty">Nessun segnalino attivo per ${escapeHtml(state.players[playerNum].name)}.</div>`;
     return;
   }
 
@@ -1434,9 +1463,14 @@ function activateFieldSpell(archetypeKey, activatorPlayer = 1, showBanner = true
     if (bannerName) bannerName.textContent = arch.fieldSpellName;
 
     if (banner) {
+      banner.style.display = 'flex';
+      void banner.offsetWidth;
       banner.classList.add('show-banner');
       setTimeout(() => {
         banner.classList.remove('show-banner');
+        setTimeout(() => {
+          banner.style.display = 'none';
+        }, 320);
       }, 1900);
     }
   }
@@ -2147,7 +2181,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const coinVisualEl = document.getElementById('coinVisual');
-  if (coinVisualEl) {
+  const coinStageEl = document.getElementById('coinStage');
+  if (coinStageEl) {
+    coinStageEl.addEventListener('click', () => launchCoins(1));
+  } else if (coinVisualEl) {
     coinVisualEl.addEventListener('click', () => launchCoins(1));
   }
 
@@ -2213,9 +2250,47 @@ document.addEventListener('DOMContentLoaded', () => {
   const newDuelBtn = document.getElementById('newDuelBtn');
   if (newDuelBtn) {
     newDuelBtn.addEventListener('click', () => {
-      resetDuel(state.startLp);
+      const confirmDlg = document.getElementById('resetConfirmDialog');
+      if (confirmDlg) {
+        confirmDlg.showModal();
+      } else {
+        resetDuel(state.startLp);
+      }
     });
   }
+
+  const confirmResetBtn = document.getElementById('confirmResetBtn');
+  if (confirmResetBtn) {
+    confirmResetBtn.addEventListener('click', () => {
+      resetDuel(state.startLp);
+      const confirmDlg = document.getElementById('resetConfirmDialog');
+      if (confirmDlg) closeTopLayer(confirmDlg);
+      showToast('⚡ Nuovo duello iniziato! LP resettati.');
+    });
+  }
+
+  // Center Bar Scroll Affordance Indicator
+  const cbarEl = document.getElementById('centerDuelBar');
+  const scrollInd = document.getElementById('cbarScrollIndicator');
+  if (cbarEl && scrollInd) {
+    cbarEl.addEventListener('scroll', () => {
+      const isAtEnd = cbarEl.scrollLeft + cbarEl.clientWidth >= cbarEl.scrollWidth - 12;
+      scrollInd.classList.toggle('hidden', isAtEnd);
+    }, { passive: true });
+  }
+
+  // Keyboard Shortcuts (Ctrl+Z: Undo, Ctrl+Y / Ctrl+Shift+Z: Redo)
+  window.addEventListener('keydown', (e) => {
+    if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      undoLpChange();
+    } else if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') || ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z')) {
+      e.preventDefault();
+      redoLpChange();
+    }
+  });
 
   // Timer Controls
   document.getElementById('timerPlayPauseBtn').addEventListener('click', toggleTimer);
