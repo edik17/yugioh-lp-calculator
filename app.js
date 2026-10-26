@@ -157,6 +157,7 @@ function createDefaultState(startLp = 8000) {
     soundEnabled: true,
     soundVolume: 0.85,
     tabletopMode: true,
+    tabletopDesktopRot: false,
     turn: 1,
     activePlayer: 1,
     phase: 'DP',
@@ -617,6 +618,9 @@ function loadState() {
       if (parsed && parsed.players && parsed.players[1] && parsed.players[2]) {
         if (parsed.tabletopMode === undefined) {
           parsed.tabletopMode = true;
+        }
+        if (parsed.tabletopDesktopRot === undefined) {
+          parsed.tabletopDesktopRot = false;
         }
         delete parsed.nibiruCount;
         if (parsed.players[1]?.flags) delete parsed.players[1].flags;
@@ -1809,9 +1813,15 @@ function renderAll() {
   }
 
   const arena = document.getElementById('duelArena');
-  if (arena) arena.classList.toggle('tabletop-mode', state.tabletopMode);
+  if (arena) {
+    arena.classList.toggle('tabletop-mode', state.tabletopMode);
+    arena.classList.toggle('tabletop-desktop-rot', !!state.tabletopDesktopRot);
+  }
   const ttBtn = document.getElementById('tabletopModeBtn');
-  if (ttBtn) ttBtn.classList.toggle('active-chip', state.tabletopMode);
+  if (ttBtn) {
+    const isRot = window.innerWidth >= 900 ? !!state.tabletopDesktopRot : state.tabletopMode;
+    ttBtn.classList.toggle('active-chip', isRot);
+  }
 
   renderTurnAndPhase();
   renderMarkers(1);
@@ -1836,6 +1846,7 @@ function resetDuel(newStartLp = state.startLp) {
   const soundEnabled = state.soundEnabled;
   const soundVolume = getMasterVolume();
   const tabletopMode = state.tabletopMode;
+  const tabletopDesktopRot = state.tabletopDesktopRot;
 
   state = createDefaultState(newStartLp);
   state.players[1].name = p1Name;
@@ -1850,6 +1861,7 @@ function resetDuel(newStartLp = state.startLp) {
   state.soundEnabled = soundEnabled;
   state.soundVolume = soundVolume;
   state.tabletopMode = tabletopMode;
+  state.tabletopDesktopRot = tabletopDesktopRot;
 
   undoStack = [];
   redoStack = [];
@@ -2230,12 +2242,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const ttBtn = document.getElementById('tabletopModeBtn');
   if (ttBtn) {
     ttBtn.addEventListener('click', () => {
-      state.tabletopMode = !state.tabletopMode;
-      renderAll();
-      saveState();
-      showToast(state.tabletopMode ? '⇅ Modalità Fronte a Fronte (180°) Attivata' : 'Modalità Standard Attivata');
+      if (window.innerWidth >= 900) {
+        state.tabletopDesktopRot = !state.tabletopDesktopRot;
+        renderAll();
+        saveState();
+        showToast(state.tabletopDesktopRot ? '⇅ Rotazione G2 (180°) Attivata' : 'Vista Desktop Standard (Entrambi Dritti)');
+      } else {
+        state.tabletopMode = !state.tabletopMode;
+        renderAll();
+        saveState();
+        showToast(state.tabletopMode ? '⇅ Modalità Fronte a Fronte (180°) Attivata' : 'Modalità Standard Attivata');
+      }
     });
   }
+
+  window.addEventListener('resize', () => {
+    const ttBtn = document.getElementById('tabletopModeBtn');
+    if (ttBtn) {
+      const isRot = window.innerWidth >= 900 ? !!state.tabletopDesktopRot : state.tabletopMode;
+      ttBtn.classList.toggle('active-chip', isRot);
+    }
+  });
 
   const sndBtn = document.getElementById('soundToggleBtn');
   if (sndBtn) {
@@ -2279,16 +2306,55 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
   }
 
-  // Keyboard Shortcuts (Ctrl+Z: Undo, Ctrl+Y / Ctrl+Shift+Z: Redo)
+  // Keyboard Shortcuts (Desktop & PC Controls)
   window.addEventListener('keydown', (e) => {
     if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
 
-    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
-      e.preventDefault();
-      undoLpChange();
-    } else if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') || ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z')) {
-      e.preventDefault();
-      redoLpChange();
+    const calcDlg = document.getElementById('calcDialog');
+    if (calcDlg && calcDlg.open) {
+      if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault();
+        handleCalcKey(e.key);
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+        handleCalcKey('BACK');
+      } else if (e.key === 'Delete') {
+        e.preventDefault();
+        handleCalcKey('CLR');
+      } else if (e.key === '+') {
+        e.preventDefault();
+        calcMode = 'add';
+        updateCalculatorScreen();
+      } else if (e.key === '-') {
+        e.preventDefault();
+        calcMode = 'sub';
+        updateCalculatorScreen();
+      } else if (e.key === '/' || e.key === ':') {
+        e.preventDefault();
+        calcMode = 'half';
+        updateCalculatorScreen();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        submitCalculator();
+      }
+      return;
+    }
+
+    // Duel shortcuts when no modal is open
+    if (!document.querySelector('dialog[open]')) {
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        undoLpChange();
+      } else if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') || ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z')) {
+        e.preventDefault();
+        redoLpChange();
+      } else if (e.code === 'Space') {
+        e.preventDefault();
+        toggleTimer();
+      } else if (e.key.toLowerCase() === 't') {
+        e.preventDefault();
+        nextTurn();
+      }
     }
   });
 

@@ -99,15 +99,17 @@ body.duel-app-body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: env(safe-area-inset-top, 0.4rem) 0.5rem env(safe-area-inset-bottom, 0.4rem) 0.5rem;
+  padding: max(0.5rem, env(safe-area-inset-top, 0.5rem)) 0.55rem max(0.5rem, env(safe-area-inset-bottom, 0.5rem)) 0.55rem;
   box-sizing: border-box;
   overflow: hidden;
   gap: 0.25rem;
 }
 
-/* TABLETOP 180° ROTATION (PLAYER 2 FACES OPPONENT ACROSS THE TABLE) */
-.duel-arena.tabletop-mode .player-2 {
-  transform: rotate(180deg);
+/* TABLETOP 180° ROTATION (ON MOBILE PORTRAIT, PLAYER 2 FACES OPPONENT ACROSS THE TABLE) */
+@media (max-width: 899px) {
+  .duel-arena.tabletop-mode .player-2 {
+    transform: rotate(180deg);
+  }
 }
 
 /* PLAYER CARD (FLEX BOX SIZED TO FIT EXACTLY HALF SCREEN) */
@@ -509,6 +511,7 @@ body.duel-app-body {
 }
 
 .center-duel-bar {
+  width: 100%;
   height: 48px;
   min-height: 48px;
   flex-shrink: 0;
@@ -2143,5 +2146,246 @@ body.duel-app-body {
   .cbar-tool-btn {
     height: 30px;
     min-width: 28px;
+  }
+}
+
+/* ========================================================================= */
+/* 14. DESKTOP / PC & WIDESCREEN RESPONSIVE DUAL ARENA (SIDE-BY-SIDE)        */
+/* ========================================================================= */
+@media (min-width: 900px) {
+  body.duel-app-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .duel-arena {
+    max-width: 1440px;
+    width: 96vw;
+    height: 96dvh;
+    max-height: 940px;
+    margin: auto;
+    padding: 1rem 1.4rem;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 1.1rem;
+    border-radius: 20px;
+    background: rgba(6, 9, 17, 0.45);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Player 1 Card (Left Zone) */
+  .player-card.player-1 {
+    order: 1;
+    flex: 1;
+    min-width: 340px;
+    border-radius: 16px;
+    padding: 1.1rem 1.35rem;
+    border-bottom: 1px solid var(--border-subtle);
+    border-left: 4px solid var(--p1-primary);
+  }
+
+  /* Center Tactical Console Bar (Middle Vertical Column) */
+  .center-duel-bar-wrap {
+    order: 2;
+    width: auto;
+    flex-shrink: 0;
+    align-self: center;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .center-duel-bar {
+    flex-direction: column;
+    height: auto;
+    max-height: 90dvh;
+    width: 138px;
+    padding: 0.65rem 0.45rem;
+    gap: 0.55rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 14px;
+    border: 1px solid rgba(245, 183, 49, 0.35);
+  }
+
+  .cbar-cluster {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.35rem;
+  }
+
+  .cbar-timer {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0.22rem 0.45rem;
+  }
+
+  .cbar-turn-badge {
+    width: 100%;
+    justify-content: center;
+    padding: 0.28rem 0.45rem;
+  }
+
+  .cbar-tool-btn {
+    width: 100%;
+    height: 38px;
+    flex-direction: row;
+    gap: 0.45rem;
+    padding: 0.2rem 0.55rem;
+    justify-content: flex-start;
+  }
+
+  .cbar-tool-btn .btn-icon {
+    font-size: 0.95rem;
+  }
+
+  .cbar-tool-btn .btn-lbl {
+    font-size: 0.68rem;
+    margin-top: 0;
+  }
+
+  .cbar-scroll-indicator {
+    display: none !important;
+  }
+
+  /* Player 2 Card (Right Zone) */
+  .player-card.player-2 {
+    order: 3;
+    flex: 1;
+    min-width: 340px;
+    border-radius: 16px;
+    padding: 1.1rem 1.35rem;
+    border-bottom: 1px solid var(--border-subtle);
+    border-right: 4px solid var(--p2-primary);
+    transform: none; /* Upright by default on PC */
+  }
+
+  .duel-arena.tabletop-desktop-rot .player-2 {
+    transform: rotate(180deg);
+  }
+
+  /* LP DIGITS & BUTTONS ON DESKTOP */
+  .lp-digits {
+    font-size: clamp(3.2rem, min(5.5vw, 7vh), 5.4rem);
+  }
+
+  .player-name-input {
+    font-size: 1.25rem;
+    max-width: 180px;
+  }
+
+  .player-archetype-tag {
+    font-size: 0.78rem;
+    padding: 0.2rem 0.55rem;
+  }
+
+  .quick-lp-grid {
+    gap: 0.5rem;
+  }
+
+  .qlp-btn {
+    height: 48px;
+    min-height: 48px;
+    font-size: 1.05rem;
+    border-radius: 10px;
+  }
+
+  .lp-hero {
+    padding: 0.5rem 0;
+  }
+
+  .card-mini-markers {
+    margin: 0.4rem 0;
+  }
+
+  .card-mini-chip {
+    font-size: 0.72rem;
+    padding: 0.15rem 0.55rem;
+  }
+}
+
+/* ========================================================================= */
+/* 15. DESKTOP CENTERED CYBER FLOATING DIALOGS                               */
+/* ========================================================================= */
+@media (min-width: 768px) {
+  dialog.duel-dialog {
+    margin: auto;
+    width: 90vw;
+    max-width: 580px;
+    max-height: 85dvh;
+    border-radius: 18px;
+    border: 1px solid rgba(245, 183, 49, 0.5);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(245, 183, 49, 0.15);
+    opacity: 0;
+    transform: scale(0.94);
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
+  }
+
+  dialog.duel-dialog.wide-dialog {
+    max-width: 840px;
+  }
+
+  :is(dialog.duel-dialog[open], dialog#calcDialog.tabletop-p2[open]):where(:not([data-closing])) {
+    transform: scale(1);
+    opacity: 1;
+
+    @starting-style {
+      transform: scale(0.94);
+      opacity: 0;
+    }
+  }
+
+  /* On desktop, calculator dialog is always centered */
+  dialog#calcDialog.tabletop-p2 {
+    margin: auto;
+    border-radius: 18px;
+    border: 1px solid rgba(245, 183, 49, 0.5);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8);
+  }
+
+  dialog#calcDialog.tabletop-p2 .dialog-inner {
+    transform: none; /* Keep upright on desktop */
+  }
+
+  /* Grid of Archetypes in Field Dialog on Desktop */
+  .archetypes-selection-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+  }
+
+  .arch-card-thumb-wrap {
+    height: 72px;
+  }
+
+  .field-status-box {
+    padding: 1rem;
+    gap: 1.2rem;
+  }
+
+  .field-status-preview-wrap {
+    width: 96px;
+    height: 96px;
+  }
+
+  .field-status-title {
+    font-size: 1.15rem;
+  }
+
+  .field-status-desc {
+    font-size: 0.82rem;
+  }
+
+  .presets-columns {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .rng-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
   }
 }
