@@ -14,7 +14,6 @@ function createDefaultState(startLp = 8000) {
     turn: 1,
     activePlayer: 1,
     phase: 'DP',
-    nibiruCount: 0,
     timerDurationSec: 45 * 60,
     timerRemainingSec: 45 * 60,
     players: {
@@ -22,14 +21,12 @@ function createDefaultState(startLp = 8000) {
         name: 'Giocatore 1',
         lp: startLp,
         stars: 0,
-        flags: { ns: false, lock: false, droll: false, shifter: false, maxxc: false },
         markers: []
       },
       2: {
         name: 'Giocatore 2',
         lp: startLp,
         stars: 0,
-        flags: { ns: false, lock: false, droll: false, shifter: false, maxxc: false },
         markers: []
       }
     },
@@ -469,6 +466,9 @@ function loadState() {
         if (parsed.tabletopMode === undefined) {
           parsed.tabletopMode = true;
         }
+        delete parsed.nibiruCount;
+        if (parsed.players[1]?.flags) delete parsed.players[1].flags;
+        if (parsed.players[2]?.flags) delete parsed.players[2].flags;
         return parsed;
       }
     }
@@ -1037,14 +1037,6 @@ function advanceTurn() {
   saveState();
 }
 
-function renderFlags() {
-  document.querySelectorAll('.flag-chip').forEach((chip) => {
-    const pNum = parseInt(chip.getAttribute('data-player'), 10);
-    const flagKey = chip.getAttribute('data-flag');
-    const isOn = Boolean(state.players[pNum]?.flags?.[flagKey]);
-    chip.classList.toggle('flag-on', isOn);
-  });
-}
 
 // ============================================================================
 // 9. TOURNAMENT ROUND TIMER (45:00 DEFAULT)
@@ -1185,7 +1177,6 @@ function renderAll() {
   if (ttBtn) ttBtn.classList.toggle('active-chip', state.tabletopMode);
 
   renderTurnAndPhase();
-  renderFlags();
   renderMarkers(1);
   renderMarkers(2);
   renderMatchStars();
@@ -1363,36 +1354,6 @@ document.addEventListener('DOMContentLoaded', () => {
       renderTurnAndPhase();
       saveState();
       playUiBeep(780, 0.04);
-    });
-  });
-
-  // Nibiru Summon Counter (if present)
-  const nibPlusBtn = document.getElementById('nibPlusBtn');
-  if (nibPlusBtn) {
-    nibPlusBtn.addEventListener('click', () => {
-      state.nibiruCount += 1;
-      renderTurnAndPhase();
-      saveState();
-    });
-  }
-  const nibMinusBtn = document.getElementById('nibMinusBtn');
-  if (nibMinusBtn) {
-    nibMinusBtn.addEventListener('click', () => {
-      state.nibiruCount = Math.max(0, state.nibiruCount - 1);
-      renderTurnAndPhase();
-      saveState();
-    });
-  }
-
-  // Turn Status Flags
-  document.querySelectorAll('.flag-chip').forEach((chip) => {
-    chip.addEventListener('click', () => {
-      const pNum = parseInt(chip.getAttribute('data-player'), 10);
-      const flag = chip.getAttribute('data-flag');
-      state.players[pNum].flags[flag] = !state.players[pNum].flags[flag];
-      renderFlags();
-      saveState();
-      playUiBeep(700, 0.04);
     });
   });
 
