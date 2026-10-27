@@ -82,9 +82,9 @@
           <polyline points="320,45 305,35 312,33 295,20" fill="none" stroke="#f43f5e" stroke-width="2"/>
         </svg>
       </div>
-      <div class="turn-cutin-kanji" id="cutinKanji">【 TURN <span id="cutinTurnNum">1</span> • 俺のターン！ 】</div>
-      <div class="turn-cutin-callout" id="cutinCallout">ORE NO TURN! DRAW!</div>
-      <div class="turn-cutin-player" id="cutinPlayerName">⚡ IL MIO TURNO! PESCO! — Giocatore 1</div>
+      <div class="turn-cutin-kanji" id="cutinKanji">★ TURNO <span id="cutinTurnNum">1</span> • TOCCA A TE! ★</div>
+      <div class="turn-cutin-callout" id="cutinCallout">IL MIO TURNO! PESCO!</div>
+      <div class="turn-cutin-player" id="cutinPlayerName">⚡ Tocca a: Giocatore 1</div>
     </div>
   </div>
 
@@ -103,7 +103,7 @@
       <!-- Anime Summon HUD Box -->
       <div class="summon-hud-panel" id="summonHudPanel">
         <div class="summon-header-row">
-          <span class="summon-jp-badge" id="summonJpName">青眼の白龍</span>
+          <span class="summon-jp-badge" id="summonJpName">DRAGO BIANCO OCCHI BLU</span>
           <span class="summon-stars-row" id="summonStars">★★★★★★★★</span>
         </div>
         <h2 class="summon-monster-name" id="summonMonsterName">Drago Bianco Occhi Blu</h2>
@@ -155,7 +155,7 @@
   <div class="field-activation-banner" id="fieldActivationBanner" aria-hidden="true" style="display: none;" role="dialog" aria-label="Attivazione Magia Terreno">
     <div class="field-activation-card-frame">
       <div class="field-activation-header-badge">
-        <span class="activation-magic-icon">魔</span> CARTA MAGIA TERRENO ATTIVATA
+        <span class="activation-magic-icon">🏛️</span> CARTA MAGIA TERRENO ATTIVATA
       </div>
       <div class="field-activation-activator-pill" id="bannerActivator">Attivata da: Giocatore 1</div>
       <div class="field-activation-img-box">
@@ -195,7 +195,7 @@
           <span class="player-tag p2-tag">P2</span>
           <div class="player-name-wrap">
             <input type="text" class="player-name-input" id="p2Name" value="Giocatore 2" maxlength="16" aria-label="Nome Giocatore 2" />
-            <span class="player-jp-title">決闘者 2 • DUELIST</span>
+            <span class="player-jp-title">DUELLANTE 2 • KAIBA CORP</span>
           </div>
           <button class="player-archetype-tag" id="p2ArchetypeBtn" data-player="2" title="Mazzo Giocatore 2 (Tocca per cambiare o attivare Terreno)">
             <span class="archetype-icon" id="p2ArchetypeIcon">🐉</span>
@@ -298,7 +298,7 @@
         <!-- P1 Field Chip -->
         <div class="field-hud-cluster" id="fieldClusterP1" style="display: none;">
           <button type="button" class="field-hud-chip" id="openActiveFieldInspectorBtn" data-player="1" title="Magia Terreno Giocatore 1 (Tocca per visualizzare dettagli)">
-            <span class="field-hud-spell-icon">魔</span>
+            <span class="field-hud-spell-icon">🏛️</span>
             <span class="field-hud-icon" id="hudFieldIcon">👑</span>
             <span class="field-hud-name" id="hudFieldName">Dominio dei Veri Monarchi</span>
             <span class="field-hud-activator-tag" id="hudFieldActivator">P1</span>
@@ -308,7 +308,7 @@
         <!-- P2 Field Chip (When P2 also controls an active Field Spell) -->
         <div class="field-hud-cluster" id="fieldClusterP2" style="display: none;">
           <button type="button" class="field-hud-chip chip-p2" id="openActiveFieldInspectorBtnP2" data-player="2" title="Magia Terreno Giocatore 2 (Tocca per visualizzare dettagli)">
-            <span class="field-hud-spell-icon">魔</span>
+            <span class="field-hud-spell-icon">🏛️</span>
             <span class="field-hud-icon" id="hudFieldIconP2">💎</span>
             <span class="field-hud-name" id="hudFieldNameP2">Rovine Arcobaleno</span>
             <span class="field-hud-activator-tag tag-p2" id="hudFieldActivatorP2">P2</span>
@@ -414,7 +414,7 @@
           <span class="player-tag p1-tag">P1</span>
           <div class="player-name-wrap">
             <input type="text" class="player-name-input" id="p1Name" value="Giocatore 1" maxlength="16" aria-label="Nome Giocatore 1" />
-            <span class="player-jp-title">決闘者 1 • DUELIST</span>
+            <span class="player-jp-title">DUELLANTE 1 • KAIBA CORP</span>
           </div>
           <button class="player-archetype-tag" id="p1ArchetypeBtn" data-player="1" title="Mazzo Giocatore 1 (Tocca per cambiare o attivare Terreno)">
             <span class="archetype-icon" id="p1ArchetypeIcon">👑</span>
@@ -1010,7 +1010,7 @@
     <div class="dialog-inner">
       <div class="dialog-header">
         <h2 id="fieldInspectorTitle">
-          <span style="color: #34d399; font-size: 1.25rem; margin-right: 0.35rem;">魔</span>
+          <span style="color: #34d399; font-size: 1.25rem; margin-right: 0.35rem;">🏛️</span>
           <span>Dettagli Magia Terreno Attiva</span>
         </h2>
         <button class="dialog-close-btn" data-close-dialog="fieldInspectorDialog" aria-label="Chiudi finestra">✕</button>
@@ -1146,6 +1146,6 @@
   <!-- TOAST NOTIFICATION -->
   <div class="duel-toast" id="duelToast" role="status" aria-live="polite"></div>
 
-  <script src="app.js?v=2.9"></script>
+  <script src="app.js?v=3.0"></script>
 </body>
 </html>

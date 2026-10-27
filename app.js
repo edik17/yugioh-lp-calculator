@@ -173,7 +173,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'monarch_erebus',
     archetypeId: 'monarch',
     name: 'Erebus il Monarca Sotterraneo',
-    jpName: '冥帝エレボス',
+    jpName: 'MONARCA SUPREMO DEL MONDO OSCURO',
     level: 8,
     attribute: 'OSCURITÀ',
     type: 'Zombie / Effetto',
@@ -188,7 +188,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'monarch_ehther',
     archetypeId: 'monarch',
     name: 'Ehther il Monarca Celeste',
-    jpName: '天帝アイテール',
+    jpName: 'MONARCA DEI CIELI AUREI',
     level: 8,
     attribute: 'LUCE',
     type: 'Fata / Effetto',
@@ -203,7 +203,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'monarch_caius',
     archetypeId: 'monarch',
     name: 'Caius il Monarca dell\'Ombra',
-    jpName: '邪帝ガイウス',
+    jpName: 'MONARCA DELL\'OMBRA',
     level: 6,
     attribute: 'OSCURITÀ',
     type: 'Demone / Effetto',
@@ -220,7 +220,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'cb_rainbowdragon',
     archetypeId: 'crystalbeast',
     name: 'Drago Arcobaleno',
-    jpName: '究極宝玉神 レインボー・ドラゴン',
+    jpName: 'DRAGO ARCOBALENO LEGGENDARIO',
     level: 10,
     attribute: 'LUCE',
     type: 'Drago / Effetto',
@@ -235,7 +235,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'cb_overdrive',
     archetypeId: 'crystalbeast',
     name: 'Drago Cristallo Arcobaleno Sovraccarico',
-    jpName: '究極宝玉神 レインボー・ドラゴン オーバー・ドライブ',
+    jpName: 'FUSIONE DELLE 7 GEMME SOVRACCARICO',
     level: 12,
     attribute: 'LUCE',
     type: 'Drago / Fusione',
@@ -250,7 +250,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'cb_pegasus',
     archetypeId: 'crystalbeast',
     name: 'Bestia Cristallo Pegaso Zaffiro',
-    jpName: '宝玉獣 サファイア・ペガサス',
+    jpName: 'BESTIA CRISTALLO LEGGENDARIA',
     level: 4,
     attribute: 'VENTO',
     type: 'Bestia Alata / Effetto',
@@ -265,7 +265,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'cb_ruby',
     archetypeId: 'crystalbeast',
     name: 'Bestia Cristallo Carbuncle Rubino',
-    jpName: '宝玉獣 ルビー・カーバンクル',
+    jpName: 'RISVEGLIO DELLE GEMME DI CRISTALLO',
     level: 3,
     attribute: 'LUCE',
     type: 'Fata / Effetto',
@@ -282,7 +282,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'be_blueeyes',
     archetypeId: 'blueeyes',
     name: 'Drago Bianco Occhi Blu',
-    jpName: '青眼の白龍 (Blue-Eyes White Dragon)',
+    jpName: 'DRAGO BIANCO OCCHI BLU',
     level: 8,
     attribute: 'LUCE',
     type: 'Drago / Normale',
@@ -297,7 +297,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'be_ultimate',
     archetypeId: 'blueeyes',
     name: 'Drago Finale Occhi Blu',
-    jpName: '青眼の究極竜 (Blue-Eyes Ultimate Dragon)',
+    jpName: 'FUSIONE SUPREMA A TRE TESTE',
     level: 12,
     attribute: 'LUCE',
     type: 'Drago / Fusione',
@@ -312,7 +312,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'be_chaosmax',
     archetypeId: 'blueeyes',
     name: 'Drago Chaos Massimo Occhi Blu',
-    jpName: 'ブルーアイズ・カオス・MAX・ドラゴン',
+    jpName: 'RITUALE DEL CHAOS SUPREMO',
     level: 8,
     attribute: 'OSCURITÀ',
     type: 'Drago / Rituale',
@@ -327,7 +327,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'be_spirit',
     archetypeId: 'blueeyes',
     name: 'Drago Spirito Occhi Blu',
-    jpName: '青眼の精霊龍 (Blue-Eyes Spirit Dragon)',
+    jpName: 'SPIRITO DEI DRAGHI LUMINOSI',
     level: 9,
     attribute: 'LUCE',
     type: 'Drago / Synchro',
@@ -344,7 +344,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'cd_cyberdragon',
     archetypeId: 'cyber',
     name: 'Cyber Drago',
-    jpName: 'サイバー・ドラゴン (Cyber Dragon)',
+    jpName: 'DRAGO MECCANICO D\'ACCIAIO',
     level: 5,
     attribute: 'LUCE',
     type: 'Macchina / Effetto',
@@ -359,7 +359,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'cd_cyberend',
     archetypeId: 'cyber',
     name: 'Cyber Drago Finale',
-    jpName: 'サイバー・エンド・ドラゴン',
+    jpName: 'FUSIONE CYBER FINALE',
     level: 10,
     attribute: 'LUCE',
     type: 'Macchina / Fusione',
@@ -374,7 +374,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'cd_infinity',
     archetypeId: 'cyber',
     name: 'Cyber Drago Infinito',
-    jpName: 'サイバー・ドラゴン・インフィニティ',
+    jpName: 'EVOLUZIONE XYZ INFINITA',
     rank: 6,
     attribute: 'LUCE',
     type: 'Macchina / Xyz',
@@ -389,7 +389,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'cd_nova',
     archetypeId: 'cyber',
     name: 'Cyber Drago Nova',
-    jpName: 'サイバー・ドラゴン・ノヴァ',
+    jpName: 'SUPERNOVA MECCANICA',
     rank: 5,
     attribute: 'LUCE',
     type: 'Macchina / Xyz',
@@ -406,7 +406,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'dm_darkmagician',
     archetypeId: 'darkmagician',
     name: 'Mago Nero',
-    jpName: 'ブラック・マジシャン (Dark Magician)',
+    jpName: 'MAGO SUPREMO DELLE TENEBRE',
     level: 7,
     attribute: 'OSCURITÀ',
     type: 'Incantatore / Normale',
@@ -421,7 +421,7 @@ const ALL_SUMMON_MONSTERS = {
     key: 'hero_neos',
     archetypeId: 'hero',
     name: 'Neos EROE Elementale',
-    jpName: 'E・HERO ネオス (Elemental HERO Neos)',
+    jpName: 'EROE ELEMENTALE DELLO SPAZIO',
     level: 7,
     attribute: 'LUCE',
     type: 'Guerriero / Normale',
@@ -2690,37 +2690,37 @@ function showAnimeCutin(type = 'turn', options = {}) {
     const turnNum = options.turnNum || state.turn || 1;
     const playerNum = options.playerNum || state.activePlayer || 1;
     const actPlayerName = state.players[playerNum]?.name || `Giocatore ${playerNum}`;
-    if (kanjiEl) kanjiEl.innerHTML = `【 TURN <span id="cutinTurnNum">${turnNum}</span> • 俺のターン！ 】`;
-    if (calloutEl) calloutEl.textContent = 'ORE NO TURN! DRAW!';
-    if (playerEl) playerEl.textContent = `⚡ IL MIO TURNO! PESCO! — ${actPlayerName} (P${playerNum})`;
+    if (kanjiEl) kanjiEl.innerHTML = `★ TURNO <span id="cutinTurnNum">${turnNum}</span> • TOCCA A TE! ★`;
+    if (calloutEl) calloutEl.textContent = 'IL MIO TURNO! PESCO!';
+    if (playerEl) playerEl.textContent = `⚡ Tocca a: ${actPlayerName} (P${playerNum})`;
     playOriginalSound('nextturn') || playUiBeep(920, 0.07);
   } else if (type === 'battle') {
     content.classList.add('cutin-battle');
     const playerNum = options.playerNum || state.activePlayer || 1;
     const actPlayerName = state.players[playerNum]?.name || `Giocatore ${playerNum}`;
-    if (kanjiEl) kanjiEl.textContent = '【 BATTLE PHASE • バトルフェイズ！ 】';
-    if (calloutEl) calloutEl.textContent = 'BATTLE PHASE ENTRY!';
-    if (playerEl) playerEl.textContent = `⚔️ FASE DI COMBATTIMENTO — ${actPlayerName} (P${playerNum})`;
+    if (kanjiEl) kanjiEl.textContent = '⚔️ FASE DI COMBATTIMENTO • ALL\'ATTACCO! ⚔️';
+    if (calloutEl) calloutEl.textContent = 'BATTLE PHASE!';
+    if (playerEl) playerEl.textContent = `⚔️ ${actPlayerName} dichiara la Battle Phase!`;
   } else if (type === 'direct_atk') {
     content.classList.add('cutin-direct_atk');
     const attackerNum = options.attackerNum || 1;
     const atkAmount = options.atkAmount || 3000;
     const attackerName = state.players[attackerNum]?.name || `Giocatore ${attackerNum}`;
-    if (kanjiEl) kanjiEl.textContent = '【 DIRECT ATTACK • ダイレクトアタック！ 】';
-    if (calloutEl) calloutEl.textContent = `DIRECT ATTACK! -${atkAmount} LP`;
-    if (playerEl) playerEl.textContent = `💥 ${attackerName} sferra un attacco diretto ai Life Points!`;
+    if (kanjiEl) kanjiEl.textContent = '💥 ATTACCO DIRETTO AI LIFE POINTS 💥';
+    if (calloutEl) calloutEl.textContent = `COLPO DIRETTO! -${atkAmount} LP`;
+    if (playerEl) playerEl.textContent = `💥 ${attackerName} colpisce direttamente i Life Points!`;
   } else if (type === 'trap') {
     content.classList.add('cutin-trap');
     const playerNum = options.playerNum || 1;
     const pName = state.players[playerNum]?.name || `Giocatore ${playerNum}`;
-    if (kanjiEl) kanjiEl.textContent = '【 TRAP CARD ACTIVATION • 罠発動！ 】';
-    if (calloutEl) calloutEl.textContent = 'REVERSE CARD OPEN!';
-    if (playerEl) playerEl.textContent = `🃏 Trappola Coperta attivata da ${pName}!`;
+    if (kanjiEl) kanjiEl.textContent = '🃏 ATTIVAZIONE CARTA TRAPPOLA! 🃏';
+    if (calloutEl) calloutEl.textContent = 'CARTA COPERTA ATTIVATA!';
+    if (playerEl) playerEl.textContent = `🃏 Carta Trappola svelata da ${pName}!`;
   } else if (type === 'duel_start') {
     content.classList.add('cutin-duel_start');
-    if (kanjiEl) kanjiEl.textContent = '【 DUEL COMMENCE • 決闘開始！ 】';
-    if (calloutEl) calloutEl.textContent = "IT'S TIME TO DUEL!";
-    if (playerEl) playerEl.textContent = '⚡ Solid Vision KaibaCorp System Online';
+    if (kanjiEl) kanjiEl.textContent = '⚡ INIZIO DEL DUELLO • PRONTI AL DUELLO ⚡';
+    if (calloutEl) calloutEl.textContent = "È ORA DI DUELLARE!";
+    if (playerEl) playerEl.textContent = '⚡ Sistema Solid Vision KaibaCorp Attivo';
   }
 
   // Force re-animation
