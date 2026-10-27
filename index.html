@@ -246,6 +246,14 @@
           <button type="button" class="cb-gem-btn" data-player="2" data-gem="4" title="4+ Cristalli: Pesca 1 Carta">4 🃏</button>
           <button type="button" class="cb-gem-btn" data-player="2" data-gem="5" title="5 Cristalli: Evocazione Speciale">5 ⚡</button>
         </div>
+        <div class="cb-summon-row">
+          <button type="button" class="cb-quick-summon-btn" data-player="2" data-card="cb_overdrive" title="Evoca subito Rainbow Dragon Overdrive in 3D!">
+            💎 Overdrive 3D (4000)
+          </button>
+          <button type="button" class="cb-quick-summon-btn" data-player="2" data-card="cb_rainbowdragon" title="Evoca subito Drago Arcobaleno in 3D!">
+            🌈 Drago Arcobaleno
+          </button>
+        </div>
       </div>
 
       <!-- Active Mini Markers on Playmat -->
@@ -253,6 +261,10 @@
 
       <!-- Anime Combat & Trap Action Bar -->
       <div class="anime-action-bar">
+        <button type="button" class="anime-action-btn anime-btn-summon" data-action="summon-ace" data-player="2" title="Evoca Mostro in 3D (Bestia Cristallo / Asso)">
+          <span class="act-icon">🌟</span>
+          <span class="act-text">EVOCA MOSTRO 3D</span>
+        </button>
         <button type="button" class="anime-action-btn anime-btn-atk" data-action="direct-atk" data-player="2" title="Dichiara un Attacco Diretto Anime col Mostro!">
           <span class="act-icon">⚔️</span>
           <span class="act-text">ATTACCO DIRETTO!</span>
@@ -331,6 +343,10 @@
           <button class="cbar-tool-btn field-spell-tool-btn" id="openFieldSpellBtn" title="Magia Terreno & Sfondo Animato">
             <span class="btn-icon" id="fieldSpellBtnIcon">🏟️</span>
             <span class="btn-lbl" id="fieldSpellBtnLbl">Terreno</span>
+          </button>
+          <button class="cbar-tool-btn" id="cbarSummonBtn" title="Evoca Mostro Asso 3D Anime (Bestia Cristallo / Monarchi / Occhi Blu)">
+            <span class="btn-icon">🌟</span>
+            <span class="btn-lbl">Evoca 3D</span>
           </button>
           <button class="cbar-tool-btn" id="undoBtn" disabled title="Annulla ultima modifica LP (Ctrl+Z)">
             <span class="btn-icon">↩</span>
@@ -449,6 +465,14 @@
           <button type="button" class="cb-gem-btn" data-player="1" data-gem="4" title="4+ Cristalli: Pesca 1 Carta">4 🃏</button>
           <button type="button" class="cb-gem-btn" data-player="1" data-gem="5" title="5 Cristalli: Evocazione Speciale">5 ⚡</button>
         </div>
+        <div class="cb-summon-row">
+          <button type="button" class="cb-quick-summon-btn" data-player="1" data-card="cb_overdrive" title="Evoca subito Rainbow Dragon Overdrive in 3D!">
+            💎 Overdrive 3D (4000)
+          </button>
+          <button type="button" class="cb-quick-summon-btn" data-player="1" data-card="cb_rainbowdragon" title="Evoca subito Drago Arcobaleno in 3D!">
+            🌈 Drago Arcobaleno
+          </button>
+        </div>
       </div>
 
       <!-- Active Mini Markers on Playmat -->
@@ -456,6 +480,10 @@
 
       <!-- Anime Combat & Trap Action Bar -->
       <div class="anime-action-bar">
+        <button type="button" class="anime-action-btn anime-btn-summon" data-action="summon-ace" data-player="1" title="Evoca Mostro in 3D (Bestia Cristallo / Asso)">
+          <span class="act-icon">🌟</span>
+          <span class="act-text">EVOCA MOSTRO 3D</span>
+        </button>
         <button type="button" class="anime-action-btn anime-btn-atk" data-action="direct-atk" data-player="1" title="Dichiara un Attacco Diretto Anime col Mostro!">
           <span class="act-icon">⚔️</span>
           <span class="act-text">ATTACCO DIRETTO!</span>
@@ -1118,6 +1146,6 @@
   <!-- TOAST NOTIFICATION -->
   <div class="duel-toast" id="duelToast" role="status" aria-live="polite"></div>
 
-  <script src="app.js?v=2.8"></script>
+  <script src="app.js?v=2.9"></script>
 </body>
 </html>

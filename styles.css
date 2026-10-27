@@ -3855,25 +3855,41 @@ body.duel-app-body {
 
 /* Anime Combat & Trap Action Bar */
 .anime-action-bar {
-  display: flex;
-  gap: 0.45rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
   margin-bottom: 0.45rem;
 }
 .anime-action-btn {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.55rem;
+  gap: 0.3rem;
+  padding: 0.35rem 0.4rem;
   border-radius: 8px;
   font-family: var(--font-display);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.04em;
+  white-space: nowrap;
   cursor: pointer;
   transition: all 0.18s ease;
   border: 1px solid transparent;
+}
+.anime-btn-summon {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(245, 183, 49, 0.35), rgba(217, 119, 6, 0.5));
+  border-color: rgba(245, 183, 49, 0.8);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(245, 183, 49, 0.4);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+.anime-btn-summon:hover {
+  background: linear-gradient(135deg, rgba(245, 183, 49, 0.55), rgba(217, 119, 6, 0.8));
+  box-shadow: 0 0 22px rgba(245, 183, 49, 0.8);
+  transform: translateY(-2px);
 }
 .anime-btn-atk {
   background: linear-gradient(135deg, rgba(244, 63, 94, 0.28), rgba(190, 18, 60, 0.45));
@@ -3896,6 +3912,35 @@ body.duel-app-body {
   background: linear-gradient(135deg, rgba(168, 85, 247, 0.5), rgba(107, 33, 168, 0.75));
   box-shadow: 0 0 20px rgba(168, 85, 247, 0.65);
   transform: translateY(-2px);
+}
+
+/* Dedicated Quick Summon in Crystal Beast Zone */
+.cb-summon-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+.cb-quick-summon-btn {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.28), rgba(236, 72, 153, 0.35));
+  border: 1px solid rgba(6, 182, 212, 0.7);
+  border-radius: 6px;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.28rem 0.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+  white-space: nowrap;
+  text-align: center;
+}
+.cb-quick-summon-btn:hover {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.5), rgba(236, 72, 153, 0.6));
+  border-color: #06b6d4;
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.7);
+  transform: translateY(-1px);
 }
 
 /* Direct Attack Modal */

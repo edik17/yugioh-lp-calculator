@@ -2902,8 +2902,8 @@ function triggerAnimeSummon3D(cardOrArchKey, playerNum = 1) {
 }
 
 // 6B. Archetype Monster Summon Picker Modal
-function openSummonPicker(playerNum = 1) {
-  const pArch = state.players[playerNum]?.archetype || 'blueeyes';
+function openSummonPicker(playerNum = 1, defaultFilter = null) {
+  const pArch = defaultFilter || state.players[playerNum]?.archetype || 'blueeyes';
   const pName = state.players[playerNum]?.name || `Giocatore ${playerNum}`;
   const dlg = document.getElementById('summonPickerDialog');
   const titleEl = document.getElementById('summonPickerTitle');
@@ -3597,6 +3597,30 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Anime Quick Actions on Duel Disk Player Cards
+  document.querySelectorAll('[data-action="summon-ace"]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const playerNum = parseInt(btn.getAttribute('data-player'), 10) || 1;
+      openSummonPicker(playerNum);
+    });
+  });
+
+  document.querySelectorAll('.cb-quick-summon-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const playerNum = parseInt(btn.getAttribute('data-player'), 10) || 1;
+      const cardKey = btn.getAttribute('data-card') || 'cb_overdrive';
+      triggerAnimeSummon3D(cardKey, playerNum);
+    });
+  });
+
+  const cbarSummonBtn = document.getElementById('cbarSummonBtn');
+  if (cbarSummonBtn) {
+    cbarSummonBtn.addEventListener('click', () => {
+      openSummonPicker(state.activePlayer || 1);
+    });
+  }
+
   document.querySelectorAll('[data-action="direct-atk"]').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
