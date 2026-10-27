@@ -46,12 +46,44 @@
   <!-- ANIME RADIAL ACTION SPEEDLINES OVERLAY -->
   <div class="anime-speedlines" id="animeSpeedLines" aria-hidden="true"></div>
 
-  <!-- ANIME TURN CHANGE CUT-IN BANNER ("ORE NO TURN! DRAW!") -->
+  <!-- ANIME DUEL CLASH & CUT-IN OVERLAY ("ORE NO TURN! DRAW!", "BATTLE PHASE!", "DIRECT ATTACK!") -->
   <div class="anime-turn-cutin" id="animeTurnCutin" style="display: none;" aria-hidden="true">
     <div class="turn-cutin-backdrop" id="turnCutinBackdrop"></div>
     <div class="turn-cutin-content" id="turnCutinContent">
-      <div class="turn-cutin-kanji">【 TURN <span id="cutinTurnNum">1</span> 】</div>
-      <div class="turn-cutin-callout">ORE NO TURN! DRAW!</div>
+      <div class="turn-cutin-eyes-wrap" aria-hidden="true">
+        <svg class="anime-eyes-svg" viewBox="0 0 540 80" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="eyeGlowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00d2ff"/>
+              <stop offset="50%" stop-color="#ffe27a"/>
+              <stop offset="100%" stop-color="#f43f5e"/>
+            </linearGradient>
+            <linearGradient id="pupilGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffe27a"/>
+              <stop offset="100%" stop-color="#f59e0b"/>
+            </linearGradient>
+          </defs>
+          <!-- Manga speed slash backdrop -->
+          <polygon points="0,0 540,15 540,65 0,80" fill="rgba(10, 16, 32, 0.95)" stroke="var(--gold-bright)" stroke-width="2"/>
+          <line x1="20" y1="12" x2="520" y2="12" stroke="rgba(255,226,122,0.4)" stroke-width="1.5" stroke-dasharray="8 6"/>
+          <line x1="30" y1="68" x2="510" y2="68" stroke="rgba(255,226,122,0.4)" stroke-width="1.5" stroke-dasharray="12 4"/>
+          <!-- Left Eye Contour & Iris -->
+          <path d="M 90,42 Q 150,18 200,38 Q 155,62 90,42 Z" fill="#030712" stroke="#ffe27a" stroke-width="2.5"/>
+          <polygon points="140,40 175,28 185,40 160,52" fill="url(#eyeGlowGrad)"/>
+          <circle cx="165" cy="40" r="6" fill="url(#pupilGrad)"/>
+          <circle cx="163" cy="38" r="2.5" fill="#ffffff"/>
+          <!-- Right Eye Contour & Iris -->
+          <path d="M 340,38 Q 390,18 450,42 Q 385,62 340,38 Z" fill="#030712" stroke="#ffe27a" stroke-width="2.5"/>
+          <polygon points="380,40 400,28 415,40 395,52" fill="url(#eyeGlowGrad)"/>
+          <circle cx="395" cy="40" r="6" fill="url(#pupilGrad)"/>
+          <circle cx="393" cy="38" r="2.5" fill="#ffffff"/>
+          <!-- Lightning sparks -->
+          <polyline points="220,35 235,45 228,47 245,60" fill="none" stroke="#00d2ff" stroke-width="2"/>
+          <polyline points="320,45 305,35 312,33 295,20" fill="none" stroke="#f43f5e" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="turn-cutin-kanji" id="cutinKanji">【 TURN <span id="cutinTurnNum">1</span> • 俺のターン！ 】</div>
+      <div class="turn-cutin-callout" id="cutinCallout">ORE NO TURN! DRAW!</div>
       <div class="turn-cutin-player" id="cutinPlayerName">⚡ IL MIO TURNO! PESCO! — Giocatore 1</div>
     </div>
   </div>
@@ -142,11 +174,29 @@
     <!-- PLAYER 2 (TOP ZONE - ROTATED 180° IN TABLETOP MODE)               -->
     <!-- ================================================================== -->
     <article class="player-card player-2" id="playerCard2" data-player="2">
+      <!-- KaibaCorp Duel Disk Terminal Branding -->
+      <div class="kc-d-disk-badge" title="KaibaCorp Solid Vision Duel Disk System">
+        <span class="kc-chip">KC</span>
+        <span class="kc-label">SOLID VISION D-DISK OS</span>
+        <span class="kc-status-led"></span>
+      </div>
+
+      <!-- Playmat Ghost Holographic Outlines -->
+      <div class="playmat-ghost-zones" aria-hidden="true">
+        <span class="ghost-zone">M-ZONE</span>
+        <span class="ghost-zone">S/T-ZONE</span>
+        <span class="ghost-zone">GRAVEYARD</span>
+        <span class="ghost-zone">DECK</span>
+      </div>
+
       <!-- Top header row -->
       <div class="player-meta-row">
         <div class="player-identity">
           <span class="player-tag p2-tag">P2</span>
-          <input type="text" class="player-name-input" id="p2Name" value="Giocatore 2" maxlength="16" aria-label="Nome Giocatore 2" />
+          <div class="player-name-wrap">
+            <input type="text" class="player-name-input" id="p2Name" value="Giocatore 2" maxlength="16" aria-label="Nome Giocatore 2" />
+            <span class="player-jp-title">決闘者 2 • DUELIST</span>
+          </div>
           <button class="player-archetype-tag" id="p2ArchetypeBtn" data-player="2" title="Mazzo Giocatore 2 (Tocca per cambiare o attivare Terreno)">
             <span class="archetype-icon" id="p2ArchetypeIcon">🐉</span>
             <span class="archetype-name" id="p2ArchetypeName">Occhi Blu</span>
@@ -201,6 +251,18 @@
       <!-- Active Mini Markers on Playmat -->
       <div class="card-mini-markers" id="p2CardMarkers" aria-label="Segnalini attivi Giocatore 2"></div>
 
+      <!-- Anime Combat & Trap Action Bar -->
+      <div class="anime-action-bar">
+        <button type="button" class="anime-action-btn anime-btn-atk" data-action="direct-atk" data-player="2" title="Dichiara un Attacco Diretto Anime col Mostro!">
+          <span class="act-icon">⚔️</span>
+          <span class="act-text">ATTACCO DIRETTO!</span>
+        </button>
+        <button type="button" class="anime-action-btn anime-btn-trap" data-action="trap-activate" data-player="2" title="Rivela una Carta Coperta (Trappola / Magia Rapida)">
+          <span class="act-icon">🃏</span>
+          <span class="act-text">TRAPPOLA COPERTA</span>
+        </button>
+      </div>
+
       <!-- Fast Action LP Buttons -->
       <div class="quick-lp-grid">
         <button class="qlp-btn dmg" data-player="2" data-op="add" data-val="-100">−100</button>
@@ -244,12 +306,20 @@
       </div>
 
       <nav class="center-duel-bar" id="centerDuelBar" aria-label="Console Tattica Centrale">
-        <!-- Left: Turn Counter (Tap to advance turn) -->
+        <!-- Left: Turn Counter & Anime Phase Track -->
         <div class="cbar-cluster cbar-left">
           <button class="cbar-turn-badge" id="turnCounterBtn" title="Avanza Turno (Tocca per passare il turno)">
             <span class="turn-label">TURNO</span>
             <span class="turn-num" id="turnNumber">1</span>
           </button>
+          <div class="anime-phase-bar" id="animePhaseBar" role="tablist" aria-label="Fasi del Turno Anime">
+            <button type="button" class="phase-chip active" data-phase="DP" title="Draw Phase (Pesca)">DP</button>
+            <button type="button" class="phase-chip" data-phase="SP" title="Standby Phase (Attesa)">SP</button>
+            <button type="button" class="phase-chip" data-phase="M1" title="Main Phase 1">M1</button>
+            <button type="button" class="phase-chip battle-chip" data-phase="BP" title="Battle Phase (Fase di Battaglia!)">⚔️ BP</button>
+            <button type="button" class="phase-chip" data-phase="M2" title="Main Phase 2">M2</button>
+            <button type="button" class="phase-chip" data-phase="EP" title="End Phase (Fine Turno)">EP</button>
+          </div>
         </div>
 
         <!-- Center: RNG & Duel History -->
@@ -307,11 +377,29 @@
     <!-- PLAYER 1 (BOTTOM ZONE - FACING NEAR PLAYER)                       -->
     <!-- ================================================================== -->
     <article class="player-card player-1 active-turn-card" id="playerCard1" data-player="1">
+      <!-- KaibaCorp Duel Disk Terminal Branding -->
+      <div class="kc-d-disk-badge" title="KaibaCorp Solid Vision Duel Disk System">
+        <span class="kc-chip">KC</span>
+        <span class="kc-label">SOLID VISION D-DISK OS</span>
+        <span class="kc-status-led"></span>
+      </div>
+
+      <!-- Playmat Ghost Holographic Outlines -->
+      <div class="playmat-ghost-zones" aria-hidden="true">
+        <span class="ghost-zone">M-ZONE</span>
+        <span class="ghost-zone">S/T-ZONE</span>
+        <span class="ghost-zone">GRAVEYARD</span>
+        <span class="ghost-zone">DECK</span>
+      </div>
+
       <!-- Top header row -->
       <div class="player-meta-row">
         <div class="player-identity">
           <span class="player-tag p1-tag">P1</span>
-          <input type="text" class="player-name-input" id="p1Name" value="Giocatore 1" maxlength="16" aria-label="Nome Giocatore 1" />
+          <div class="player-name-wrap">
+            <input type="text" class="player-name-input" id="p1Name" value="Giocatore 1" maxlength="16" aria-label="Nome Giocatore 1" />
+            <span class="player-jp-title">決闘者 1 • DUELIST</span>
+          </div>
           <button class="player-archetype-tag" id="p1ArchetypeBtn" data-player="1" title="Mazzo Giocatore 1 (Tocca per cambiare o attivare Terreno)">
             <span class="archetype-icon" id="p1ArchetypeIcon">👑</span>
             <span class="archetype-name" id="p1ArchetypeName">Monarchi</span>
@@ -365,6 +453,18 @@
 
       <!-- Active Mini Markers on Playmat -->
       <div class="card-mini-markers" id="p1CardMarkers" aria-label="Segnalini attivi Giocatore 1"></div>
+
+      <!-- Anime Combat & Trap Action Bar -->
+      <div class="anime-action-bar">
+        <button type="button" class="anime-action-btn anime-btn-atk" data-action="direct-atk" data-player="1" title="Dichiara un Attacco Diretto Anime col Mostro!">
+          <span class="act-icon">⚔️</span>
+          <span class="act-text">ATTACCO DIRETTO!</span>
+        </button>
+        <button type="button" class="anime-action-btn anime-btn-trap" data-action="trap-activate" data-player="1" title="Rivela una Carta Coperta (Trappola / Magia Rapida)">
+          <span class="act-icon">🃏</span>
+          <span class="act-text">TRAPPOLA COPERTA</span>
+        </button>
+      </div>
 
       <!-- Fast Action LP Buttons -->
       <div class="quick-lp-grid">
@@ -936,6 +1036,63 @@
   </dialog>
 
   <!-- ====================================================================== -->
+  <!-- MODAL 6C: ANIME DIRECT ATTACK DECLARATION MODAL                        -->
+  <!-- ====================================================================== -->
+  <dialog class="duel-dialog" id="directAtkDialog" closedby="any" aria-labelledby="directAtkTitle">
+    <div class="dialog-inner">
+      <div class="dialog-header">
+        <h2 id="directAtkTitle">
+          <span style="color: #f43f5e; margin-right: 0.35rem;">⚔️</span>
+          <span>Dichiarazione Attacco Diretto</span>
+        </h2>
+        <button class="dialog-close-btn" data-close-dialog="directAtkDialog" aria-label="Chiudi finestra">✕</button>
+      </div>
+      <p style="font-size: 0.82rem; color: #94a3b8; margin: 0 0 0.85rem 0;" id="directAtkSubtitle">Scegli la potenza d'attacco del mostro per colpire l'avversario:</p>
+      
+      <div class="direct-atk-grid">
+        <button type="button" class="direct-atk-preset-btn" data-atk="3000">
+          <span class="atk-badge-icon">🐉</span>
+          <span class="atk-badge-num">3000 ATK</span>
+          <span class="atk-badge-sub">Drago Bianco</span>
+        </button>
+        <button type="button" class="direct-atk-preset-btn" data-atk="2800">
+          <span class="atk-badge-icon">👑</span>
+          <span class="atk-badge-num">2800 ATK</span>
+          <span class="atk-badge-sub">Monarca (Erebus/Ehther)</span>
+        </button>
+        <button type="button" class="direct-atk-preset-btn" data-atk="2500">
+          <span class="atk-badge-icon">🔮</span>
+          <span class="atk-badge-num">2500 ATK</span>
+          <span class="atk-badge-sub">Mago Nero / Neos</span>
+        </button>
+        <button type="button" class="direct-atk-preset-btn" data-atk="2100">
+          <span class="atk-badge-icon">🤖</span>
+          <span class="atk-badge-num">2100 ATK</span>
+          <span class="atk-badge-sub">Cyber Drago</span>
+        </button>
+        <button type="button" class="direct-atk-preset-btn" data-atk="4000">
+          <span class="atk-badge-icon">💎</span>
+          <span class="atk-badge-num">4000 ATK</span>
+          <span class="atk-badge-sub">Drago Arcobaleno / Cyber Finale</span>
+        </button>
+        <button type="button" class="direct-atk-preset-btn" data-atk="1800">
+          <span class="atk-badge-icon">🦅</span>
+          <span class="atk-badge-num">1800 ATK</span>
+          <span class="atk-badge-sub">Pegaso Zaffiro / Mostro LV4</span>
+        </button>
+      </div>
+
+      <div class="custom-atk-box">
+        <label for="customAtkValInput" style="font-size: 0.78rem; font-weight: 700; color: #cbd5e1;">Oppure inserisci ATK esatto del mostro:</label>
+        <div style="display: flex; gap: 0.5rem; margin-top: 0.35rem;">
+          <input type="number" id="customAtkValInput" placeholder="Es. 2400..." min="1" max="99999" step="100" style="flex: 1; padding: 0.55rem; background: rgba(15,23,42,0.85); border: 1px solid rgba(244,63,94,0.5); border-radius: 8px; color: #fff; font-family: var(--font-display); font-size: 1rem;" />
+          <button type="button" class="field-remove-btn" id="customAtkSubmitBtn" style="background: #e11d48; border-color: #f43f5e; color: #fff; padding: 0.45rem 1rem; font-weight: 800;">⚔️ Sferra Attacco!</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ====================================================================== -->
   <!-- MODAL 7: RESET CONFIRMATION DIALOG (PREVENTS ACCIDENTAL DATA LOSS)     -->
   <!-- ====================================================================== -->
   <dialog class="duel-dialog" id="resetConfirmDialog" closedby="any" aria-labelledby="resetConfirmTitle">
@@ -961,6 +1118,6 @@
   <!-- TOAST NOTIFICATION -->
   <div class="duel-toast" id="duelToast" role="status" aria-live="polite"></div>
 
-  <script src="app.js?v=2.7"></script>
+  <script src="app.js?v=2.8"></script>
 </body>
 </html>

@@ -1600,32 +1600,43 @@ function renderTurnAndPhase() {
 
   const card1 = document.getElementById('playerCard1');
   const card2 = document.getElementById('playerCard2');
-  if (card1) card1.classList.toggle('active-turn-card', state.activePlayer === 1);
-  if (card2) card2.classList.toggle('active-turn-card', state.activePlayer === 2);
+  if (card1) {
+    card1.classList.toggle('active-turn-card', state.activePlayer === 1);
+    card1.classList.toggle('battle-phase-engaged', state.activePlayer === 1 && state.phase === 'BP');
+  }
+  if (card2) {
+    card2.classList.toggle('active-turn-card', state.activePlayer === 2);
+    card2.classList.toggle('battle-phase-engaged', state.activePlayer === 2 && state.phase === 'BP');
+  }
 
   const b1 = document.getElementById('p1TurnBadge');
   const b2 = document.getElementById('p2TurnBadge');
   if (b1) {
-    b1.textContent = state.activePlayer === 1 ? '⚡ TUO TURNO' : '💤 IN ATTESA';
+    b1.textContent = state.activePlayer === 1 ? (state.phase === 'BP' ? '⚔️ BATTLE PHASE' : '⚡ TUO TURNO') : '💤 IN ATTESA';
     b1.classList.toggle('badge-active', state.activePlayer === 1);
   }
   if (b2) {
-    b2.textContent = state.activePlayer === 2 ? '⚡ TUO TURNO' : '💤 IN ATTESA';
+    b2.textContent = state.activePlayer === 2 ? (state.phase === 'BP' ? '⚔️ BATTLE PHASE' : '⚡ TUO TURNO') : '💤 IN ATTESA';
     b2.classList.toggle('badge-active', state.activePlayer === 2);
   }
+
+  // Update Anime Phase Track Chips
+  document.querySelectorAll('#animePhaseBar .phase-chip').forEach((btn) => {
+    btn.classList.toggle('active', btn.getAttribute('data-phase') === (state.phase || 'DP'));
+  });
 }
 
 function advanceTurn() {
   state.turn += 1;
   state.activePlayer = state.activePlayer === 1 ? 2 : 1;
+  state.phase = 'DP';
 
   renderTurnAndPhase();
   addLogEntry(0, `⏭ Inizia il Turno ${state.turn} (${state.players[state.activePlayer].name})`);
   showToast(`Turno ${state.turn} — Tocca a ${state.players[state.activePlayer].name}`);
-  playOriginalSound('nextturn') || playUiBeep(920, 0.07);
 
-  showAnimeTurnCutin(state.turn, state.activePlayer);
-  triggerAnimeSpeedlines(480);
+  showAnimeCutin('turn', { turnNum: state.turn, playerNum: state.activePlayer });
+  triggerAnimeSpeedlines(520);
 
   saveState();
 }
@@ -2657,19 +2668,133 @@ function triggerAnimeSlash(playerNum) {
   }
 }
 
-// 4. Anime Turn Cut-In Banner ("ORE NO TURN! DRAW!")
-function showAnimeTurnCutin(turnNum, activePlayerNum) {
+// 4. Anime Duel Clash & Cut-In Overlay System ("ORE NO TURN! DRAW!", "BATTLE PHASE!", "DIRECT ATTACK!", "REVERSE CARD OPEN!")
+let cutinTimer = null;
+function showAnimeCutin(type = 'turn', options = {}) {
   const cutin = document.getElementById('animeTurnCutin');
-  const turnNumEl = document.getElementById('cutinTurnNum');
+  const content = document.getElementById('turnCutinContent');
+  const kanjiEl = document.getElementById('cutinKanji');
+  const calloutEl = document.getElementById('cutinCallout');
   const playerEl = document.getElementById('cutinPlayerName');
-  if (!cutin) return;
+  if (!cutin || !content) return;
 
-  const actPlayerName = state.players[activePlayerNum]?.name || `Giocatore ${activePlayerNum}`;
-  if (turnNumEl) turnNumEl.textContent = turnNum;
-  if (playerEl) playerEl.textContent = `⚡ IL MIO TURNO! PESCO! — ${actPlayerName} (P${activePlayerNum})`;
+  if (cutinTimer) {
+    clearTimeout(cutinTimer);
+    cutinTimer = null;
+  }
 
+  // Clear previous variant classes
+  content.className = 'turn-cutin-content';
+
+  if (type === 'turn') {
+    const turnNum = options.turnNum || state.turn || 1;
+    const playerNum = options.playerNum || state.activePlayer || 1;
+    const actPlayerName = state.players[playerNum]?.name || `Giocatore ${playerNum}`;
+    if (kanjiEl) kanjiEl.innerHTML = `【 TURN <span id="cutinTurnNum">${turnNum}</span> • 俺のターン！ 】`;
+    if (calloutEl) calloutEl.textContent = 'ORE NO TURN! DRAW!';
+    if (playerEl) playerEl.textContent = `⚡ IL MIO TURNO! PESCO! — ${actPlayerName} (P${playerNum})`;
+    playOriginalSound('nextturn') || playUiBeep(920, 0.07);
+  } else if (type === 'battle') {
+    content.classList.add('cutin-battle');
+    const playerNum = options.playerNum || state.activePlayer || 1;
+    const actPlayerName = state.players[playerNum]?.name || `Giocatore ${playerNum}`;
+    if (kanjiEl) kanjiEl.textContent = '【 BATTLE PHASE • バトルフェイズ！ 】';
+    if (calloutEl) calloutEl.textContent = 'BATTLE PHASE ENTRY!';
+    if (playerEl) playerEl.textContent = `⚔️ FASE DI COMBATTIMENTO — ${actPlayerName} (P${playerNum})`;
+  } else if (type === 'direct_atk') {
+    content.classList.add('cutin-direct_atk');
+    const attackerNum = options.attackerNum || 1;
+    const atkAmount = options.atkAmount || 3000;
+    const attackerName = state.players[attackerNum]?.name || `Giocatore ${attackerNum}`;
+    if (kanjiEl) kanjiEl.textContent = '【 DIRECT ATTACK • ダイレクトアタック！ 】';
+    if (calloutEl) calloutEl.textContent = `DIRECT ATTACK! -${atkAmount} LP`;
+    if (playerEl) playerEl.textContent = `💥 ${attackerName} sferra un attacco diretto ai Life Points!`;
+  } else if (type === 'trap') {
+    content.classList.add('cutin-trap');
+    const playerNum = options.playerNum || 1;
+    const pName = state.players[playerNum]?.name || `Giocatore ${playerNum}`;
+    if (kanjiEl) kanjiEl.textContent = '【 TRAP CARD ACTIVATION • 罠発動！ 】';
+    if (calloutEl) calloutEl.textContent = 'REVERSE CARD OPEN!';
+    if (playerEl) playerEl.textContent = `🃏 Trappola Coperta attivata da ${pName}!`;
+  } else if (type === 'duel_start') {
+    content.classList.add('cutin-duel_start');
+    if (kanjiEl) kanjiEl.textContent = '【 DUEL COMMENCE • 決闘開始！ 】';
+    if (calloutEl) calloutEl.textContent = "IT'S TIME TO DUEL!";
+    if (playerEl) playerEl.textContent = '⚡ Solid Vision KaibaCorp System Online';
+  }
+
+  // Force re-animation
   cutin.style.display = 'flex';
-  setTimeout(() => { cutin.style.display = 'none'; }, 1350);
+  content.style.animation = 'none';
+  void content.offsetWidth;
+  content.style.animation = '';
+
+  const duration = (type === 'duel_start' || type === 'direct_atk') ? 1600 : 1350;
+  cutinTimer = setTimeout(() => {
+    cutin.style.display = 'none';
+  }, duration);
+}
+
+function showAnimeTurnCutin(turnNum, activePlayerNum) {
+  showAnimeCutin('turn', { turnNum, playerNum: activePlayerNum });
+}
+
+// 4B. Anime Direct Attack & Trap Activation Handlers
+let currentDirectAttacker = 1;
+
+function openDirectAttackDialog(attackerPlayer = 1) {
+  currentDirectAttacker = attackerPlayer;
+  const targetPlayer = attackerPlayer === 1 ? 2 : 1;
+  const atkPlayerName = state.players[attackerPlayer]?.name || `Giocatore ${attackerPlayer}`;
+  const targetPlayerName = state.players[targetPlayer]?.name || `Giocatore ${targetPlayer}`;
+
+  const sub = document.getElementById('directAtkSubtitle');
+  if (sub) {
+    sub.innerHTML = `<strong>${escapeHtml(atkPlayerName)}</strong> sferra un attacco diretto contro <strong>${escapeHtml(targetPlayerName)}</strong>! Scegli la potenza:`;
+  }
+  const dlg = document.getElementById('directAtkDialog');
+  if (dlg && !dlg.open) dlg.showModal();
+}
+
+function executeDirectAttack(amount) {
+  const atkVal = parseInt(amount, 10);
+  if (isNaN(atkVal) || atkVal <= 0) {
+    showToast('Inserisci un valore di ATK valido!');
+    return;
+  }
+
+  const attackerNum = currentDirectAttacker;
+  const targetNum = attackerNum === 1 ? 2 : 1;
+  const attackerName = state.players[attackerNum]?.name || `Giocatore ${attackerNum}`;
+  const targetName = state.players[targetNum]?.name || `Giocatore ${targetNum}`;
+  const currentLp = state.players[targetNum].lp;
+  const newLp = Math.max(0, currentLp - atkVal);
+
+  const dlg = document.getElementById('directAtkDialog');
+  if (dlg && dlg.open) dlg.close();
+
+  // 1. Play Direct Attack SFX
+  playOriginalSound('directattack') || playOriginalSound('damage') || playUiBeep(450, 0.2);
+
+  // 2. Anime Visual Effects: Speedlines, Slash, Shake, Combat Pop
+  triggerAnimeSpeedlines(700);
+  triggerAnimeSlash(targetNum);
+  spawnAnimeCombatPop(targetNum, `-${atkVal}`, true);
+  showAnimeCutin('direct_atk', { attackerNum, targetNum, atkAmount: atkVal });
+
+  // 3. Apply LP Damage
+  applyLpChange(targetNum, newLp, `-${atkVal} LP`, `Attacco Diretto da ${attackerName}`);
+  addLogEntry(attackerNum, `⚔️ [ATTACCO DIRETTO] ${attackerName} colpisce ${targetName} per ${atkVal} danni diretti!`);
+  showToast(`💥 ATTACCO DIRETTO: -${atkVal} LP a ${targetName}!`);
+}
+
+function executeTrapActivation(playerNum) {
+  const pName = state.players[playerNum]?.name || `Giocatore ${playerNum}`;
+  playOriginalSound('activate') || playUiBeep(1040, 0.15);
+  triggerAnimeSpeedlines(500);
+  showAnimeCutin('trap', { playerNum });
+  addLogEntry(playerNum, `🃏 [REVERSE CARD OPEN] ${pName} attiva una Carta Trappola coperta!`);
+  showToast(`🃏 ${pName}: REVERSE CARD OPEN!`);
 }
 
 // 5. Solid Vision Magic Summoning Circle
@@ -3439,7 +3564,74 @@ document.addEventListener('DOMContentLoaded', () => {
       resetDuel(state.startLp);
       const confirmDlg = document.getElementById('resetConfirmDialog');
       if (confirmDlg) closeTopLayer(confirmDlg);
-      showToast('⚡ Nuovo duello iniziato! LP resettati.');
+      showAnimeCutin('duel_start');
+      triggerAnimeSpeedlines(800);
+      playOriginalSound('summon') || playUiBeep(990, 0.2);
+      showToast("⚡ IT'S TIME TO DUEL! Nuovo duello iniziato!");
+    });
+  }
+
+  // Anime Phase Bar Quick Switcher
+  document.querySelectorAll('#animePhaseBar .phase-chip').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const phase = btn.getAttribute('data-phase');
+      if (!phase) return;
+      state.phase = phase;
+      renderTurnAndPhase();
+      playUiBeep(880, 0.05);
+
+      if (phase === 'BP') {
+        showAnimeCutin('battle', { playerNum: state.activePlayer });
+        triggerAnimeSpeedlines(600);
+        playOriginalSound('damage') || playUiBeep(650, 0.1);
+        addLogEntry(state.activePlayer, `⚔️ ${state.players[state.activePlayer].name} dichiara BATTLE PHASE!`);
+        showToast(`⚔️ BATTLE PHASE di ${state.players[state.activePlayer].name}!`);
+      } else {
+        const phaseNames = { DP: 'Draw Phase', SP: 'Standby Phase', M1: 'Main Phase 1', M2: 'Main Phase 2', EP: 'End Phase' };
+        showToast(`Fase: ${phaseNames[phase] || phase}`);
+        addLogEntry(state.activePlayer, `🔄 Fase: ${phaseNames[phase] || phase}`);
+      }
+      saveState();
+    });
+  });
+
+  // Anime Quick Actions on Duel Disk Player Cards
+  document.querySelectorAll('[data-action="direct-atk"]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const playerNum = parseInt(btn.getAttribute('data-player'), 10) || 1;
+      openDirectAttackDialog(playerNum);
+    });
+  });
+
+  document.querySelectorAll('[data-action="trap-activate"]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const playerNum = parseInt(btn.getAttribute('data-player'), 10) || 1;
+      executeTrapActivation(playerNum);
+    });
+  });
+
+  // Direct Attack Modal Presets & Custom ATK Submit
+  document.querySelectorAll('.direct-atk-preset-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const atk = parseInt(btn.getAttribute('data-atk'), 10);
+      if (atk) executeDirectAttack(atk);
+    });
+  });
+
+  const customAtkSubmitBtn = document.getElementById('customAtkSubmitBtn');
+  if (customAtkSubmitBtn) {
+    customAtkSubmitBtn.addEventListener('click', () => {
+      const input = document.getElementById('customAtkValInput');
+      const val = parseInt(input ? input.value : 0, 10);
+      if (val > 0) {
+        executeDirectAttack(val);
+        if (input) input.value = '';
+      } else {
+        showToast('Inserisci un valore di ATK valido!');
+      }
     });
   }
 
@@ -3600,7 +3792,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('⚡ Attacco Diretto Anime!');
       } else if (sfx === 'activate') {
         playOriginalSound('activate') || playTrapChainSfx();
-        showToast('🪤 Attivazione Magia / Trappola!');
+        showToast('🃏 Attivazione Magia / Trappola!');
       } else if (sfx === 'summon') {
         playOriginalSound('summon') || playBossSummonSfx();
         showToast('🌟 Mostro Evocato sul Terreno!');
@@ -3664,6 +3856,38 @@ document.addEventListener('DOMContentLoaded', () => {
     state.players[1].crystalGems = 3;
     renderField();
     setTimeout(openFieldInspector, 200);
+  } else if (urlParams.get('test') === 'direct_atk') {
+    renderField();
+    setTimeout(() => {
+      showAnimeCutin('direct_atk', { attackerNum: 1, targetNum: 2, atkAmount: 3000 });
+      triggerAnimeSpeedlines(650);
+      triggerAnimeSlash(2);
+      spawnAnimeCombatPop(2, '-3000', true);
+    }, 150);
+  } else if (urlParams.get('test') === 'battle') {
+    state.phase = 'BP';
+    renderField();
+    renderTurnAndPhase();
+    setTimeout(() => {
+      showAnimeCutin('battle', { playerNum: 1 });
+      triggerAnimeSpeedlines(600);
+    }, 150);
+  } else if (urlParams.get('test') === 'trap') {
+    renderField();
+    setTimeout(() => {
+      executeTrapActivation(1);
+    }, 150);
+  } else if (urlParams.get('test') === 'duel_start') {
+    renderField();
+    setTimeout(() => {
+      showAnimeCutin('duel_start');
+      triggerAnimeSpeedlines(800);
+    }, 150);
+  } else if (urlParams.get('test') === 'direct_modal') {
+    renderField();
+    setTimeout(() => {
+      openDirectAttackDialog(1);
+    }, 150);
   }
 
   // Register Service Worker for 100% Offline PWA on Smartphones

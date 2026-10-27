@@ -2857,12 +2857,12 @@ body.duel-app-body {
 .turn-cutin-content {
   position: relative;
   width: 100%;
-  max-width: 620px;
-  padding: 1.25rem 1.75rem;
-  background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.96) 12%, rgba(15, 23, 42, 0.96) 88%, transparent);
+  max-width: 680px;
+  padding: 1.1rem 1.6rem;
+  background: linear-gradient(90deg, transparent, rgba(10, 16, 32, 0.98) 10%, rgba(10, 16, 32, 0.98) 90%, transparent);
   border-top: 2px solid var(--gold-bright);
   border-bottom: 2px solid var(--gold-bright);
-  box-shadow: 0 0 40px rgba(245, 183, 49, 0.5), inset 0 0 25px rgba(245, 183, 49, 0.2);
+  box-shadow: 0 0 50px rgba(245, 183, 49, 0.6), inset 0 0 25px rgba(245, 183, 49, 0.25);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2870,6 +2870,56 @@ body.duel-app-body {
   text-align: center;
   animation: cutinBannerFly 1.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+.turn-cutin-eyes-wrap {
+  width: 100%;
+  max-width: 480px;
+  height: 65px;
+  overflow: hidden;
+  margin-bottom: 0.35rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.anime-eyes-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 10px rgba(255, 226, 122, 0.7));
+}
+
+.turn-cutin-content.cutin-battle {
+  border-top-color: #f43f5e;
+  border-bottom-color: #f43f5e;
+  box-shadow: 0 0 50px rgba(244, 63, 94, 0.7), inset 0 0 25px rgba(244, 63, 94, 0.35);
+}
+.turn-cutin-content.cutin-battle .turn-cutin-callout {
+  text-shadow: 0 0 25px #f43f5e, 0 0 45px rgba(244, 63, 94, 0.8);
+  color: #fff;
+}
+.turn-cutin-content.cutin-direct_atk {
+  border-top-color: #ef4444;
+  border-bottom-color: #ef4444;
+  box-shadow: 0 0 60px rgba(239, 68, 68, 0.85), inset 0 0 30px rgba(239, 68, 68, 0.45);
+}
+.turn-cutin-content.cutin-direct_atk .turn-cutin-callout {
+  color: #fff;
+  text-shadow: 0 0 30px #ef4444, 0 0 60px rgba(239, 68, 68, 0.9);
+}
+.turn-cutin-content.cutin-trap {
+  border-top-color: #a855f7;
+  border-bottom-color: #a855f7;
+  box-shadow: 0 0 50px rgba(168, 85, 247, 0.7), inset 0 0 25px rgba(168, 85, 247, 0.35);
+}
+.turn-cutin-content.cutin-trap .turn-cutin-callout {
+  color: #f5d0fe;
+  text-shadow: 0 0 25px #a855f7, 0 0 50px rgba(168, 85, 247, 0.8);
+}
+.turn-cutin-content.cutin-duel_start {
+  border-top-color: #00d2ff;
+  border-bottom-color: var(--gold-bright);
+  box-shadow: 0 0 60px rgba(0, 210, 255, 0.75), inset 0 0 30px rgba(245, 183, 49, 0.4);
+}
+
 .turn-cutin-kanji {
   font-family: var(--font-display);
   font-size: 0.85rem;
@@ -3454,6 +3504,23 @@ body.duel-app-body {
     padding: 0.28rem 0.45rem;
   }
 
+  .center-duel-bar .anime-phase-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    gap: 0.2rem;
+    padding: 0.25rem 0.2rem;
+    box-sizing: border-box;
+  }
+
+  .center-duel-bar .anime-phase-bar .phase-chip {
+    padding: 0.22rem 0.1rem;
+    font-size: 0.62rem;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
   .cbar-tool-btn {
     width: 100%;
     height: 38px;
@@ -3657,4 +3724,223 @@ body.duel-app-body {
     max-width: 280px;
     gap: 0.4rem;
   }
+}
+
+/* ========================================================================= */
+/* KAIBA CORPORATION SOLID VISION & DUEL DISK TERMINAL STYLING              */
+/* ========================================================================= */
+.kc-d-disk-badge {
+  position: absolute;
+  top: 7px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: rgba(56, 189, 248, 0.7);
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  z-index: 2;
+}
+.kc-chip {
+  background: rgba(56, 189, 248, 0.18);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  padding: 0.05rem 0.28rem;
+  border-radius: 3px;
+  color: #38bdf8;
+  font-weight: 900;
+}
+.kc-status-led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: ledPulse 1.8s infinite alternate;
+}
+@keyframes ledPulse {
+  0% { opacity: 0.5; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 12px #10b981; }
+}
+
+.player-name-wrap {
+  display: flex;
+  flex-direction: column;
+}
+.player-jp-title {
+  font-size: 0.58rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: rgba(148, 163, 184, 0.7);
+  letter-spacing: 0.05em;
+  line-height: 1;
+  margin-top: 0.1rem;
+}
+
+/* Playmat Ghost Holographic Zones */
+.playmat-ghost-zones {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  opacity: 0.045;
+  z-index: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  color: #ffffff;
+}
+.ghost-zone {
+  border: 1px dashed rgba(255, 255, 255, 0.5);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+/* Anime Phase Tracker Bar */
+.anime-phase-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: rgba(10, 15, 28, 0.88);
+  border: 1px solid rgba(245, 183, 49, 0.35);
+  border-radius: 7px;
+  padding: 0.15rem 0.25rem;
+}
+.phase-chip {
+  background: none;
+  border: 1px solid transparent;
+  color: #94a3b8;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.12rem 0.32rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.phase-chip:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+.phase-chip.active {
+  background: rgba(245, 183, 49, 0.25);
+  border-color: var(--gold-bright);
+  color: var(--gold-bright);
+  box-shadow: 0 0 8px rgba(245, 183, 49, 0.4);
+  text-shadow: 0 0 6px var(--gold-bright);
+}
+.phase-chip.battle-chip.active {
+  background: rgba(244, 63, 94, 0.35);
+  border-color: #f43f5e;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(244, 63, 94, 0.6);
+  text-shadow: 0 0 8px #f43f5e;
+  animation: battlePhasePulse 0.8s infinite alternate;
+}
+@keyframes battlePhasePulse {
+  0% { transform: scale(0.96); box-shadow: 0 0 6px #f43f5e; }
+  100% { transform: scale(1.06); box-shadow: 0 0 16px #f43f5e; }
+}
+
+/* Battle Phase Engaged Active Card Glow */
+.player-card.battle-phase-engaged {
+  box-shadow: 0 0 35px rgba(244, 63, 94, 0.45), inset 0 0 20px rgba(244, 63, 94, 0.15);
+  border-color: rgba(244, 63, 94, 0.75);
+}
+
+/* Anime Combat & Trap Action Bar */
+.anime-action-bar {
+  display: flex;
+  gap: 0.45rem;
+  margin-bottom: 0.45rem;
+}
+.anime-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  border: 1px solid transparent;
+}
+.anime-btn-atk {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.28), rgba(190, 18, 60, 0.45));
+  border-color: rgba(244, 63, 94, 0.65);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.3);
+}
+.anime-btn-atk:hover {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.5), rgba(190, 18, 60, 0.75));
+  box-shadow: 0 0 20px rgba(244, 63, 94, 0.65);
+  transform: translateY(-2px);
+}
+.anime-btn-trap {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.28), rgba(107, 33, 168, 0.45));
+  border-color: rgba(168, 85, 247, 0.65);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
+}
+.anime-btn-trap:hover {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.5), rgba(107, 33, 168, 0.75));
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.65);
+  transform: translateY(-2px);
+}
+
+/* Direct Attack Modal */
+.direct-atk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.55rem;
+  margin-bottom: 0.75rem;
+}
+.direct-atk-preset-btn {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(244, 63, 94, 0.45);
+  border-radius: 10px;
+  padding: 0.65rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #ffffff;
+}
+.direct-atk-preset-btn:hover {
+  background: rgba(244, 63, 94, 0.25);
+  border-color: #f43f5e;
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
+}
+.atk-badge-icon {
+  font-size: 1.15rem;
+}
+.atk-badge-num {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #fda4af;
+}
+.atk-badge-sub {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  text-align: center;
+}
+.custom-atk-box {
+  background: rgba(10, 16, 32, 0.6);
+  border: 1px dashed rgba(244, 63, 94, 0.4);
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
 }
