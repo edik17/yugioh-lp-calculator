@@ -3023,8 +3023,141 @@ body.duel-app-body {
   font-weight: 900;
   color: #ffffff;
   letter-spacing: 0.04em;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.3rem 0;
   text-shadow: 0 0 15px rgba(245, 183, 49, 0.7);
+}
+.summon-meta-badges {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 0.45rem;
+}
+.summon-attr-pill {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(245, 183, 49, 0.25);
+  border: 1px solid var(--gold-bright);
+  color: var(--gold-bright);
+}
+.summon-type-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.2);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  color: #cbd5e1;
+}
+
+/* Archetype Aura FX */
+.summon-aura-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+  transition: all 0.5s ease;
+}
+.summon-aura-fx.aura-monarch {
+  background: radial-gradient(circle at center, rgba(245, 158, 11, 0.4), rgba(220, 38, 38, 0.25), transparent 70%);
+  animation: auraFlamePulse 2s infinite alternate ease-in-out;
+}
+.summon-aura-fx.aura-crystalbeast {
+  background: radial-gradient(circle at center, rgba(6, 182, 212, 0.45), rgba(168, 85, 247, 0.3), rgba(236, 72, 153, 0.25), transparent 70%);
+  animation: auraPrismShift 3s infinite alternate ease-in-out;
+}
+.summon-aura-fx.aura-blueeyes {
+  background: radial-gradient(circle at center, rgba(56, 189, 248, 0.5), rgba(30, 58, 138, 0.4), transparent 70%);
+  animation: auraLightningPulse 1.8s infinite alternate ease-in-out;
+}
+.summon-aura-fx.aura-cyber {
+  background: 
+    repeating-linear-gradient(0deg, rgba(6, 182, 212, 0.12) 0px, transparent 2px, transparent 16px),
+    radial-gradient(circle at center, rgba(6, 182, 212, 0.45), rgba(15, 23, 42, 0.6), transparent 70%);
+  animation: auraCyberMatrix 2.5s infinite linear;
+}
+@keyframes auraFlamePulse {
+  0% { transform: scale(0.96); opacity: 0.7; }
+  100% { transform: scale(1.08); opacity: 1; }
+}
+@keyframes auraPrismShift {
+  0% { filter: hue-rotate(0deg); transform: scale(1); }
+  100% { filter: hue-rotate(60deg); transform: scale(1.06); }
+}
+@keyframes auraLightningPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; filter: brightness(1.2); }
+}
+@keyframes auraCyberMatrix {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 32px; }
+}
+
+/* Summon Picker Dialog */
+.summon-picker-dialog .dialog-inner {
+  max-width: 580px;
+}
+.summon-picker-subtitle {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin: 0 0 0.85rem 0;
+}
+.summon-monsters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+  gap: 0.65rem;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+.summon-monster-card-btn {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(245, 183, 49, 0.4);
+  border-radius: 12px;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  text-align: center;
+  color: #ffffff;
+}
+.summon-monster-card-btn:hover {
+  background: rgba(30, 41, 59, 0.98);
+  border-color: var(--gold-bright);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(245, 183, 49, 0.4);
+}
+.summon-thumb-wrap {
+  width: 100%;
+  height: 140px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.summon-thumb-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.summon-btn-name {
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1.2;
+}
+.summon-btn-stats {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #38bdf8;
+  display: flex;
+  gap: 0.35rem;
 }
 .summon-stats-row {
   display: flex;

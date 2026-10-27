@@ -165,93 +165,314 @@ const ARCHETYPES = {
 };
 
 // ============================================================================
-// 1B. ICONIC ACE MONSTERS CATALOG (FOR 3D PERSPECTIVE ANIME SUMMON CUT-INS)
+// 1B. COMPLETE ARCHETYPE & SIGNATURE MONSTERS CATALOG (FOR 3D ANIME CUT-INS)
 // ============================================================================
-const ACE_MONSTERS = {
-  monarch: {
+const ALL_SUMMON_MONSTERS = {
+  // --- ARCHETIPO: I MONARCHI ---
+  monarch_erebus: {
+    key: 'monarch_erebus',
+    archetypeId: 'monarch',
     name: 'Erebus il Monarca Sotterraneo',
     jpName: '冥帝エレボス',
-    archetypeId: 'monarch',
-    cardImg: './images/monsters/monarch.jpg',
     level: 8,
     attribute: 'OSCURITÀ',
     type: 'Zombie / Effetto',
     atk: 2800,
     def: 1000,
-    summonChant: 'Dall\'abisso delle anime dimenticate, erigiti sovrano assoluto! Evocazione tramite Tributo: Erebus il Monarca Sotterraneo!',
+    cardImg: './images/monsters/monarch_erebus.jpg',
+    summonChant: 'Dall\'abisso delle anime dimenticate, erigiti sovrano assoluto del regno degli inferi! Evocazione tramite Tributo: Erebus il Monarca Sotterraneo!',
     accentColor: '#f59e0b',
-    glowColor: 'rgba(245, 183, 49, 0.7)'
+    glowColor: 'rgba(245, 183, 49, 0.75)'
   },
-  crystalbeast: {
+  monarch_ehther: {
+    key: 'monarch_ehther',
+    archetypeId: 'monarch',
+    name: 'Ehther il Monarca Celeste',
+    jpName: '天帝アイテール',
+    level: 8,
+    attribute: 'LUCE',
+    type: 'Fata / Effetto',
+    atk: 2800,
+    def: 1000,
+    cardImg: './images/monsters/monarch_ehther.jpg',
+    summonChant: 'Scendi dalla volta celeste, regina immacolata! Giudica il destino con splendore eterno! Evocazione tramite Tributo: Ehther il Monarca Celeste!',
+    accentColor: '#facc15',
+    glowColor: 'rgba(250, 204, 21, 0.8)'
+  },
+  monarch_caius: {
+    key: 'monarch_caius',
+    archetypeId: 'monarch',
+    name: 'Caius il Monarca dell\'Ombra',
+    jpName: '邪帝ガイウス',
+    level: 6,
+    attribute: 'OSCURITÀ',
+    type: 'Demone / Effetto',
+    atk: 2400,
+    def: 1000,
+    cardImg: './images/monsters/monarch_caius.jpg',
+    summonChant: 'Spalanca le porte del nulla ed esilia ogni forma terrena nella voragine oscura! Vieni a me: Caius il Monarca dell\'Ombra!',
+    accentColor: '#a855f7',
+    glowColor: 'rgba(168, 85, 247, 0.8)'
+  },
+
+  // --- ARCHETIPO: BESTIA CRISTALLO ---
+  cb_rainbowdragon: {
+    key: 'cb_rainbowdragon',
+    archetypeId: 'crystalbeast',
     name: 'Drago Arcobaleno',
     jpName: '究極宝玉神 レインボー・ドラゴン',
-    archetypeId: 'crystalbeast',
-    cardImg: './images/monsters/rainbowdragon.jpg',
     level: 10,
     attribute: 'LUCE',
     type: 'Drago / Effetto',
     atk: 4000,
     def: 0,
-    summonChant: 'Trascendi i confini dello spettro visibile, maestoso guardiano dell\'arcobaleno! Vieni a me, Drago Arcobaleno!',
+    cardImg: './images/monsters/cb_rainbowdragon.jpg',
+    summonChant: 'Sette gemme lucenti si uniscono nel firmamento! Trascendi lo spettro visibile: Drago Arcobaleno!',
     accentColor: '#06b6d4',
-    glowColor: 'rgba(6, 182, 212, 0.75)'
+    glowColor: 'rgba(6, 182, 212, 0.8)'
   },
-  blueeyes: {
+  cb_overdrive: {
+    key: 'cb_overdrive',
+    archetypeId: 'crystalbeast',
+    name: 'Drago Cristallo Arcobaleno Sovraccarico',
+    jpName: '究極宝玉神 レインボー・ドラゴン オーバー・ドライブ',
+    level: 12,
+    attribute: 'LUCE',
+    type: 'Drago / Fusione',
+    atk: 4000,
+    def: 0,
+    cardImg: './images/monsters/cb_overdrive.jpg',
+    summonChant: 'Oltrepassa ogni limite di potenza e scatena l\'iper-risonanza delle 7 Gemme! Fusione Trascendente: Rainbow Dragon Overdrive!',
+    accentColor: '#ec4899',
+    glowColor: 'rgba(236, 72, 153, 0.85)'
+  },
+  cb_pegasus: {
+    key: 'cb_pegasus',
+    archetypeId: 'crystalbeast',
+    name: 'Bestia Cristallo Pegaso Zaffiro',
+    jpName: '宝玉獣 サファイア・ペガサス',
+    level: 4,
+    attribute: 'VENTO',
+    type: 'Bestia Alata / Effetto',
+    atk: 1800,
+    def: 1200,
+    cardImg: './images/monsters/cb_pegasus.jpg',
+    summonChant: 'Solca le brezze eteree e porta i tesori celesti nel nido di gemme! Spiega le ali, Bestia Cristallo Pegaso Zaffiro!',
+    accentColor: '#38bdf8',
+    glowColor: 'rgba(56, 189, 248, 0.75)'
+  },
+  cb_ruby: {
+    key: 'cb_ruby',
+    archetypeId: 'crystalbeast',
+    name: 'Bestia Cristallo Carbuncle Rubino',
+    jpName: '宝玉獣 ルビー・カーバンクル',
+    level: 3,
+    attribute: 'LUCE',
+    type: 'Fata / Effetto',
+    atk: 300,
+    def: 300,
+    cardImg: './images/monsters/cb_ruby.jpg',
+    summonChant: 'La scintilla cremisi che risveglia tutte le gemme sopite! Risplendi nel campo: Bestia Cristallo Carbuncle Rubino!',
+    accentColor: '#f43f5e',
+    glowColor: 'rgba(244, 63, 94, 0.8)'
+  },
+
+  // --- ARCHETIPO: DRAGO BIANCO OCCHI BLU ---
+  be_blueeyes: {
+    key: 'be_blueeyes',
+    archetypeId: 'blueeyes',
     name: 'Drago Bianco Occhi Blu',
     jpName: '青眼の白龍 (Blue-Eyes White Dragon)',
-    archetypeId: 'blueeyes',
-    cardImg: './images/monsters/blueeyes.jpg',
     level: 8,
     attribute: 'LUCE',
     type: 'Drago / Normale',
     atk: 3000,
     def: 2500,
+    cardImg: './images/monsters/be_blueeyes.jpg',
     summonChant: 'Spiega le tue possenti ali d\'argento e annienta ogni cosa con il tuo Raggio di Luce Bianco! Scendi in campo, Drago Bianco Occhi Blu!',
     accentColor: '#38bdf8',
     glowColor: 'rgba(56, 189, 248, 0.8)'
   },
-  darkmagician: {
-    name: 'Mago Nero',
-    jpName: 'ブラック・マジシャン (Dark Magician)',
-    archetypeId: 'darkmagician',
-    cardImg: './images/monsters/darkmagician.jpg',
-    level: 7,
-    attribute: 'OSCURITÀ',
-    type: 'Incantatore / Normale',
-    atk: 2500,
-    def: 2100,
-    summonChant: 'Il supremo maestro delle arti oscure in termini di attacco e difesa! Mostrati a noi, Mago Nero!',
-    accentColor: '#a855f7',
-    glowColor: 'rgba(168, 85, 247, 0.8)'
+  be_ultimate: {
+    key: 'be_ultimate',
+    archetypeId: 'blueeyes',
+    name: 'Drago Finale Occhi Blu',
+    jpName: '青眼の究極竜 (Blue-Eyes Ultimate Dragon)',
+    level: 12,
+    attribute: 'LUCE',
+    type: 'Drago / Fusione',
+    atk: 4500,
+    def: 3800,
+    cardImg: './images/monsters/be_ultimate.jpg',
+    summonChant: 'L\'unione suprema di tre draghi leggendari dà vita alla forza distruttiva invincibile! Ruggisci, Drago Finale Occhi Blu!',
+    accentColor: '#60a5fa',
+    glowColor: 'rgba(96, 165, 250, 0.85)'
   },
-  cyber: {
-    name: 'Cyber Drago Finale',
-    jpName: 'サイバー・エンド・ドラゴン (Cyber End Dragon)',
+  be_chaosmax: {
+    key: 'be_chaosmax',
+    archetypeId: 'blueeyes',
+    name: 'Drago Chaos Massimo Occhi Blu',
+    jpName: 'ブルーアイズ・カオス・MAX・ドラゴン',
+    level: 8,
+    attribute: 'OSCURITÀ',
+    type: 'Drago / Rituale',
+    atk: 4000,
+    def: 0,
+    cardImg: './images/monsters/be_chaosmax.jpg',
+    summonChant: 'Dall\'abisso del caos cosmico sorge la divinità indistruttibile! Evocazione Rituale: Drago Chaos Massimo Occhi Blu!',
+    accentColor: '#6366f1',
+    glowColor: 'rgba(99, 102, 241, 0.85)'
+  },
+  be_spirit: {
+    key: 'be_spirit',
+    archetypeId: 'blueeyes',
+    name: 'Drago Spirito Occhi Blu',
+    jpName: '青眼の精霊龍 (Blue-Eyes Spirit Dragon)',
+    level: 9,
+    attribute: 'LUCE',
+    type: 'Drago / Synchro',
+    atk: 2500,
+    def: 3000,
+    cardImg: './images/monsters/be_spirit.jpg',
+    summonChant: 'La sacra luce dell\'anima che custodisce il mausoleo dei draghi! Evocazione Synchro: Drago Spirito Occhi Blu!',
+    accentColor: '#38bdf8',
+    glowColor: 'rgba(56, 189, 248, 0.8)'
+  },
+
+  // --- ARCHETIPO: CYBER DRAGO ---
+  cd_cyberdragon: {
+    key: 'cd_cyberdragon',
     archetypeId: 'cyber',
-    cardImg: './images/monsters/cyberend.jpg',
+    name: 'Cyber Drago',
+    jpName: 'サイバー・ドラゴン (Cyber Dragon)',
+    level: 5,
+    attribute: 'LUCE',
+    type: 'Macchina / Effetto',
+    atk: 2100,
+    def: 1600,
+    cardImg: './images/monsters/cd_cyberdragon.jpg',
+    summonChant: 'Quando il campo avversario è gremito, sorge il predatore d\'acciaio! Evocazione Speciale: Cyber Drago!',
+    accentColor: '#06b6d4',
+    glowColor: 'rgba(6, 182, 212, 0.8)'
+  },
+  cd_cyberend: {
+    key: 'cd_cyberend',
+    archetypeId: 'cyber',
+    name: 'Cyber Drago Finale',
+    jpName: 'サイバー・エンド・ドラゴン',
     level: 10,
     attribute: 'LUCE',
     type: 'Macchina / Fusione',
     atk: 4000,
     def: 2800,
-    summonChant: 'Tre colossi d\'acciaio si fondono in un\'unica entità di pura distruzione cibernetica! Evocazione per Fusione: Cyber Drago Finale!',
+    cardImg: './images/monsters/cd_cyberend.jpg',
+    summonChant: 'Tre colossi d\'acciaio si fondono in un\'unica entità di distruzione cibernetica! Evocazione per Fusione: Cyber Drago Finale!',
     accentColor: '#06b6d4',
-    glowColor: 'rgba(6, 182, 212, 0.8)'
+    glowColor: 'rgba(6, 182, 212, 0.85)'
   },
-  hero: {
+  cd_infinity: {
+    key: 'cd_infinity',
+    archetypeId: 'cyber',
+    name: 'Cyber Drago Infinito',
+    jpName: 'サイバー・ドラゴン・インフィニティ',
+    rank: 6,
+    attribute: 'LUCE',
+    type: 'Macchina / Xyz',
+    atk: 2100,
+    def: 1600,
+    cardImg: './images/monsters/cd_infinity.jpg',
+    summonChant: 'Evoluzione Xyz suprema! Assorbi la materia dei nemici e domina il duello con sovranità infinita! Cyber Drago Infinito!',
+    accentColor: '#10b981',
+    glowColor: 'rgba(16, 185, 129, 0.85)'
+  },
+  cd_nova: {
+    key: 'cd_nova',
+    archetypeId: 'cyber',
+    name: 'Cyber Drago Nova',
+    jpName: 'サイバー・ドラゴン・ノヴァ',
+    rank: 5,
+    attribute: 'LUCE',
+    type: 'Macchina / Xyz',
+    atk: 2100,
+    def: 1600,
+    cardImg: './images/monsters/cd_nova.jpg',
+    summonChant: 'Raggiungi la massa critica ed esplodi come una supernova meccanica! Evocazione Xyz: Cyber Drago Nova!',
+    accentColor: '#f59e0b',
+    glowColor: 'rgba(245, 158, 11, 0.8)'
+  },
+
+  // --- CLASSICI & ALTRI ---
+  dm_darkmagician: {
+    key: 'dm_darkmagician',
+    archetypeId: 'darkmagician',
+    name: 'Mago Nero',
+    jpName: 'ブラック・マジシャン (Dark Magician)',
+    level: 7,
+    attribute: 'OSCURITÀ',
+    type: 'Incantatore / Normale',
+    atk: 2500,
+    def: 2100,
+    cardImg: './images/monsters/darkmagician.jpg',
+    summonChant: 'Il supremo maestro delle arti oscure in termini di attacco e difesa! Mostrati a noi, Mago Nero!',
+    accentColor: '#a855f7',
+    glowColor: 'rgba(168, 85, 247, 0.8)'
+  },
+  hero_neos: {
+    key: 'hero_neos',
+    archetypeId: 'hero',
     name: 'Neos EROE Elementale',
     jpName: 'E・HERO ネオス (Elemental HERO Neos)',
-    archetypeId: 'hero',
-    cardImg: './images/monsters/neos.jpg',
     level: 7,
     attribute: 'LUCE',
     type: 'Guerriero / Normale',
     atk: 2500,
     def: 2000,
+    cardImg: './images/monsters/neos.jpg',
     summonChant: 'Dalle profondità dello spazio stellare giunge il guerriero della giustizia cosmica! Evocazione Speciale: Neos EROE Elementale!',
     accentColor: '#ef4444',
     glowColor: 'rgba(239, 68, 68, 0.8)'
   }
+};
+
+const ARCHETYPE_MONSTERS = {
+  monarch: [
+    ALL_SUMMON_MONSTERS.monarch_erebus,
+    ALL_SUMMON_MONSTERS.monarch_ehther,
+    ALL_SUMMON_MONSTERS.monarch_caius
+  ],
+  crystalbeast: [
+    ALL_SUMMON_MONSTERS.cb_rainbowdragon,
+    ALL_SUMMON_MONSTERS.cb_overdrive,
+    ALL_SUMMON_MONSTERS.cb_pegasus,
+    ALL_SUMMON_MONSTERS.cb_ruby
+  ],
+  blueeyes: [
+    ALL_SUMMON_MONSTERS.be_blueeyes,
+    ALL_SUMMON_MONSTERS.be_ultimate,
+    ALL_SUMMON_MONSTERS.be_chaosmax,
+    ALL_SUMMON_MONSTERS.be_spirit
+  ],
+  cyber: [
+    ALL_SUMMON_MONSTERS.cd_cyberdragon,
+    ALL_SUMMON_MONSTERS.cd_cyberend,
+    ALL_SUMMON_MONSTERS.cd_infinity,
+    ALL_SUMMON_MONSTERS.cd_nova
+  ],
+  darkmagician: [
+    ALL_SUMMON_MONSTERS.dm_darkmagician
+  ],
+  hero: [
+    ALL_SUMMON_MONSTERS.hero_neos
+  ]
+};
+
+const ACE_MONSTERS = {
+  monarch: ALL_SUMMON_MONSTERS.monarch_erebus,
+  crystalbeast: ALL_SUMMON_MONSTERS.cb_rainbowdragon,
+  blueeyes: ALL_SUMMON_MONSTERS.be_blueeyes,
+  cyber: ALL_SUMMON_MONSTERS.cd_cyberend,
+  darkmagician: ALL_SUMMON_MONSTERS.dm_darkmagician,
+  hero: ALL_SUMMON_MONSTERS.hero_neos
 };
 
 // Default Initial State (Face-to-Face Tabletop Mode enabled by default)
@@ -2460,32 +2681,59 @@ function triggerFieldSummonCircle() {
   setTimeout(() => circle.classList.remove('summoning'), 2400);
 }
 
+// Helper to resolve card or archetype to a monster object
+function findSummonMonster(cardOrArchKey) {
+  if (!cardOrArchKey) return ALL_SUMMON_MONSTERS.be_blueeyes;
+  if (ALL_SUMMON_MONSTERS[cardOrArchKey]) return ALL_SUMMON_MONSTERS[cardOrArchKey];
+  if (ARCHETYPE_MONSTERS[cardOrArchKey] && ARCHETYPE_MONSTERS[cardOrArchKey].length > 0) {
+    return ARCHETYPE_MONSTERS[cardOrArchKey][0];
+  }
+  if (ACE_MONSTERS[cardOrArchKey]) return ACE_MONSTERS[cardOrArchKey];
+  return ALL_SUMMON_MONSTERS.be_blueeyes;
+}
+
 // 6. 3D Ace Monster Summon Cut-In
-function triggerAnimeSummon3D(archetypeKey, playerNum = 1) {
-  const pArch = archetypeKey || state.players[playerNum]?.archetype || 'blueeyes';
-  const monster = ACE_MONSTERS[pArch] || ACE_MONSTERS.blueeyes;
+function triggerAnimeSummon3D(cardOrArchKey, playerNum = 1) {
+  const pArch = state.players[playerNum]?.archetype || 'blueeyes';
+  const monster = findSummonMonster(cardOrArchKey || pArch);
   const pName = state.players[playerNum]?.name || `Giocatore ${playerNum}`;
 
   playOriginalSound('summon') || playUiBeep(880, 0.15);
-  triggerAnimeSpeedlines(800);
+  triggerAnimeSpeedlines(850);
+  triggerFieldSummonCircle();
 
   const modal = document.getElementById('animeSummonModal');
   const cardImg = document.getElementById('summonMonsterImg');
   const jpBadge = document.getElementById('summonJpName');
   const starsEl = document.getElementById('summonStars');
   const nameEl = document.getElementById('summonMonsterName');
+  const attrEl = document.getElementById('summonAttrPill');
+  const typeEl = document.getElementById('summonTypePill');
   const atkEl = document.getElementById('summonAtkVal');
   const defEl = document.getElementById('summonDefVal');
   const chantEl = document.getElementById('summonChant');
   const pillEl = document.getElementById('summonerPill');
   const cardWrap = document.getElementById('summonCard3dWrap');
+  const auraFx = document.getElementById('summonAuraFx');
 
   if (cardImg) cardImg.src = monster.cardImg;
   if (jpBadge) jpBadge.textContent = monster.jpName;
-  if (starsEl) starsEl.textContent = '★'.repeat(monster.level);
+  if (starsEl) {
+    const starCount = monster.rank || monster.level || 8;
+    starsEl.textContent = '★'.repeat(starCount);
+    starsEl.title = monster.rank ? `Rank ${monster.rank}` : `Livello ${monster.level}`;
+  }
   if (nameEl) nameEl.textContent = monster.name;
+  if (attrEl) attrEl.textContent = monster.attribute || 'LUCE';
+  if (typeEl) typeEl.textContent = monster.type || 'Drago / Effetto';
   if (chantEl) chantEl.textContent = `"${monster.summonChant}"`;
   if (pillEl) pillEl.textContent = `Evocato da: ${pName} (P${playerNum})`;
+
+  if (auraFx) {
+    auraFx.className = 'summon-aura-fx';
+    const auraName = monster.archetypeId || 'blueeyes';
+    auraFx.classList.add(`aura-${auraName}`);
+  }
 
   if (atkEl && defEl) {
     atkEl.textContent = '0';
@@ -2507,6 +2755,7 @@ function triggerAnimeSummon3D(archetypeKey, playerNum = 1) {
     modal.style.display = 'flex';
     if (cardWrap) {
       cardWrap.style.animation = 'none';
+      cardWrap.style.transform = '';
       void cardWrap.offsetWidth;
       cardWrap.style.animation = 'summonCard3dBurst 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards';
     }
@@ -2516,13 +2765,125 @@ function triggerAnimeSummon3D(archetypeKey, playerNum = 1) {
       if (dismissTimer) clearTimeout(dismissTimer);
       modal.style.display = 'none';
       modal.onclick = null;
+      if (cardWrap) cardWrap.style.transform = '';
     };
     modal.onclick = dismissSummon;
-    dismissTimer = setTimeout(dismissSummon, 3800);
+    dismissTimer = setTimeout(dismissSummon, 4200);
   }
 
-  addLogEntry(playerNum, `⚡ [EVOCAZIONE ASSO] ${pName} ha evocato "${monster.name}" (ATK: ${monster.atk} / DEF: ${monster.def})!`);
+  addLogEntry(playerNum, `⚡ [EVOCAZIONE ASSO 3D] ${pName} ha evocato "${monster.name}" (ATK: ${monster.atk} / DEF: ${monster.def})!`);
   showToast(`⚡ ${pName} evoca ${monster.name}!`);
+}
+
+// 6B. Archetype Monster Summon Picker Modal
+function openSummonPicker(playerNum = 1) {
+  const pArch = state.players[playerNum]?.archetype || 'blueeyes';
+  const pName = state.players[playerNum]?.name || `Giocatore ${playerNum}`;
+  const dlg = document.getElementById('summonPickerDialog');
+  const titleEl = document.getElementById('summonPickerTitle');
+  const subEl = document.getElementById('summonPickerSubtitle');
+  const grid = document.getElementById('summonMonstersGrid');
+  if (!dlg || !grid) return;
+
+  if (titleEl) {
+    titleEl.innerHTML = `<span style="color: var(--gold-bright);">⚡ Evocazione Mostro 3D</span> <span style="font-size: 0.85rem; color: #94a3b8; font-weight: normal;">— ${escapeHtml(pName)} (P${playerNum})</span>`;
+  }
+
+  let selectedFilter = pArch;
+
+  function renderPickerContent(activeTab) {
+    selectedFilter = activeTab;
+    grid.innerHTML = '';
+
+    // Filter selector bar at top
+    const filterBar = document.createElement('div');
+    filterBar.className = 'summon-filter-bar';
+    filterBar.style.cssText = 'grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.65rem; justify-content: center;';
+
+    const tabs = [
+      { id: pArch, label: `⭐ Mazzo (${ARCHETYPES[pArch]?.name || pArch})` },
+      { id: 'monarch', label: '👑 Monarchi' },
+      { id: 'crystalbeast', label: '💎 Bestia Cristallo' },
+      { id: 'blueeyes', label: '🐉 Occhi Blu' },
+      { id: 'cyber', label: '🤖 Cyber Drago' },
+      { id: 'all', label: '🌐 Tutti' }
+    ];
+
+    const seen = new Set();
+    tabs.forEach((tab) => {
+      if (seen.has(tab.id)) return;
+      seen.add(tab.id);
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      const isSel = (tab.id === selectedFilter);
+      btn.className = `filter-pill-btn ${isSel ? 'active' : ''}`;
+      btn.style.cssText = `
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid ${isSel ? 'var(--gold-bright)' : 'rgba(255,255,255,0.2)'};
+        background: ${isSel ? 'rgba(245, 183, 49, 0.25)' : 'rgba(15, 23, 42, 0.75)'};
+        color: ${isSel ? 'var(--gold-bright)' : '#cbd5e1'};
+        transition: all 0.2s ease;
+      `;
+      btn.textContent = tab.label;
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        renderPickerContent(tab.id);
+      };
+      filterBar.appendChild(btn);
+    });
+    grid.appendChild(filterBar);
+
+    if (subEl) {
+      subEl.textContent = `Seleziona una carta da scatenare sul Terreno in olografia 3D:`;
+    }
+
+    let monsters = [];
+    if (selectedFilter === 'all') {
+      monsters = Object.values(ALL_SUMMON_MONSTERS);
+    } else if (ARCHETYPE_MONSTERS[selectedFilter]) {
+      monsters = ARCHETYPE_MONSTERS[selectedFilter];
+    } else if (ALL_SUMMON_MONSTERS[selectedFilter]) {
+      monsters = [ALL_SUMMON_MONSTERS[selectedFilter]];
+    } else {
+      monsters = ARCHETYPE_MONSTERS[pArch] || Object.values(ALL_SUMMON_MONSTERS);
+    }
+
+    monsters.forEach((m) => {
+      const cardBtn = document.createElement('button');
+      cardBtn.type = 'button';
+      cardBtn.className = 'summon-monster-card-btn';
+      cardBtn.setAttribute('data-card-key', m.key);
+      cardBtn.title = `Evoca ${m.name} in 3D`;
+      const starText = m.rank ? `Rank ${m.rank}` : `Liv. ${m.level}`;
+      cardBtn.innerHTML = `
+        <div class="summon-thumb-wrap">
+          <img src="${m.cardImg}" alt="${escapeHtml(m.name)}" loading="lazy" />
+        </div>
+        <div class="summon-btn-name">${escapeHtml(m.name)}</div>
+        <div class="summon-btn-stats">
+          <span>⚔️ ${m.atk}</span>
+          <span>🛡️ ${m.def}</span>
+        </div>
+        <div style="font-size: 0.65rem; color: #94a3b8;">${starText} • ${m.attribute}</div>
+      `;
+      cardBtn.onclick = (e) => {
+        e.stopPropagation();
+        closeTopLayer(dlg);
+        setTimeout(() => {
+          triggerAnimeSummon3D(m.key, playerNum);
+        }, 120);
+      };
+      grid.appendChild(cardBtn);
+    });
+  }
+
+  renderPickerContent(selectedFilter);
+  if (!dlg.open) dlg.showModal();
 }
 
 // 7. Fullscreen Anime 0 LP Defeat & Victory Overlay
@@ -2692,18 +3053,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 3D Ace Monster Summon Buttons
+  // 3D Ace Monster Summon Buttons (Opens Archetype Signature Monster Selector)
   const p1SummonBtn = document.getElementById('p1SummonAceBtn');
   if (p1SummonBtn) {
-    p1SummonBtn.addEventListener('click', () => {
-      triggerAnimeSummon3D(state.players[1]?.archetype, 1);
+    p1SummonBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openSummonPicker(1);
     });
   }
   const p2SummonBtn = document.getElementById('p2SummonAceBtn');
   if (p2SummonBtn) {
-    p2SummonBtn.addEventListener('click', () => {
-      triggerAnimeSummon3D(state.players[2]?.archetype, 2);
+    p2SummonBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openSummonPicker(2);
     });
+  }
+
+  // Inspector Summon Button
+  const inspSummonBtn = document.getElementById('inspectorSummonAceBtn');
+  if (inspSummonBtn) {
+    inspSummonBtn.addEventListener('click', () => {
+      const inspDlg = document.getElementById('fieldInspectorDialog');
+      if (inspDlg) closeTopLayer(inspDlg);
+      openSummonPicker(state.fieldActivator || 1);
+    });
+  }
+
+  // Interactive 3D Card Parallax Tilt on Summon Viewport
+  const summonViewport = document.getElementById('summonViewport');
+  const summonCardWrap = document.getElementById('summonCard3dWrap');
+  if (summonViewport && summonCardWrap) {
+    function applyCardTilt(e) {
+      const modal = document.getElementById('animeSummonModal');
+      if (!modal || modal.style.display === 'none') return;
+      const rect = summonViewport.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      if (clientX === undefined || clientY === undefined) return;
+      const x = clientX - rect.left - rect.width / 2;
+      const y = clientY - rect.top - rect.height / 2;
+      const rotX = -(y / (rect.height / 2)) * 16;
+      const rotY = (x / (rect.width / 2)) * 20;
+      summonCardWrap.style.transform = `perspective(900px) rotateX(${rotX.toFixed(1)}deg) rotateY(${rotY.toFixed(1)}deg) translateZ(40px)`;
+    }
+    window.addEventListener('mousemove', applyCardTilt);
+    window.addEventListener('touchmove', applyCardTilt, { passive: true });
   }
 
   // Victory Overlay Actions
@@ -3235,9 +3629,15 @@ document.addEventListener('DOMContentLoaded', () => {
     state.players[2].crystalGems = 2;
     renderField();
   } else if (urlParams.get('test') === 'summon') {
+    const cardKey = urlParams.get('card') || 'be_blueeyes';
     renderField();
     setTimeout(() => {
-      triggerAnimeSummon3D('blueeyes', 1);
+      triggerAnimeSummon3D(cardKey, 1);
+    }, 150);
+  } else if (urlParams.get('test') === 'picker') {
+    renderField();
+    setTimeout(() => {
+      openSummonPicker(1);
     }, 150);
   } else if (urlParams.get('test') === 'turn') {
     renderField();

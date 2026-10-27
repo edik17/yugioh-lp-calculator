@@ -59,11 +59,12 @@
   <!-- 3D ANIME ACE MONSTER SUMMON CUT-IN (MASTER DUEL / DUEL LINKS STYLE) -->
   <div class="anime-summon-modal" id="animeSummonModal" style="display: none;" role="dialog" aria-label="Evocazione Mostro Asso">
     <div class="summon-modal-backdrop" id="summonModalBackdrop"></div>
-    <div class="summon-viewport">
+    <div class="summon-aura-fx" id="summonAuraFx"></div>
+    <div class="summon-viewport" id="summonViewport">
       <!-- 3D Floating Action Card Container -->
       <div class="summon-card-3d-wrap" id="summonCard3dWrap">
         <div class="summon-card-hologram" id="summonCardHolo">
-          <img class="summon-card-img" id="summonMonsterImg" src="./images/monsters/blueeyes.jpg" alt="Mostro Asso Evocato" />
+          <img class="summon-card-img" id="summonMonsterImg" src="./images/monsters/be_blueeyes.jpg" alt="Mostro Asso Evocato" />
           <div class="summon-foil-sheen"></div>
         </div>
       </div>
@@ -74,16 +75,34 @@
           <span class="summon-stars-row" id="summonStars">★★★★★★★★</span>
         </div>
         <h2 class="summon-monster-name" id="summonMonsterName">Drago Bianco Occhi Blu</h2>
+        <div class="summon-meta-badges">
+          <span class="summon-attr-pill" id="summonAttrPill">LUCE</span>
+          <span class="summon-type-pill" id="summonTypePill">Drago / Normale</span>
+        </div>
         <div class="summon-stats-row">
           <div class="summon-stat-badge atk"><span class="stat-lbl">ATK</span> <span class="stat-val" id="summonAtkVal">3000</span></div>
           <div class="summon-stat-badge def"><span class="stat-lbl">DEF</span> <span class="stat-val" id="summonDefVal">2500</span></div>
         </div>
         <p class="summon-chant-text" id="summonChant">"Spiega le tue possenti ali d'argento e annienta ogni cosa con il tuo Raggio di Luce Bianco! Scendi in campo, Drago Bianco Occhi Blu!"</p>
         <div class="summon-summoner-pill" id="summonerPill">Evocato da: Giocatore 1</div>
-        <div class="summon-tap-hint">Tocca per continuare</div>
+        <div class="summon-tap-hint">Tocca per continuare il Duello</div>
       </div>
     </div>
   </div>
+
+  <!-- ANIME ARCHETYPE MONSTER SUMMON PICKER MODAL -->
+  <dialog class="duel-dialog summon-picker-dialog" id="summonPickerDialog" aria-labelledby="summonPickerTitle">
+    <div class="dialog-inner">
+      <div class="dialog-header">
+        <h2 id="summonPickerTitle">
+          <span style="color: var(--gold-bright);">⚡ Evocazione Mostro 3D</span>
+        </h2>
+        <button class="dialog-close-btn" data-close-dialog="summonPickerDialog" aria-label="Chiudi finestra">✕</button>
+      </div>
+      <p class="summon-picker-subtitle" id="summonPickerSubtitle">Scegli la carta dell'archetipo da evocare sul terreno:</p>
+      <div class="summon-monsters-grid" id="summonMonstersGrid"></div>
+    </div>
+  </dialog>
 
   <!-- ANIME DUEL FINISHED / OTK VICTORY MODAL -->
   <div class="anime-victory-modal" id="animeVictoryModal" style="display: none;" role="dialog" aria-label="Duello Terminato">
@@ -927,6 +946,9 @@
         <button type="button" class="secondary-btn" id="inspectorChangeFieldBtn" style="flex: 1;">
           🔄 Gestisci / Cambia
         </button>
+        <button type="button" class="secondary-btn" id="inspectorSummonAceBtn" style="flex: 1; border-color: var(--gold-bright); color: var(--gold-bright);" title="Evoca un Mostro Asso dell'archetipo in 3D">
+          ⚡ Evoca Asso 3D
+        </button>
       </div>
     </div>
   </dialog>
@@ -957,6 +979,6 @@
   <!-- TOAST NOTIFICATION -->
   <div class="duel-toast" id="duelToast" role="status" aria-live="polite"></div>
 
-  <script src="app.js?v=2.5"></script>
+  <script src="app.js?v=2.6"></script>
 </body>
 </html>

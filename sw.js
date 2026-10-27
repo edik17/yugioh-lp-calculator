@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dueldisk-cache-v13';
+const CACHE_NAME = 'dueldisk-cache-v14';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -34,6 +34,21 @@ const ASSETS_TO_CACHE = [
   './images/fields/zombie.jpg',
   './images/fields/umi.jpg',
   './images/fields/sanctuary.jpg',
+  './images/monsters/monarch_erebus.jpg',
+  './images/monsters/monarch_ehther.jpg',
+  './images/monsters/monarch_caius.jpg',
+  './images/monsters/cb_rainbowdragon.jpg',
+  './images/monsters/cb_overdrive.jpg',
+  './images/monsters/cb_pegasus.jpg',
+  './images/monsters/cb_ruby.jpg',
+  './images/monsters/be_blueeyes.jpg',
+  './images/monsters/be_ultimate.jpg',
+  './images/monsters/be_chaosmax.jpg',
+  './images/monsters/be_spirit.jpg',
+  './images/monsters/cd_cyberdragon.jpg',
+  './images/monsters/cd_cyberend.jpg',
+  './images/monsters/cd_infinity.jpg',
+  './images/monsters/cd_nova.jpg',
   './images/monsters/blueeyes.jpg',
   './images/monsters/darkmagician.jpg',
   './images/monsters/rainbowdragon.jpg',
