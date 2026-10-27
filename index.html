@@ -18,9 +18,21 @@
   <link rel="stylesheet" href="styles.css?v=2.4" />
 </head>
 <body class="duel-app-body">
-  <!-- DYNAMIC FIELD SPELL & ANIMATED BACKGROUND CONTAINER -->
+  <!-- DYNAMIC FIELD SPELL & ANIMATED BACKGROUND CONTAINER (SUPPORTS SPLIT DUAL FIELDS) -->
   <div class="field-bg-container" id="fieldBgContainer" aria-hidden="true">
     <div class="field-art-layer" id="fieldArtLayer"></div>
+    <div class="field-art-layer field-art-p1" id="fieldArtLayerP1" style="display: none;"></div>
+    <div class="field-art-layer field-art-p2" id="fieldArtLayerP2" style="display: none;"></div>
+    <div class="field-split-seam" id="fieldSplitSeam" style="display: none;">
+      <div class="seam-line"></div>
+      <div class="seam-glow"></div>
+    </div>
+    <!-- HOLOGRAPHIC SOLID VISION MAGIC CIRCLE -->
+    <div class="field-magic-circle" id="fieldMagicCircle" aria-hidden="true">
+      <div class="circle-outer-ring"></div>
+      <div class="circle-inner-ring"></div>
+      <div class="circle-hexagram"></div>
+    </div>
     <div class="field-vignette-layer"></div>
     <canvas class="field-particles-canvas" id="fieldCanvas"></canvas>
     <div class="field-lightning-flash" id="fieldLightningFlash"></div>
@@ -30,6 +42,63 @@
   <div class="bg-glow bg-glow-p1" aria-hidden="true"></div>
   <div class="bg-glow bg-glow-p2" aria-hidden="true"></div>
   <div class="damage-flash-overlay" id="damageFlashOverlay" aria-hidden="true"></div>
+
+  <!-- ANIME RADIAL ACTION SPEEDLINES OVERLAY -->
+  <div class="anime-speedlines" id="animeSpeedLines" aria-hidden="true"></div>
+
+  <!-- ANIME TURN CHANGE CUT-IN BANNER ("ORE NO TURN! DRAW!") -->
+  <div class="anime-turn-cutin" id="animeTurnCutin" style="display: none;" aria-hidden="true">
+    <div class="turn-cutin-backdrop" id="turnCutinBackdrop"></div>
+    <div class="turn-cutin-content" id="turnCutinContent">
+      <div class="turn-cutin-kanji">【 TURN <span id="cutinTurnNum">1</span> 】</div>
+      <div class="turn-cutin-callout">ORE NO TURN! DRAW!</div>
+      <div class="turn-cutin-player" id="cutinPlayerName">⚡ IL MIO TURNO! PESCO! — Giocatore 1</div>
+    </div>
+  </div>
+
+  <!-- 3D ANIME ACE MONSTER SUMMON CUT-IN (MASTER DUEL / DUEL LINKS STYLE) -->
+  <div class="anime-summon-modal" id="animeSummonModal" style="display: none;" role="dialog" aria-label="Evocazione Mostro Asso">
+    <div class="summon-modal-backdrop" id="summonModalBackdrop"></div>
+    <div class="summon-viewport">
+      <!-- 3D Floating Action Card Container -->
+      <div class="summon-card-3d-wrap" id="summonCard3dWrap">
+        <div class="summon-card-hologram" id="summonCardHolo">
+          <img class="summon-card-img" id="summonMonsterImg" src="./images/monsters/blueeyes.jpg" alt="Mostro Asso Evocato" />
+          <div class="summon-foil-sheen"></div>
+        </div>
+      </div>
+      <!-- Anime Summon HUD Box -->
+      <div class="summon-hud-panel" id="summonHudPanel">
+        <div class="summon-header-row">
+          <span class="summon-jp-badge" id="summonJpName">青眼の白龍</span>
+          <span class="summon-stars-row" id="summonStars">★★★★★★★★</span>
+        </div>
+        <h2 class="summon-monster-name" id="summonMonsterName">Drago Bianco Occhi Blu</h2>
+        <div class="summon-stats-row">
+          <div class="summon-stat-badge atk"><span class="stat-lbl">ATK</span> <span class="stat-val" id="summonAtkVal">3000</span></div>
+          <div class="summon-stat-badge def"><span class="stat-lbl">DEF</span> <span class="stat-val" id="summonDefVal">2500</span></div>
+        </div>
+        <p class="summon-chant-text" id="summonChant">"Spiega le tue possenti ali d'argento e annienta ogni cosa con il tuo Raggio di Luce Bianco! Scendi in campo, Drago Bianco Occhi Blu!"</p>
+        <div class="summon-summoner-pill" id="summonerPill">Evocato da: Giocatore 1</div>
+        <div class="summon-tap-hint">Tocca per continuare</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANIME DUEL FINISHED / OTK VICTORY MODAL -->
+  <div class="anime-victory-modal" id="animeVictoryModal" style="display: none;" role="dialog" aria-label="Duello Terminato">
+    <div class="victory-modal-backdrop" id="victoryBackdrop"></div>
+    <div class="victory-modal-card">
+      <div class="victory-trophy-badge">🏆 DUEL FINISHED 🏆</div>
+      <div class="victory-title" id="victoryWinnerTitle">VITTORIA SCHIACCIANTE!</div>
+      <div class="victory-winner-name" id="victoryWinnerName">Giocatore 1 Trionfa!</div>
+      <div class="victory-subtext" id="victoryReason">L'avversario è stato ridotto a 0 Life Points!</div>
+      <div class="victory-actions">
+        <button type="button" class="victory-btn victory-btn-rematch" id="victoryRematchBtn">⚔️ Nuova Partita</button>
+        <button type="button" class="victory-btn victory-btn-close" id="victoryCloseBtn">Chiudi Schermata</button>
+      </div>
+    </div>
+  </div>
 
   <!-- FIELD SPELL ANIME ACTIVATION BANNER (ENHANCED CINEMATIC CUT-IN) -->
   <div class="field-activation-banner" id="fieldActivationBanner" aria-hidden="true" style="display: none;" role="dialog" aria-label="Attivazione Magia Terreno">
@@ -63,6 +132,7 @@
             <span class="archetype-icon" id="p2ArchetypeIcon">🐉</span>
             <span class="archetype-name" id="p2ArchetypeName">Occhi Blu</span>
           </button>
+          <button type="button" class="summon-ace-btn" id="p2SummonAceBtn" data-player="2" title="Evoca Mostro Asso 3D (Animazione Anime)">⚡ Asso</button>
         </div>
         <div class="match-stars" title="Vittorie nel Match (Best of 3)">
           <span class="match-label">MATCH</span>
@@ -76,6 +146,7 @@
         <div class="lp-hero-meta">
           <span class="lp-title">LIFE POINTS</span>
           <span class="player-turn-badge" id="p2TurnBadge">TUO TURNO</span>
+          <span class="lp-critical-warning" id="p2CriticalWarn">⚡ CRITICAL LP ⚡</span>
           <span class="lp-delta" id="p2Delta" aria-live="polite"></span>
         </div>
         <div class="lp-digits-wrap">
@@ -85,6 +156,13 @@
           <div class="lp-bar-fill" id="p2LpBar" style="width: 100%"></div>
         </div>
       </div>
+
+      <!-- Anime Combat Effects Layers -->
+      <div class="anime-combat-pop" id="p2DmgPop" aria-hidden="true"></div>
+      <div class="anime-slash-container" id="p2SlashContainer" aria-hidden="true">
+        <div class="anime-slash-beam"></div>
+      </div>
+      <div class="anime-shattered-glass" id="p2ShatteredGlass" aria-hidden="true"></div>
 
       <!-- Dedicated Crystal Beast Zone Tracker (Zone M&T) -->
       <div class="crystal-beast-tracker" id="p2CrystalTracker" style="display: none;" aria-label="Zone Bestia Cristallo Giocatore 2">
@@ -122,15 +200,28 @@
     <!-- SLIM CENTER TACTICAL DIVIDER (ACCESSIBLE TO BOTH PLAYERS)         -->
     <!-- ================================================================== -->
     <div class="center-duel-bar-wrap">
-      <!-- Active Field Spell Floating Capsule (Visible whenever a Field Spell is active) -->
+      <!-- Active Field Spell Floating Capsule (Supports Split Dual Fields P1 & P2) -->
       <div class="active-field-hud-capsule" id="activeFieldHudCapsule" style="display: none;">
-        <button type="button" class="field-hud-chip" id="openActiveFieldInspectorBtn" title="Magia Terreno attiva (Tocca per visualizzare dettagli carta e gestore)">
-          <span class="field-hud-spell-icon">魔</span>
-          <span class="field-hud-icon" id="hudFieldIcon">👑</span>
-          <span class="field-hud-name" id="hudFieldName">Dominio dei Veri Monarchi</span>
-          <span class="field-hud-activator-tag" id="hudFieldActivator">P1</span>
-        </button>
-        <button type="button" class="field-hud-quick-remove-btn" id="hudFieldQuickRemoveBtn" title="Rimuovi / Distruggi Magia Terreno" aria-label="Rimuovi Magia Terreno">✕</button>
+        <!-- P1 Field Chip -->
+        <div class="field-hud-cluster" id="fieldClusterP1" style="display: none;">
+          <button type="button" class="field-hud-chip" id="openActiveFieldInspectorBtn" data-player="1" title="Magia Terreno Giocatore 1 (Tocca per visualizzare dettagli)">
+            <span class="field-hud-spell-icon">魔</span>
+            <span class="field-hud-icon" id="hudFieldIcon">👑</span>
+            <span class="field-hud-name" id="hudFieldName">Dominio dei Veri Monarchi</span>
+            <span class="field-hud-activator-tag" id="hudFieldActivator">P1</span>
+          </button>
+          <button type="button" class="field-hud-quick-remove-btn" id="hudFieldQuickRemoveBtn" data-player="1" title="Distruggi Magia Terreno P1" aria-label="Rimuovi Terreno P1">✕</button>
+        </div>
+        <!-- P2 Field Chip (When P2 also controls an active Field Spell) -->
+        <div class="field-hud-cluster" id="fieldClusterP2" style="display: none;">
+          <button type="button" class="field-hud-chip chip-p2" id="openActiveFieldInspectorBtnP2" data-player="2" title="Magia Terreno Giocatore 2 (Tocca per visualizzare dettagli)">
+            <span class="field-hud-spell-icon">魔</span>
+            <span class="field-hud-icon" id="hudFieldIconP2">💎</span>
+            <span class="field-hud-name" id="hudFieldNameP2">Rovine Arcobaleno</span>
+            <span class="field-hud-activator-tag tag-p2" id="hudFieldActivatorP2">P2</span>
+          </button>
+          <button type="button" class="field-hud-quick-remove-btn" id="hudFieldQuickRemoveBtnP2" data-player="2" title="Distruggi Magia Terreno P2" aria-label="Rimuovi Terreno P2">✕</button>
+        </div>
       </div>
 
       <nav class="center-duel-bar" id="centerDuelBar" aria-label="Console Tattica Centrale">
@@ -215,6 +306,7 @@
             <span class="archetype-icon" id="p1ArchetypeIcon">👑</span>
             <span class="archetype-name" id="p1ArchetypeName">Monarchi</span>
           </button>
+          <button type="button" class="summon-ace-btn" id="p1SummonAceBtn" data-player="1" title="Evoca Mostro Asso 3D (Animazione Anime)">⚡ Asso</button>
         </div>
         <div class="match-stars" title="Vittorie nel Match (Best of 3)">
           <span class="match-label">MATCH</span>
@@ -228,6 +320,7 @@
         <div class="lp-hero-meta">
           <span class="lp-title">LIFE POINTS</span>
           <span class="player-turn-badge" id="p1TurnBadge">TUO TURNO</span>
+          <span class="lp-critical-warning" id="p1CriticalWarn">⚡ CRITICAL LP ⚡</span>
           <span class="lp-delta" id="p1Delta" aria-live="polite"></span>
         </div>
         <div class="lp-digits-wrap">
@@ -237,6 +330,13 @@
           <div class="lp-bar-fill" id="p1LpBar" style="width: 100%"></div>
         </div>
       </div>
+
+      <!-- Anime Combat Effects Layers -->
+      <div class="anime-combat-pop" id="p1DmgPop" aria-hidden="true"></div>
+      <div class="anime-slash-container" id="p1SlashContainer" aria-hidden="true">
+        <div class="anime-slash-beam"></div>
+      </div>
+      <div class="anime-shattered-glass" id="p1ShatteredGlass" aria-hidden="true"></div>
 
       <!-- Dedicated Crystal Beast Zone Tracker (Zone M&T) -->
       <div class="crystal-beast-tracker" id="p1CrystalTracker" style="display: none;" aria-label="Zone Bestia Cristallo Giocatore 1">
@@ -857,6 +957,6 @@
   <!-- TOAST NOTIFICATION -->
   <div class="duel-toast" id="duelToast" role="status" aria-live="polite"></div>
 
-  <script src="app.js?v=2.4"></script>
+  <script src="app.js?v=2.5"></script>
 </body>
 </html>

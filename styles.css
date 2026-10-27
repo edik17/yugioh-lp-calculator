@@ -2496,6 +2496,718 @@ body.duel-app-body {
 }
 
 /* ========================================================================= */
+/* 13B. ORIGINAL ANIME IMMERSION FX, 3D SUMMONS & SPLIT DUAL FIELDS          */
+/* ========================================================================= */
+
+/* Summon Ace Button */
+.summon-ace-btn {
+  background: linear-gradient(135deg, rgba(245, 183, 49, 0.25), rgba(217, 119, 6, 0.4));
+  border: 1px solid rgba(245, 183, 49, 0.6);
+  color: var(--gold-bright);
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(245, 183, 49, 0.25);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.summon-ace-btn:hover {
+  background: linear-gradient(135deg, rgba(245, 183, 49, 0.45), rgba(217, 119, 6, 0.6));
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(245, 183, 49, 0.6);
+}
+
+/* Dual Split Field Spell Styling */
+.field-bg-container.dual-split-active .field-art-layer.field-art-p1,
+.field-bg-container.dual-split-active .field-art-layer.field-art-p2 {
+  display: block !important;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Mobile Portrait: P2 top half, P1 bottom half */
+.field-bg-container.dual-split-active .field-art-layer.field-art-p2 {
+  top: 0;
+  height: 50%;
+  border-bottom: 2px solid rgba(16, 185, 129, 0.6);
+}
+
+.field-bg-container.dual-split-active .field-art-layer.field-art-p1 {
+  top: 50%;
+  height: 50%;
+  border-top: 2px solid rgba(16, 185, 129, 0.6);
+}
+
+.field-split-seam {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  transform: translateY(-50%);
+  z-index: 3;
+  pointer-events: none;
+}
+.field-split-seam .seam-line {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #34d399, #f5b731, #38bdf8, #34d399, transparent);
+  box-shadow: 0 0 15px #34d399, 0 0 30px #f5b731;
+}
+.field-split-seam .seam-glow {
+  position: absolute;
+  top: -12px;
+  left: 0;
+  width: 100%;
+  height: 26px;
+  background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.35), transparent 70%);
+  animation: seamPulse 2.5s infinite alternate ease-in-out;
+}
+@keyframes seamPulse {
+  0% { opacity: 0.5; }
+  100% { opacity: 0.95; }
+}
+
+/* Dual Field HUD Clusters */
+.field-hud-cluster {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.field-hud-chip.chip-p2 {
+  border-color: #38bdf8;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.32), rgba(12, 74, 110, 0.45));
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+.field-hud-chip.chip-p2:hover {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.48), rgba(12, 74, 110, 0.6));
+}
+.field-hud-activator-tag.tag-p2 {
+  background: rgba(56, 189, 248, 0.2);
+  color: #bae6fd;
+}
+
+/* Heavy Screen Shake */
+.duel-arena.arena-heavy-shake {
+  animation: arenaEarthquake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) !important;
+}
+@keyframes arenaEarthquake {
+  0%, 100% { transform: translate(0, 0); }
+  10%, 90% { transform: translate(-8px, 6px); }
+  20%, 80% { transform: translate(8px, -7px); }
+  30%, 50%, 70% { transform: translate(-6px, 6px); }
+  40%, 60% { transform: translate(6px, -5px); }
+}
+
+/* Anime Action Speedlines */
+.anime-speedlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, 0.42) 0deg 1deg,
+    transparent 1deg 6deg,
+    rgba(245, 183, 49, 0.36) 6deg 7.5deg,
+    transparent 7.5deg 12deg,
+    rgba(255, 255, 255, 0.5) 12deg 13deg,
+    transparent 13deg 18deg
+  );
+  mask-image: radial-gradient(circle at center, transparent 25%, rgba(0, 0, 0, 0.96) 68%);
+  -webkit-mask-image: radial-gradient(circle at center, transparent 25%, rgba(0, 0, 0, 0.96) 68%);
+  transition: opacity 0.1s ease-out;
+}
+.anime-speedlines.active {
+  opacity: 1;
+  animation: animeSpeedlinesZoom 0.52s cubic-bezier(0.12, 0.8, 0.2, 1) forwards;
+}
+@keyframes animeSpeedlinesZoom {
+  0% { transform: scale(1.22); opacity: 0; }
+  20% { transform: scale(1); opacity: 1; }
+  75% { transform: scale(1.04); opacity: 0.85; }
+  100% { transform: scale(1.08); opacity: 0; }
+}
+
+/* Floating Anime Combat Pop Numbers */
+.anime-combat-pop {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.combat-pop-item {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-style: italic;
+  font-size: 2.8rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  user-select: none;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.9));
+}
+.combat-pop-item.pop-dmg {
+  color: #ff3366;
+  -webkit-text-stroke: 2px #0a0e17;
+  text-shadow: 0 0 16px rgba(255, 51, 102, 0.9), 0 0 35px rgba(239, 68, 68, 0.8);
+  animation: animeDmgPop 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.combat-pop-item.pop-heal {
+  color: #34d399;
+  -webkit-text-stroke: 2px #0a0e17;
+  text-shadow: 0 0 16px rgba(52, 211, 153, 0.9), 0 0 35px rgba(16, 185, 129, 0.8);
+  animation: animeHealPop 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes animeDmgPop {
+  0% { transform: scale(0.25) translateY(30px) rotate(-8deg); opacity: 0; }
+  22% { transform: scale(1.4) translateY(-10px) rotate(4deg); opacity: 1; }
+  45% { transform: scale(1.15) translateY(-20px) rotate(-2deg); }
+  75% { transform: scale(1.05) translateY(-40px) rotate(0deg); opacity: 1; }
+  100% { transform: scale(0.85) translateY(-65px); opacity: 0; }
+}
+@keyframes animeHealPop {
+  0% { transform: scale(0.3) translateY(20px); opacity: 0; }
+  25% { transform: scale(1.3) translateY(-10px); opacity: 1; }
+  75% { transform: scale(1.05) translateY(-35px); opacity: 1; }
+  100% { transform: scale(0.85) translateY(-60px); opacity: 0; }
+}
+
+/* Anime Energy Slash Beam */
+.anime-slash-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 22;
+  border-radius: 16px;
+  display: none;
+}
+.anime-slash-container.slashing {
+  display: block;
+}
+.anime-slash-beam {
+  position: absolute;
+  top: 50%;
+  left: -40%;
+  width: 180%;
+  height: 8px;
+  background: linear-gradient(90deg, transparent, #ffffff, #67e8f9, #ffffff, transparent);
+  box-shadow: 0 0 20px #06b6d4, 0 0 40px #38bdf8, 0 0 60px #ffffff;
+  transform: translateY(-50%) rotate(-30deg) scaleX(0);
+  animation: animeSlashCut 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes animeSlashCut {
+  0% { transform: translateY(-50%) rotate(-30deg) scaleX(0); opacity: 0; }
+  25% { transform: translateY(-50%) rotate(-30deg) scaleX(1.4) translateY(-8px); opacity: 1; }
+  60% { transform: translateY(-50%) rotate(-30deg) scaleX(1.1) translateY(8px); opacity: 0.9; }
+  100% { transform: translateY(-50%) rotate(-30deg) scaleX(0.7) translateY(18px); opacity: 0; }
+}
+
+/* Shattered Glass Defeat Screen on 0 LP */
+.anime-shattered-glass {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  pointer-events: none;
+  z-index: 24;
+  opacity: 0;
+  background: 
+    radial-gradient(circle at 50% 45%, transparent 20%, rgba(255, 255, 255, 0.15) 21%, transparent 23%),
+    linear-gradient(45deg, transparent 48%, rgba(255, 255, 255, 0.6) 50%, transparent 52%),
+    linear-gradient(-35deg, transparent 48%, rgba(255, 255, 255, 0.6) 50%, transparent 52%),
+    linear-gradient(115deg, transparent 48%, rgba(255, 255, 255, 0.5) 50%, transparent 52%),
+    linear-gradient(-75deg, transparent 48%, rgba(255, 255, 255, 0.5) 50%, transparent 52%),
+    rgba(225, 29, 72, 0.18);
+  backdrop-filter: contrast(140%) brightness(120%);
+  transition: opacity 0.3s ease;
+}
+.player-card.is-defeated .anime-shattered-glass {
+  opacity: 1;
+  animation: shatteredGlassCrack 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes shatteredGlassCrack {
+  0% { opacity: 0; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Critical LP Danger Warning */
+.lp-critical-warning {
+  display: none;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #ff3366;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 10px rgba(255, 51, 102, 0.9);
+  animation: criticalWarnBlink 0.6s infinite alternate ease-in-out;
+}
+.lp-hero.lp-critical .lp-critical-warning {
+  display: block;
+}
+@keyframes criticalWarnBlink {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0.45; transform: scale(0.96); }
+}
+
+.lp-hero.lp-critical {
+  border-color: #ef4444;
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.65), inset 0 0 15px rgba(239, 68, 68, 0.3);
+  animation: criticalHeroPulse 1s infinite alternate ease-in-out;
+}
+@keyframes criticalHeroPulse {
+  0% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+  100% { box-shadow: 0 0 35px rgba(239, 68, 68, 0.85), inset 0 0 20px rgba(239, 68, 68, 0.4); }
+}
+
+/* Holographic Solid Vision Magic Summoning Circle */
+.field-magic-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 440px;
+  height: 440px;
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+  border-radius: 50%;
+  z-index: 2;
+  opacity: 0;
+}
+.field-magic-circle.summoning {
+  animation: magicCircleSummon 2.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.circle-outer-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px dashed rgba(16, 185, 129, 0.85);
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
+  animation: circleSpinClockwise 12s linear infinite;
+}
+.circle-inner-ring {
+  position: absolute;
+  inset: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(52, 211, 153, 0.7);
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  animation: circleSpinCounter 8s linear infinite;
+}
+.circle-hexagram {
+  position: absolute;
+  inset: 75px;
+  border-radius: 50%;
+  border: 1px dotted rgba(167, 243, 208, 0.6);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.25), transparent 70%);
+}
+@keyframes circleSpinClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes circleSpinCounter {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+@keyframes magicCircleSummon {
+  0% { transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
+  15% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+  40% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
+  75% { transform: translate(-50%, -50%) scale(1.25); opacity: 0.75; }
+  100% { transform: translate(-50%, -50%) scale(1.55); opacity: 0; }
+}
+
+/* Anime Turn Cut-In Banner: "ORE NO TURN! DRAW!" */
+.anime-turn-cutin {
+  position: fixed;
+  inset: 0;
+  z-index: 92;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.turn-cutin-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.65);
+  backdrop-filter: blur(4px);
+  animation: cutinBackdrop 1.35s ease-out forwards;
+}
+.turn-cutin-content {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  padding: 1.25rem 1.75rem;
+  background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.96) 12%, rgba(15, 23, 42, 0.96) 88%, transparent);
+  border-top: 2px solid var(--gold-bright);
+  border-bottom: 2px solid var(--gold-bright);
+  box-shadow: 0 0 40px rgba(245, 183, 49, 0.5), inset 0 0 25px rgba(245, 183, 49, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  animation: cutinBannerFly 1.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.turn-cutin-kanji {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: var(--gold-bright);
+  letter-spacing: 0.18em;
+  margin-bottom: 0.2rem;
+}
+.turn-cutin-callout {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-style: italic;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+  -webkit-text-stroke: 1.5px #0a0e17;
+  text-shadow: 0 0 20px rgba(245, 183, 49, 0.85), 0 0 40px rgba(245, 183, 49, 0.5);
+  line-height: 1.1;
+  margin-bottom: 0.35rem;
+}
+.turn-cutin-player {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.06em;
+}
+@keyframes cutinBackdrop {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes cutinBannerFly {
+  0% { transform: translateX(-120%) skewX(-20deg); opacity: 0; }
+  18% { transform: translateX(0) skewX(0); opacity: 1; }
+  75% { transform: translateX(0) skewX(0); opacity: 1; }
+  100% { transform: translateX(120%) skewX(20deg); opacity: 0; }
+}
+
+/* 3D Anime Ace Monster Summon Cut-In */
+.anime-summon-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.summon-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(3, 7, 18, 0.78), rgba(2, 6, 23, 0.96));
+  backdrop-filter: blur(8px);
+  animation: summonBackdropFade 0.4s ease-out;
+}
+@keyframes summonBackdropFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.summon-viewport {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 480px;
+  width: 100%;
+  gap: 1rem;
+  perspective: 1200px;
+  cursor: pointer;
+  z-index: 2;
+}
+.summon-card-3d-wrap {
+  position: relative;
+  width: 220px;
+  height: 320px;
+  transform-style: preserve-3d;
+  animation: summonCard3dBurst 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.summon-card-hologram {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 35px rgba(245, 183, 49, 0.65), 0 20px 40px rgba(0, 0, 0, 0.85);
+  border: 2px solid var(--gold-bright);
+}
+.summon-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.summon-foil-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    125deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 45%,
+    rgba(255, 215, 0, 0.45) 50%,
+    rgba(56, 189, 248, 0.45) 55%,
+    transparent 70%
+  );
+  transform: translateX(-150%);
+  animation: holoSheenSweep 2.2s infinite ease-in-out;
+  pointer-events: none;
+}
+@keyframes holoSheenSweep {
+  0% { transform: translateX(-150%) skewX(-25deg); }
+  50%, 100% { transform: translateX(150%) skewX(-25deg); }
+}
+@keyframes summonCard3dBurst {
+  0% { transform: scale(0.2) rotateY(180deg) translateZ(-200px); opacity: 0; }
+  60% { transform: scale(1.1) rotateY(-18deg) rotateX(10deg) translateZ(80px); opacity: 1; }
+  100% { transform: scale(1) rotateY(-8deg) rotateX(6deg) translateZ(40px); opacity: 1; }
+}
+
+.summon-hud-panel {
+  position: relative;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(11, 15, 25, 0.98));
+  border: 1px solid var(--gold-bright);
+  border-radius: 16px;
+  padding: 1.1rem 1.4rem;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+  animation: summonHudSlideUp 0.6s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes summonHudSlideUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.summon-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+.summon-jp-badge {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--gold-bright);
+  letter-spacing: 0.1em;
+}
+.summon-stars-row {
+  color: #facc15;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 6px #f59e0b;
+}
+.summon-monster-name {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 0 15px rgba(245, 183, 49, 0.7);
+}
+.summon-stats-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 0.65rem;
+}
+.summon-stat-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.8rem;
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-weight: 900;
+}
+.summon-stat-badge.atk {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+}
+.summon-stat-badge.def {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid #3b82f6;
+  color: #93c5fd;
+}
+.summon-stat-badge .stat-lbl {
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+}
+.summon-stat-badge .stat-val {
+  font-size: 1.05rem;
+  color: #ffffff;
+}
+.summon-chant-text {
+  font-size: 0.78rem;
+  font-style: italic;
+  color: #cbd5e1;
+  line-height: 1.35;
+  margin: 0 0 0.5rem 0;
+}
+.summon-summoner-pill {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(245, 183, 49, 0.2);
+  color: var(--gold-bright);
+  border: 1px solid rgba(245, 183, 49, 0.4);
+}
+.summon-tap-hint {
+  font-size: 0.65rem;
+  color: #64748b;
+  margin-top: 0.45rem;
+}
+
+@media (max-width: 600px) {
+  .summon-viewport {
+    gap: 0.5rem;
+    padding: 0.25rem;
+  }
+  .summon-card-3d-wrap {
+    width: 170px;
+    height: 250px;
+  }
+  .summon-hud-panel {
+    padding: 0.8rem 1rem;
+  }
+  .summon-monster-name {
+    font-size: 1.15rem;
+    margin-bottom: 0.35rem;
+  }
+  .summon-chant-text {
+    font-size: 0.72rem;
+    line-height: 1.3;
+  }
+}
+
+/* Fullscreen Anime Victory / Defeat Climax Overlay */
+.anime-victory-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+}
+.victory-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.85);
+  backdrop-filter: blur(8px);
+  animation: victoryFadeIn 0.4s ease-out;
+}
+.victory-modal-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(20, 26, 45, 0.96), rgba(11, 16, 29, 0.98));
+  border: 2px solid var(--gold-bright);
+  box-shadow: 0 0 60px rgba(245, 183, 49, 0.55), 0 25px 60px rgba(0, 0, 0, 0.9);
+  border-radius: 20px;
+  padding: 1.8rem 1.6rem;
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  animation: victoryCardDrop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.victory-trophy-badge {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: #0d1527;
+  background: linear-gradient(135deg, var(--gold-bright), #f59e0b);
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  box-shadow: 0 0 20px rgba(245, 183, 49, 0.6);
+}
+.victory-title {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 900;
+  font-style: italic;
+  color: #ffffff;
+  text-shadow: 0 0 25px rgba(245, 183, 49, 0.7);
+}
+.victory-winner-name {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #38bdf8;
+}
+.victory-subtext {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+.victory-actions {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+.victory-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 800;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.victory-btn-rematch {
+  background: linear-gradient(135deg, var(--gold-bright), #d97706);
+  border: 1px solid #fef08a;
+  color: #0b1120;
+  box-shadow: 0 0 20px rgba(245, 183, 49, 0.4);
+}
+.victory-btn-rematch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(245, 183, 49, 0.7);
+}
+.victory-btn-close {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #cbd5e1;
+}
+@keyframes victoryFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes victoryCardDrop {
+  0% { transform: scale(0.6) translateY(-40px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* ========================================================================= */
 /* 14. DESKTOP / PC & WIDESCREEN RESPONSIVE DUAL ARENA (SIDE-BY-SIDE)        */
 /* ========================================================================= */
 @media (min-width: 900px) {
@@ -2759,5 +3471,50 @@ body.duel-app-body {
   .rng-grid {
     grid-template-columns: 1fr 1fr;
     gap: 1.2rem;
+  }
+
+  /* Desktop Split Dual Field Layout (Vertical Split: P1 Left, P2 Right) */
+  .field-bg-container.dual-split-active .field-art-layer.field-art-p1 {
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    border-right: 2px solid rgba(16, 185, 129, 0.6);
+    border-top: none;
+  }
+
+  .field-bg-container.dual-split-active .field-art-layer.field-art-p2 {
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    border-left: 2px solid rgba(56, 189, 248, 0.6);
+    border-bottom: none;
+  }
+
+  .field-split-seam {
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    transform: translateX(-50%);
+  }
+
+  .field-split-seam .seam-line {
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(180deg, transparent, #34d399, #f5b731, #38bdf8, #34d399, transparent);
+  }
+
+  .field-split-seam .seam-glow {
+    top: 0;
+    left: -12px;
+    width: 26px;
+    height: 100%;
+  }
+
+  .active-field-hud-capsule {
+    max-width: 280px;
+    gap: 0.4rem;
   }
 }

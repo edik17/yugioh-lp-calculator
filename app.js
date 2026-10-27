@@ -164,6 +164,96 @@ const ARCHETYPES = {
   }
 };
 
+// ============================================================================
+// 1B. ICONIC ACE MONSTERS CATALOG (FOR 3D PERSPECTIVE ANIME SUMMON CUT-INS)
+// ============================================================================
+const ACE_MONSTERS = {
+  monarch: {
+    name: 'Erebus il Monarca Sotterraneo',
+    jpName: '冥帝エレボス',
+    archetypeId: 'monarch',
+    cardImg: './images/monsters/monarch.jpg',
+    level: 8,
+    attribute: 'OSCURITÀ',
+    type: 'Zombie / Effetto',
+    atk: 2800,
+    def: 1000,
+    summonChant: 'Dall\'abisso delle anime dimenticate, erigiti sovrano assoluto! Evocazione tramite Tributo: Erebus il Monarca Sotterraneo!',
+    accentColor: '#f59e0b',
+    glowColor: 'rgba(245, 183, 49, 0.7)'
+  },
+  crystalbeast: {
+    name: 'Drago Arcobaleno',
+    jpName: '究極宝玉神 レインボー・ドラゴン',
+    archetypeId: 'crystalbeast',
+    cardImg: './images/monsters/rainbowdragon.jpg',
+    level: 10,
+    attribute: 'LUCE',
+    type: 'Drago / Effetto',
+    atk: 4000,
+    def: 0,
+    summonChant: 'Trascendi i confini dello spettro visibile, maestoso guardiano dell\'arcobaleno! Vieni a me, Drago Arcobaleno!',
+    accentColor: '#06b6d4',
+    glowColor: 'rgba(6, 182, 212, 0.75)'
+  },
+  blueeyes: {
+    name: 'Drago Bianco Occhi Blu',
+    jpName: '青眼の白龍 (Blue-Eyes White Dragon)',
+    archetypeId: 'blueeyes',
+    cardImg: './images/monsters/blueeyes.jpg',
+    level: 8,
+    attribute: 'LUCE',
+    type: 'Drago / Normale',
+    atk: 3000,
+    def: 2500,
+    summonChant: 'Spiega le tue possenti ali d\'argento e annienta ogni cosa con il tuo Raggio di Luce Bianco! Scendi in campo, Drago Bianco Occhi Blu!',
+    accentColor: '#38bdf8',
+    glowColor: 'rgba(56, 189, 248, 0.8)'
+  },
+  darkmagician: {
+    name: 'Mago Nero',
+    jpName: 'ブラック・マジシャン (Dark Magician)',
+    archetypeId: 'darkmagician',
+    cardImg: './images/monsters/darkmagician.jpg',
+    level: 7,
+    attribute: 'OSCURITÀ',
+    type: 'Incantatore / Normale',
+    atk: 2500,
+    def: 2100,
+    summonChant: 'Il supremo maestro delle arti oscure in termini di attacco e difesa! Mostrati a noi, Mago Nero!',
+    accentColor: '#a855f7',
+    glowColor: 'rgba(168, 85, 247, 0.8)'
+  },
+  cyber: {
+    name: 'Cyber Drago Finale',
+    jpName: 'サイバー・エンド・ドラゴン (Cyber End Dragon)',
+    archetypeId: 'cyber',
+    cardImg: './images/monsters/cyberend.jpg',
+    level: 10,
+    attribute: 'LUCE',
+    type: 'Macchina / Fusione',
+    atk: 4000,
+    def: 2800,
+    summonChant: 'Tre colossi d\'acciaio si fondono in un\'unica entità di pura distruzione cibernetica! Evocazione per Fusione: Cyber Drago Finale!',
+    accentColor: '#06b6d4',
+    glowColor: 'rgba(6, 182, 212, 0.8)'
+  },
+  hero: {
+    name: 'Neos EROE Elementale',
+    jpName: 'E・HERO ネオス (Elemental HERO Neos)',
+    archetypeId: 'hero',
+    cardImg: './images/monsters/neos.jpg',
+    level: 7,
+    attribute: 'LUCE',
+    type: 'Guerriero / Normale',
+    atk: 2500,
+    def: 2000,
+    summonChant: 'Dalle profondità dello spazio stellare giunge il guerriero della giustizia cosmica! Evocazione Speciale: Neos EROE Elementale!',
+    accentColor: '#ef4444',
+    glowColor: 'rgba(239, 68, 68, 0.8)'
+  }
+};
+
 // Default Initial State (Face-to-Face Tabletop Mode enabled by default)
 function createDefaultState(startLp = 8000) {
   return {
@@ -180,6 +270,10 @@ function createDefaultState(startLp = 8000) {
     fieldSpellActive: false,
     activeField: 'monarch',
     fieldActivator: 1,
+    playerFields: {
+      1: null,
+      2: null
+    },
     particlesEnabled: true,
     players: {
       1: {
@@ -670,6 +764,12 @@ function loadState() {
         if (parsed.fieldSpellActive === undefined) parsed.fieldSpellActive = false;
         if (!parsed.activeField || !ARCHETYPES[parsed.activeField]) parsed.activeField = 'monarch';
         if (parsed.fieldActivator === undefined) parsed.fieldActivator = 1;
+        if (!parsed.playerFields) {
+          parsed.playerFields = { 1: null, 2: null };
+          if (parsed.fieldSpellActive && parsed.activeField) {
+            parsed.playerFields[parsed.fieldActivator || 1] = parsed.activeField;
+          }
+        }
         if (parsed.particlesEnabled === undefined) parsed.particlesEnabled = true;
         if (parsed.players[1] && !parsed.players[1].archetype) parsed.players[1].archetype = 'monarch';
         if (parsed.players[2] && !parsed.players[2].archetype) parsed.players[2].archetype = 'crystalbeast';
@@ -767,6 +867,9 @@ function animateLpDigits(playerNum, fromVal, toVal) {
       if (toVal === 0) {
         playAnimeLpZero();
         showToast(`💥 ${state.players[playerNum].name} è sceso a 0 LP!`);
+        setTimeout(() => {
+          triggerAnimeDuelFinished(playerNum === 1 ? 2 : 1, playerNum);
+        }, 350);
       } else {
         playLpStopChime(isHeal);
         if (!isHeal && toVal <= 2000) {
@@ -786,6 +889,16 @@ function updateLpVisualState(playerNum, lpVal) {
 
   displayEl.classList.toggle('lp-critical', lpVal > 0 && lpVal <= 2000);
   displayEl.classList.toggle('lp-zero', lpVal === 0);
+
+  const visorEl = document.getElementById(`p${playerNum}LpVisor`);
+  if (visorEl) {
+    visorEl.classList.toggle('lp-critical', lpVal > 0 && lpVal <= 2000);
+  }
+
+  const cardEl = document.getElementById(`playerCard${playerNum}`);
+  if (cardEl) {
+    cardEl.classList.toggle('is-defeated', lpVal === 0);
+  }
 
   const pct = Math.max(0, Math.min(100, (lpVal / state.startLp) * 100));
   barEl.style.width = `${pct}%`;
@@ -821,13 +934,22 @@ function applyLpChange(playerNum, newLp, labelText, reason = '', isHalfOp = fals
   // Trigger authentic Yu-Gi-Oh! Damage Impact Sound & Screen Flash
   if (diff < 0) {
     const dmgAmount = Math.abs(diff);
+    spawnAnimeCombatPop(playerNum, `${diff}`, true);
     if (isHalfOp) {
       playSlashHalfSfx();
+      triggerAnimeSlash(playerNum);
+      triggerAnimeSpeedlines(550);
       triggerScreenDamageEffect('electric', true);
     } else {
       playDamageImpactSfx(dmgAmount);
+      if (dmgAmount >= 1000) {
+        triggerAnimeSlash(playerNum);
+        triggerAnimeSpeedlines(520);
+      }
       triggerScreenDamageEffect('red', dmgAmount >= 1000);
     }
+  } else if (diff > 0) {
+    spawnAnimeCombatPop(playerNum, `+${diff}`, false);
   }
 
   // Visual flash & delta badge
@@ -1280,6 +1402,10 @@ function advanceTurn() {
   addLogEntry(0, `⏭ Inizia il Turno ${state.turn} (${state.players[state.activePlayer].name})`);
   showToast(`Turno ${state.turn} — Tocca a ${state.players[state.activePlayer].name}`);
   playOriginalSound('nextturn') || playUiBeep(920, 0.07);
+
+  showAnimeTurnCutin(state.turn, state.activePlayer);
+  triggerAnimeSpeedlines(480);
+
   saveState();
 }
 
@@ -1390,24 +1516,70 @@ function renderMatchStars() {
 }
 
 // ============================================================================
-// 10. FIELD SPELL & DYNAMIC ANIMATED BACKGROUND SYSTEM
+// 10. FIELD SPELL & DYNAMIC ANIMATED BACKGROUND SYSTEM (WITH DUAL SPLIT FIELDS)
 // ============================================================================
 function renderField() {
-  const currentArch = ARCHETYPES[state.activeField] || ARCHETYPES.monarch;
-  const isFieldActive = Boolean(state.fieldSpellActive);
+  if (!state.playerFields) {
+    state.playerFields = { 1: null, 2: null };
+    if (state.fieldSpellActive && state.activeField) {
+      state.playerFields[state.fieldActivator || 1] = state.activeField;
+    }
+  }
 
-  // 1. Container & Artwork Layer
+  const p1FieldId = state.playerFields[1];
+  const p2FieldId = state.playerFields[2];
+  const p1Arch = p1FieldId ? ARCHETYPES[p1FieldId] : null;
+  const p2Arch = p2FieldId ? ARCHETYPES[p2FieldId] : null;
+
+  const isDual = Boolean(p1Arch && p2Arch);
+  const isFieldActive = Boolean(p1Arch || p2Arch);
+  state.fieldSpellActive = isFieldActive;
+
+  const currentArch = ARCHETYPES[state.activeField] || p1Arch || p2Arch || ARCHETYPES.monarch;
+
+  // 1. Container & Artwork Layers (Supports Split Dual Fields P1 & P2!)
   const bgContainer = document.getElementById('fieldBgContainer');
   const artLayer = document.getElementById('fieldArtLayer');
+  const artLayerP1 = document.getElementById('fieldArtLayerP1');
+  const artLayerP2 = document.getElementById('fieldArtLayerP2');
+  const splitSeam = document.getElementById('fieldSplitSeam');
+
   if (bgContainer) {
     bgContainer.classList.toggle('field-spell-active', isFieldActive);
+    bgContainer.classList.toggle('dual-split-active', isDual);
   }
-  if (artLayer) {
-    if (isFieldActive && currentArch.artUrl) {
-      artLayer.style.backgroundImage = `url('${currentArch.artUrl}')`;
-    } else {
+
+  if (isDual) {
+    // Both active: hide single layer, show split P1 & P2 layers with center seam
+    if (artLayer) artLayer.style.display = 'none';
+    if (artLayerP1) {
+      artLayerP1.style.display = 'block';
+      artLayerP1.style.backgroundImage = `url('${p1Arch.artUrl}')`;
+    }
+    if (artLayerP2) {
+      artLayerP2.style.display = 'block';
+      artLayerP2.style.backgroundImage = `url('${p2Arch.artUrl}')`;
+    }
+    if (splitSeam) splitSeam.style.display = 'block';
+  } else if (isFieldActive) {
+    // Only 1 player active: full field
+    const activeSingle = p1Arch || p2Arch;
+    if (artLayer) {
+      artLayer.style.display = 'block';
+      artLayer.style.backgroundImage = `url('${activeSingle.artUrl}')`;
+    }
+    if (artLayerP1) artLayerP1.style.display = 'none';
+    if (artLayerP2) artLayerP2.style.display = 'none';
+    if (splitSeam) splitSeam.style.display = 'none';
+  } else {
+    // No field active
+    if (artLayer) {
+      artLayer.style.display = 'block';
       artLayer.style.backgroundImage = 'none';
     }
+    if (artLayerP1) artLayerP1.style.display = 'none';
+    if (artLayerP2) artLayerP2.style.display = 'none';
+    if (splitSeam) splitSeam.style.display = 'none';
   }
 
   // 2. Arena Frosted Tint & Colors
@@ -1430,57 +1602,76 @@ function renderField() {
   if (fieldBtn) {
     fieldBtn.classList.toggle('active-field-spell', isFieldActive);
     if (fieldIcon) {
-      fieldIcon.textContent = isFieldActive ? currentArch.icon : '🏟️';
+      fieldIcon.textContent = isDual ? '⚔️' : (isFieldActive ? currentArch.icon : '🏟️');
     }
     if (fieldLbl) {
-      fieldLbl.textContent = isFieldActive ? currentArch.name.split(' ')[0] : 'Terreno';
+      fieldLbl.textContent = isDual ? 'Dual Campo' : (isFieldActive ? currentArch.name.split(' ')[0] : 'Terreno');
     }
   }
 
   // 4. Player Cards Archetype Badges & Field Spell Aura
-  const p1Arch = ARCHETYPES[state.players[1]?.archetype] || ARCHETYPES.monarch;
-  const p2Arch = ARCHETYPES[state.players[2]?.archetype] || ARCHETYPES.crystalbeast;
+  const p1PlayerArch = ARCHETYPES[state.players[1]?.archetype] || ARCHETYPES.monarch;
+  const p2PlayerArch = ARCHETYPES[state.players[2]?.archetype] || ARCHETYPES.crystalbeast;
 
   const p1Icon = document.getElementById('p1ArchetypeIcon');
   const p1Name = document.getElementById('p1ArchetypeName');
-  const p1Btn = document.getElementById('p1ArchetypeBtn');
-  if (p1Icon) p1Icon.textContent = p1Arch.icon;
-  if (p1Name) p1Name.textContent = p1Arch.name;
-  if (p1Btn) {
-    p1Btn.classList.toggle('field-controller-tag', isFieldActive && state.fieldActivator === 1);
+  const p1CardBtn = document.getElementById('p1ArchetypeBtn');
+  if (p1Icon) p1Icon.textContent = p1PlayerArch.icon;
+  if (p1Name) p1Name.textContent = p1PlayerArch.name;
+  if (p1CardBtn) {
+    p1CardBtn.classList.toggle('field-controller-tag', Boolean(p1Arch));
   }
 
   const p2Icon = document.getElementById('p2ArchetypeIcon');
   const p2Name = document.getElementById('p2ArchetypeName');
-  const p2Btn = document.getElementById('p2ArchetypeBtn');
-  if (p2Icon) p2Icon.textContent = p2Arch.icon;
-  if (p2Name) p2Name.textContent = p2Arch.name;
-  if (p2Btn) {
-    p2Btn.classList.toggle('field-controller-tag', isFieldActive && state.fieldActivator === 2);
+  const p2CardBtn = document.getElementById('p2ArchetypeBtn');
+  if (p2Icon) p2Icon.textContent = p2PlayerArch.icon;
+  if (p2Name) p2Name.textContent = p2PlayerArch.name;
+  if (p2CardBtn) {
+    p2CardBtn.classList.toggle('field-controller-tag', Boolean(p2Arch));
   }
 
-  // 5. Persistent Arena Active Field Spell HUD Capsule
+  // 5. Persistent Arena Active Field Spell HUD Capsule (Supports Dual Split Fields!)
   const hudCapsule = document.getElementById('activeFieldHudCapsule');
-  const hudIcon = document.getElementById('hudFieldIcon');
-  const hudName = document.getElementById('hudFieldName');
-  const hudActivator = document.getElementById('hudFieldActivator');
+  const clusterP1 = document.getElementById('fieldClusterP1');
+  const clusterP2 = document.getElementById('fieldClusterP2');
 
   if (hudCapsule) {
     hudCapsule.style.display = isFieldActive ? 'flex' : 'none';
-    if (isFieldActive) {
-      if (hudIcon) hudIcon.textContent = currentArch.icon;
-      const actNum = state.fieldActivator || 1;
-      const actName = state.players[actNum]?.name || `G${actNum}`;
-      if (hudActivator) {
-        hudActivator.textContent = `P${actNum}`;
-        hudActivator.title = `Controllore Terreno: P${actNum} (${actName})`;
-      }
 
-      if (currentArch.id === 'crystalbeast') {
-        const gems = state.players[actNum]?.crystalGems || 0;
-        if (hudName) hudName.textContent = `Rovine Arcobaleno (${gems}/5 💎)`;
-      } else {
-        if (hudName) hudName.textContent = currentArch.fieldSpellName;
+    // P1 Cluster
+    if (clusterP1) {
+      clusterP1.style.display = p1Arch ? 'flex' : 'none';
+      if (p1Arch) {
+        const iconEl = document.getElementById('hudFieldIcon');
+        const nameEl = document.getElementById('hudFieldName');
+        if (iconEl) iconEl.textContent = p1Arch.icon;
+        if (nameEl) {
+          if (p1Arch.id === 'crystalbeast') {
+            const gems = state.players[1]?.crystalGems || 0;
+            nameEl.textContent = `Rovine Arcobaleno (${gems}/5 💎)`;
+          } else {
+            nameEl.textContent = p1Arch.fieldSpellName;
+          }
+        }
+      }
+    }
+
+    // P2 Cluster
+    if (clusterP2) {
+      clusterP2.style.display = p2Arch ? 'flex' : 'none';
+      if (p2Arch) {
+        const iconEl2 = document.getElementById('hudFieldIconP2');
+        const nameEl2 = document.getElementById('hudFieldNameP2');
+        if (iconEl2) iconEl2.textContent = p2Arch.icon;
+        if (nameEl2) {
+          if (p2Arch.id === 'crystalbeast') {
+            const gems = state.players[2]?.crystalGems || 0;
+            nameEl2.textContent = `Rovine Arcobaleno (${gems}/5 💎)`;
+          } else {
+            nameEl2.textContent = p2Arch.fieldSpellName;
+          }
+        }
       }
     }
   }
@@ -1491,7 +1682,8 @@ function renderField() {
     if (!tracker) return;
 
     const pArch = state.players[pNum]?.archetype;
-    const isCb = pArch === 'crystalbeast' || (isFieldActive && state.activeField === 'crystalbeast' && state.fieldActivator === pNum);
+    const hasRuins = state.playerFields[pNum] === 'crystalbeast';
+    const isCb = pArch === 'crystalbeast' || hasRuins;
 
     tracker.style.display = isCb ? 'flex' : 'none';
     if (isCb) {
@@ -1533,7 +1725,10 @@ function renderField() {
     statusThumb.src = currentArch.artUrl || './icon.svg';
   }
   if (statusPill) {
-    if (isFieldActive) {
+    if (isDual) {
+      statusPill.textContent = '⚡ CAMPO DUAL DIVISO (Entrambi i Duellanti Attivi)';
+      statusPill.classList.add('pill-active');
+    } else if (isFieldActive) {
       statusPill.textContent = `✨ ATTIVA SUL CAMPO (${state.players[state.fieldActivator || 1]?.name})`;
       statusPill.classList.add('pill-active');
     } else {
@@ -1563,6 +1758,8 @@ function renderField() {
 
 function activateFieldSpell(archetypeKey, activatorPlayer = 1, showBanner = true) {
   const arch = ARCHETYPES[archetypeKey] || ARCHETYPES.monarch;
+  if (!state.playerFields) state.playerFields = { 1: null, 2: null };
+  state.playerFields[activatorPlayer] = arch.id;
   state.fieldSpellActive = true;
   state.activeField = arch.id;
   state.fieldActivator = activatorPlayer;
@@ -1578,6 +1775,10 @@ function activateFieldSpell(archetypeKey, activatorPlayer = 1, showBanner = true
   if (arch.id === 'crystalbeast') {
     playCrystalChime(5);
   }
+
+  // Trigger Solid Vision Magic Circle & Speedlines
+  triggerFieldSummonCircle();
+  triggerAnimeSpeedlines(580);
 
   // Show Anime Activation Banner
   if (showBanner) {
@@ -1623,22 +1824,44 @@ function activateFieldSpell(archetypeKey, activatorPlayer = 1, showBanner = true
   }
 
   const actPlayerName = state.players[activatorPlayer]?.name || `Giocatore ${activatorPlayer}`;
+  const isDual = Boolean(state.playerFields[1] && state.playerFields[2]);
+
   addLogEntry(activatorPlayer, `🏟️ [MAGIA TERRENO] ${actPlayerName} ha attivato "${arch.fieldSpellName}"!`);
-  showToast(`✨ Magia Terreno: ${arch.fieldSpellName} Attivata!`);
+  if (isDual) {
+    showToast(`⚡ CAMPO DUAL DIVISO! Ciascun duellante controlla il proprio Terreno!`);
+  } else {
+    showToast(`✨ Magia Terreno: ${arch.fieldSpellName} Attivata!`);
+  }
 
   renderField();
   saveState();
 }
 
-function deactivateFieldSpell() {
-  state.fieldSpellActive = false;
+function deactivateFieldSpell(playerNum = null) {
+  if (!state.playerFields) state.playerFields = { 1: null, 2: null };
+
+  if (playerNum === 1 || playerNum === 2) {
+    state.playerFields[playerNum] = null;
+    const other = playerNum === 1 ? 2 : 1;
+    if (state.playerFields[other]) {
+      state.activeField = state.playerFields[other];
+      state.fieldActivator = other;
+      state.fieldSpellActive = true;
+      showToast(`💥 Magia Terreno di P${playerNum} rimossa!`);
+    } else {
+      state.fieldSpellActive = false;
+      showToast(`💥 Magia Terreno rimossa dal Campo`);
+    }
+  } else {
+    state.playerFields = { 1: null, 2: null };
+    state.fieldSpellActive = false;
+    showToast(`💥 Magie Terreno rimosse dal Campo`);
+  }
+
   playUiBeep(440, 0.08);
 
   const inspectorDlg = document.getElementById('fieldInspectorDialog');
   if (inspectorDlg && inspectorDlg.open) closeTopLayer(inspectorDlg);
-
-  addLogEntry(0, `💥 Magia Terreno Rimossa / Distrutta dal Terreno`);
-  showToast(`💥 Magia Terreno Rimossa dal Campo`);
 
   renderField();
   saveState();
@@ -1673,13 +1896,18 @@ function renderArchetypesSelectionGrid() {
     .join('');
 }
 
-function openFieldInspector() {
-  if (!state.fieldSpellActive) {
-    openFieldDialog(state.fieldActivator || 1);
+function openFieldInspector(playerTarget = null) {
+  let actNum = playerTarget;
+  if (!actNum) {
+    actNum = state.fieldActivator || 1;
+  }
+  const fieldId = state.playerFields?.[actNum] || state.activeField;
+  if (!fieldId || !ARCHETYPES[fieldId]) {
+    openFieldDialog(actNum);
     return;
   }
-  const currentArch = ARCHETYPES[state.activeField] || ARCHETYPES.monarch;
-  const actNum = state.fieldActivator || 1;
+
+  const currentArch = ARCHETYPES[fieldId];
   const actName = state.players[actNum]?.name || `Giocatore ${actNum}`;
 
   const img = document.getElementById('inspectorCardImg');
@@ -2172,6 +2400,159 @@ function escapeHtml(str) {
 }
 
 // ============================================================================
+// 10B. ORIGINAL ANIME IMMERSION FX, 3D ACE SUMMONS & BATTLE OVERLAYS
+// ============================================================================
+
+// 1. Action Manga Speedlines Burst
+function triggerAnimeSpeedlines(durationMs = 520) {
+  const el = document.getElementById('animeSpeedLines');
+  if (!el) return;
+  el.classList.remove('active');
+  void el.offsetWidth;
+  el.classList.add('active');
+  setTimeout(() => el.classList.remove('active'), durationMs);
+}
+
+// 2. Floating Combat Damage / Heal Pop Numbers
+function spawnAnimeCombatPop(playerNum, text, isDmg = true) {
+  const container = document.getElementById(`p${playerNum}DmgPop`);
+  if (!container) return;
+  const el = document.createElement('div');
+  el.className = `combat-pop-item ${isDmg ? 'pop-dmg' : 'pop-heal'}`;
+  el.textContent = text;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+
+// 3. Anime Energy Slash Beam
+function triggerAnimeSlash(playerNum) {
+  const container = document.getElementById(`p${playerNum}SlashContainer`);
+  if (container) {
+    container.classList.remove('slashing');
+    void container.offsetWidth;
+    container.classList.add('slashing');
+    setTimeout(() => container.classList.remove('slashing'), 420);
+  }
+}
+
+// 4. Anime Turn Cut-In Banner ("ORE NO TURN! DRAW!")
+function showAnimeTurnCutin(turnNum, activePlayerNum) {
+  const cutin = document.getElementById('animeTurnCutin');
+  const turnNumEl = document.getElementById('cutinTurnNum');
+  const playerEl = document.getElementById('cutinPlayerName');
+  if (!cutin) return;
+
+  const actPlayerName = state.players[activePlayerNum]?.name || `Giocatore ${activePlayerNum}`;
+  if (turnNumEl) turnNumEl.textContent = turnNum;
+  if (playerEl) playerEl.textContent = `⚡ IL MIO TURNO! PESCO! — ${actPlayerName} (P${activePlayerNum})`;
+
+  cutin.style.display = 'flex';
+  setTimeout(() => { cutin.style.display = 'none'; }, 1350);
+}
+
+// 5. Solid Vision Magic Summoning Circle
+function triggerFieldSummonCircle() {
+  const circle = document.getElementById('fieldMagicCircle');
+  if (!circle) return;
+  circle.classList.remove('summoning');
+  void circle.offsetWidth;
+  circle.classList.add('summoning');
+  setTimeout(() => circle.classList.remove('summoning'), 2400);
+}
+
+// 6. 3D Ace Monster Summon Cut-In
+function triggerAnimeSummon3D(archetypeKey, playerNum = 1) {
+  const pArch = archetypeKey || state.players[playerNum]?.archetype || 'blueeyes';
+  const monster = ACE_MONSTERS[pArch] || ACE_MONSTERS.blueeyes;
+  const pName = state.players[playerNum]?.name || `Giocatore ${playerNum}`;
+
+  playOriginalSound('summon') || playUiBeep(880, 0.15);
+  triggerAnimeSpeedlines(800);
+
+  const modal = document.getElementById('animeSummonModal');
+  const cardImg = document.getElementById('summonMonsterImg');
+  const jpBadge = document.getElementById('summonJpName');
+  const starsEl = document.getElementById('summonStars');
+  const nameEl = document.getElementById('summonMonsterName');
+  const atkEl = document.getElementById('summonAtkVal');
+  const defEl = document.getElementById('summonDefVal');
+  const chantEl = document.getElementById('summonChant');
+  const pillEl = document.getElementById('summonerPill');
+  const cardWrap = document.getElementById('summonCard3dWrap');
+
+  if (cardImg) cardImg.src = monster.cardImg;
+  if (jpBadge) jpBadge.textContent = monster.jpName;
+  if (starsEl) starsEl.textContent = '★'.repeat(monster.level);
+  if (nameEl) nameEl.textContent = monster.name;
+  if (chantEl) chantEl.textContent = `"${monster.summonChant}"`;
+  if (pillEl) pillEl.textContent = `Evocato da: ${pName} (P${playerNum})`;
+
+  if (atkEl && defEl) {
+    atkEl.textContent = '0';
+    defEl.textContent = '0';
+    let start = performance.now();
+    let duration = 750;
+    function countStats(now) {
+      let progress = Math.min((now - start) / duration, 1);
+      let curAtk = Math.round(monster.atk * progress);
+      let curDef = Math.round(monster.def * progress);
+      atkEl.textContent = curAtk;
+      defEl.textContent = curDef;
+      if (progress < 1) requestAnimationFrame(countStats);
+    }
+    requestAnimationFrame(countStats);
+  }
+
+  if (modal) {
+    modal.style.display = 'flex';
+    if (cardWrap) {
+      cardWrap.style.animation = 'none';
+      void cardWrap.offsetWidth;
+      cardWrap.style.animation = 'summonCard3dBurst 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+    }
+
+    let dismissTimer = null;
+    const dismissSummon = () => {
+      if (dismissTimer) clearTimeout(dismissTimer);
+      modal.style.display = 'none';
+      modal.onclick = null;
+    };
+    modal.onclick = dismissSummon;
+    dismissTimer = setTimeout(dismissSummon, 3800);
+  }
+
+  addLogEntry(playerNum, `⚡ [EVOCAZIONE ASSO] ${pName} ha evocato "${monster.name}" (ATK: ${monster.atk} / DEF: ${monster.def})!`);
+  showToast(`⚡ ${pName} evoca ${monster.name}!`);
+}
+
+// 7. Fullscreen Anime 0 LP Defeat & Victory Overlay
+function triggerAnimeDuelFinished(winnerNum, loserNum) {
+  const modal = document.getElementById('animeVictoryModal');
+  const titleEl = document.getElementById('victoryWinnerTitle');
+  const nameEl = document.getElementById('victoryWinnerName');
+  const reasonEl = document.getElementById('victoryReason');
+
+  const winnerName = state.players[winnerNum]?.name || `Giocatore ${winnerNum}`;
+  const loserName = state.players[loserNum]?.name || `Giocatore ${loserNum}`;
+
+  if (titleEl) titleEl.textContent = '🏆 VITTORIA DEL DUELLO! 🏆';
+  if (nameEl) nameEl.textContent = `${winnerName} Trionfa!`;
+  if (reasonEl) reasonEl.textContent = `${loserName} è stato ridotto a 0 Life Points!`;
+
+  const overlay = document.getElementById('damageFlashOverlay');
+  if (overlay) {
+    overlay.classList.remove('flash-red', 'flash-electric');
+    overlay.classList.add('flash-electric');
+  }
+
+  triggerAnimeSpeedlines(1200);
+
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+}
+
+// ============================================================================
 // 11. EVENT LISTENERS INITIALIZATION
 // ============================================================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -2270,24 +2651,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Persistent Field HUD Capsule & Inspector Wiring
+  // Persistent Field HUD Capsule & Inspector Wiring (Dual Split Fields P1 & P2)
   const openInspectorBtn = document.getElementById('openActiveFieldInspectorBtn');
   if (openInspectorBtn) {
-    openInspectorBtn.addEventListener('click', openFieldInspector);
+    openInspectorBtn.addEventListener('click', () => openFieldInspector(1));
+  }
+  const openInspectorBtnP2 = document.getElementById('openActiveFieldInspectorBtnP2');
+  if (openInspectorBtnP2) {
+    openInspectorBtnP2.addEventListener('click', () => openFieldInspector(2));
   }
 
   const hudQuickRemove = document.getElementById('hudFieldQuickRemoveBtn');
   if (hudQuickRemove) {
     hudQuickRemove.addEventListener('click', (e) => {
       e.stopPropagation();
-      deactivateFieldSpell();
+      deactivateFieldSpell(1);
+    });
+  }
+  const hudQuickRemoveP2 = document.getElementById('hudFieldQuickRemoveBtnP2');
+  if (hudQuickRemoveP2) {
+    hudQuickRemoveP2.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deactivateFieldSpell(2);
     });
   }
 
   const inspectorDestroy = document.getElementById('inspectorDestroyBtn');
   if (inspectorDestroy) {
     inspectorDestroy.addEventListener('click', () => {
-      deactivateFieldSpell();
+      deactivateFieldSpell(state.fieldActivator || 1);
     });
   }
 
@@ -2297,6 +2689,37 @@ document.addEventListener('DOMContentLoaded', () => {
       const inspDlg = document.getElementById('fieldInspectorDialog');
       if (inspDlg) closeTopLayer(inspDlg);
       openFieldDialog(state.fieldActivator || 1);
+    });
+  }
+
+  // 3D Ace Monster Summon Buttons
+  const p1SummonBtn = document.getElementById('p1SummonAceBtn');
+  if (p1SummonBtn) {
+    p1SummonBtn.addEventListener('click', () => {
+      triggerAnimeSummon3D(state.players[1]?.archetype, 1);
+    });
+  }
+  const p2SummonBtn = document.getElementById('p2SummonAceBtn');
+  if (p2SummonBtn) {
+    p2SummonBtn.addEventListener('click', () => {
+      triggerAnimeSummon3D(state.players[2]?.archetype, 2);
+    });
+  }
+
+  // Victory Overlay Actions
+  const victoryRematch = document.getElementById('victoryRematchBtn');
+  if (victoryRematch) {
+    victoryRematch.addEventListener('click', () => {
+      const modal = document.getElementById('animeVictoryModal');
+      if (modal) modal.style.display = 'none';
+      resetDuel(state.startLp);
+    });
+  }
+  const victoryClose = document.getElementById('victoryCloseBtn');
+  if (victoryClose) {
+    victoryClose.addEventListener('click', () => {
+      const modal = document.getElementById('animeVictoryModal');
+      if (modal) modal.style.display = 'none';
     });
   }
 
@@ -2799,9 +3222,34 @@ document.addEventListener('DOMContentLoaded', () => {
     state.fieldSpellActive = true;
     state.activeField = 'crystalbeast';
     state.fieldActivator = 1;
+    state.playerFields = { 1: 'crystalbeast', 2: null };
     state.players[1].crystalGems = 3;
     state.players[2].crystalGems = 2;
     renderField();
+  } else if (urlParams.get('test') === 'dual') {
+    state.fieldSpellActive = true;
+    state.playerFields = { 1: 'monarch', 2: 'crystalbeast' };
+    state.activeField = 'monarch';
+    state.fieldActivator = 1;
+    state.players[1].crystalGems = 3;
+    state.players[2].crystalGems = 2;
+    renderField();
+  } else if (urlParams.get('test') === 'summon') {
+    renderField();
+    setTimeout(() => {
+      triggerAnimeSummon3D('blueeyes', 1);
+    }, 150);
+  } else if (urlParams.get('test') === 'turn') {
+    renderField();
+    setTimeout(() => {
+      showAnimeTurnCutin(2, 1);
+      triggerAnimeSpeedlines(800);
+    }, 150);
+  } else if (urlParams.get('test') === 'victory') {
+    renderField();
+    setTimeout(() => {
+      triggerAnimeDuelFinished(1, 2);
+    }, 150);
   } else if (urlParams.get('test') === 'banner') {
     activateFieldSpell('crystalbeast', 1, true);
   } else if (urlParams.get('test') === 'inspector') {

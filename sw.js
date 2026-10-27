@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dueldisk-cache-v12';
+const CACHE_NAME = 'dueldisk-cache-v13';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -33,7 +33,13 @@ const ASSETS_TO_CACHE = [
   './images/fields/cyber.jpg',
   './images/fields/zombie.jpg',
   './images/fields/umi.jpg',
-  './images/fields/sanctuary.jpg'
+  './images/fields/sanctuary.jpg',
+  './images/monsters/blueeyes.jpg',
+  './images/monsters/darkmagician.jpg',
+  './images/monsters/rainbowdragon.jpg',
+  './images/monsters/cyberend.jpg',
+  './images/monsters/monarch.jpg',
+  './images/monsters/neos.jpg'
 ];
 
 self.addEventListener('install', (event) => {
