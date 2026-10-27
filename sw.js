@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dueldisk-cache-v11';
+const CACHE_NAME = 'dueldisk-cache-v12';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -20,6 +20,8 @@ const ASSETS_TO_CACHE = [
   './sounds/nextturn.mp3',
   './images/fields/monarch.jpg',
   './images/fields/monarch_card.jpg',
+  './images/fields/crystal.jpg',
+  './images/fields/crystal_card.jpg',
   './images/fields/blueeyes.jpg',
   './images/fields/blueeyes_card.jpg',
   './images/fields/darkmagician.jpg',

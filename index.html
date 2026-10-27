@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2.3" />
+  <link rel="stylesheet" href="styles.css?v=2.4" />
 </head>
 <body class="duel-app-body">
   <!-- DYNAMIC FIELD SPELL & ANIMATED BACKGROUND CONTAINER -->
@@ -31,14 +31,19 @@
   <div class="bg-glow bg-glow-p2" aria-hidden="true"></div>
   <div class="damage-flash-overlay" id="damageFlashOverlay" aria-hidden="true"></div>
 
-  <!-- FIELD SPELL ANIME ACTIVATION BANNER (HIDDEN INITIALLY TO PREVENT STALE CACHE FLASH) -->
-  <div class="field-activation-banner" id="fieldActivationBanner" aria-hidden="true" style="display: none;">
+  <!-- FIELD SPELL ANIME ACTIVATION BANNER (ENHANCED CINEMATIC CUT-IN) -->
+  <div class="field-activation-banner" id="fieldActivationBanner" aria-hidden="true" style="display: none;" role="dialog" aria-label="Attivazione Magia Terreno">
     <div class="field-activation-card-frame">
-      <div class="field-activation-header-badge">MAGIA TERRENO ATTIVATA</div>
+      <div class="field-activation-header-badge">
+        <span class="activation-magic-icon">魔</span> CARTA MAGIA TERRENO ATTIVATA
+      </div>
+      <div class="field-activation-activator-pill" id="bannerActivator">Attivata da: Giocatore 1</div>
       <div class="field-activation-img-box">
-        <img class="field-activation-card-img" id="bannerCardImg" src="./images/fields/monarch.jpg" alt="Carta Terreno" />
+        <img class="field-activation-card-img" id="bannerCardImg" src="./images/fields/monarch.jpg" alt="Carta Terreno Attivata" />
       </div>
       <div class="field-activation-card-title" id="bannerCardName">Dominio dei Veri Monarchi</div>
+      <div class="field-activation-card-desc" id="bannerCardDesc">Se non hai carte nell'Extra Deck, il tuo avversario non può Evocare Specialmente dall'Extra Deck...</div>
+      <div class="field-activation-dismiss-hint">Tocca per continuare</div>
     </div>
   </div>
 
@@ -81,6 +86,21 @@
         </div>
       </div>
 
+      <!-- Dedicated Crystal Beast Zone Tracker (Zone M&T) -->
+      <div class="crystal-beast-tracker" id="p2CrystalTracker" style="display: none;" aria-label="Zone Bestia Cristallo Giocatore 2">
+        <div class="cb-tracker-header">
+          <span class="cb-tracker-title">💎 ZONE CRISTALLO (M&amp;T)</span>
+          <span class="cb-tier-badge" id="p2CbTierBadge">0 Cristalli</span>
+        </div>
+        <div class="cb-gems-row" id="p2CbGemsRow">
+          <button type="button" class="cb-gem-btn" data-player="2" data-gem="1" title="1+ Cristalli: Rovine Indistruttibili">1 🛡️</button>
+          <button type="button" class="cb-gem-btn" data-player="2" data-gem="2" title="2+ Cristalli: Dimezza Danno">2 ⚔️</button>
+          <button type="button" class="cb-gem-btn" data-player="2" data-gem="3" title="3+ Cristalli: Annulla Magia/Trappola">3 🚫</button>
+          <button type="button" class="cb-gem-btn" data-player="2" data-gem="4" title="4+ Cristalli: Pesca 1 Carta">4 🃏</button>
+          <button type="button" class="cb-gem-btn" data-player="2" data-gem="5" title="5 Cristalli: Evocazione Speciale">5 ⚡</button>
+        </div>
+      </div>
+
       <!-- Active Mini Markers on Playmat -->
       <div class="card-mini-markers" id="p2CardMarkers" aria-label="Segnalini attivi Giocatore 2"></div>
 
@@ -102,6 +122,17 @@
     <!-- SLIM CENTER TACTICAL DIVIDER (ACCESSIBLE TO BOTH PLAYERS)         -->
     <!-- ================================================================== -->
     <div class="center-duel-bar-wrap">
+      <!-- Active Field Spell Floating Capsule (Visible whenever a Field Spell is active) -->
+      <div class="active-field-hud-capsule" id="activeFieldHudCapsule" style="display: none;">
+        <button type="button" class="field-hud-chip" id="openActiveFieldInspectorBtn" title="Magia Terreno attiva (Tocca per visualizzare dettagli carta e gestore)">
+          <span class="field-hud-spell-icon">魔</span>
+          <span class="field-hud-icon" id="hudFieldIcon">👑</span>
+          <span class="field-hud-name" id="hudFieldName">Dominio dei Veri Monarchi</span>
+          <span class="field-hud-activator-tag" id="hudFieldActivator">P1</span>
+        </button>
+        <button type="button" class="field-hud-quick-remove-btn" id="hudFieldQuickRemoveBtn" title="Rimuovi / Distruggi Magia Terreno" aria-label="Rimuovi Magia Terreno">✕</button>
+      </div>
+
       <nav class="center-duel-bar" id="centerDuelBar" aria-label="Console Tattica Centrale">
         <!-- Left: Round Timer & Turn -->
         <div class="cbar-cluster cbar-left">
@@ -204,6 +235,21 @@
         </div>
         <div class="lp-bar-track">
           <div class="lp-bar-fill" id="p1LpBar" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <!-- Dedicated Crystal Beast Zone Tracker (Zone M&T) -->
+      <div class="crystal-beast-tracker" id="p1CrystalTracker" style="display: none;" aria-label="Zone Bestia Cristallo Giocatore 1">
+        <div class="cb-tracker-header">
+          <span class="cb-tracker-title">💎 ZONE CRISTALLO (M&amp;T)</span>
+          <span class="cb-tier-badge" id="p1CbTierBadge">0 Cristalli</span>
+        </div>
+        <div class="cb-gems-row" id="p1CbGemsRow">
+          <button type="button" class="cb-gem-btn" data-player="1" data-gem="1" title="1+ Cristalli: Rovine Indistruttibili">1 🛡️</button>
+          <button type="button" class="cb-gem-btn" data-player="1" data-gem="2" title="2+ Cristalli: Dimezza Danno">2 ⚔️</button>
+          <button type="button" class="cb-gem-btn" data-player="1" data-gem="3" title="3+ Cristalli: Annulla Magia/Trappola">3 🚫</button>
+          <button type="button" class="cb-gem-btn" data-player="1" data-gem="4" title="4+ Cristalli: Pesca 1 Carta">4 🃏</button>
+          <button type="button" class="cb-gem-btn" data-player="1" data-gem="5" title="5 Cristalli: Evocazione Speciale">5 ⚡</button>
         </div>
       </div>
 
@@ -609,6 +655,10 @@
               <span class="pcard-icon">⚔️</span>
               <div><strong>Segnalino Bushido</strong><small>Portale dei Sei</small></div>
             </button>
+            <button class="preset-card" data-add-type="counter" data-name="Bestia Cristallo M&amp;T" data-icon="💎">
+              <span class="pcard-icon">💎</span>
+              <div><strong>Bestia Cristallo M&amp;T</strong><small>Rovine Arcobaleno (1-5)</small></div>
+            </button>
           </div>
           <div class="custom-marker-form">
             <input type="text" id="customCounterName" placeholder="Nome segnalino..." maxlength="28" />
@@ -725,6 +775,63 @@
   </dialog>
 
   <!-- ====================================================================== -->
+  <!-- MODAL 6B: ACTIVE FIELD SPELL INSPECTOR & DETAILS                       -->
+  <!-- ====================================================================== -->
+  <dialog class="duel-dialog wide-dialog" id="fieldInspectorDialog" closedby="any" aria-labelledby="fieldInspectorTitle">
+    <div class="dialog-inner">
+      <div class="dialog-header">
+        <h2 id="fieldInspectorTitle">
+          <span style="color: #34d399; font-size: 1.25rem; margin-right: 0.35rem;">魔</span>
+          <span>Dettagli Magia Terreno Attiva</span>
+        </h2>
+        <button class="dialog-close-btn" data-close-dialog="fieldInspectorDialog" aria-label="Chiudi finestra">✕</button>
+      </div>
+
+      <div class="inspector-card-preview">
+        <div class="inspector-img-box">
+          <img class="inspector-card-img" id="inspectorCardImg" src="./images/fields/monarch_card.jpg" alt="Carta Terreno Attiva" />
+        </div>
+        <div class="inspector-meta">
+          <div class="inspector-activator-badge" id="inspectorActivator">Controllore: Giocatore 1 (P1)</div>
+          <h3 class="inspector-card-title" id="inspectorCardTitle">Dominio dei Veri Monarchi</h3>
+          <p class="inspector-card-desc" id="inspectorCardDesc"></p>
+        </div>
+      </div>
+
+      <!-- Crystal Beast Specific Inspector Panel -->
+      <div class="inspector-cb-panel" id="inspectorCbPanel" style="display: none;">
+        <div class="cb-tracker-header">
+          <span class="cb-tracker-title">💎 CRISTALLI IN ZONA M&amp;T: <strong id="inspectorCbCount">0/5</strong></span>
+          <span class="cb-tier-badge" id="inspectorCbTier">Nessun Effetto Attivo</span>
+        </div>
+        <div class="cb-gems-row" id="inspectorCbGemsRow">
+          <button type="button" class="cb-gem-btn" data-player="activator" data-gem="1" title="1+ Cristalli: Rovine Indistruttibili">1 🛡️</button>
+          <button type="button" class="cb-gem-btn" data-player="activator" data-gem="2" title="2+ Cristalli: Dimezza Danno">2 ⚔️</button>
+          <button type="button" class="cb-gem-btn" data-player="activator" data-gem="3" title="3+ Cristalli: Annulla Magia/Trappola">3 🚫</button>
+          <button type="button" class="cb-gem-btn" data-player="activator" data-gem="4" title="4+ Cristalli: Pesca 1 Carta">4 🃏</button>
+          <button type="button" class="cb-gem-btn" data-player="activator" data-gem="5" title="5 Cristalli: Evocazione Speciale">5 ⚡</button>
+        </div>
+        <div class="cb-tiers-breakdown">
+          <div class="cb-tier-item" data-tier="1"><strong>Tier 1 (1+)</strong> Rovine Indistruttibili dagli effetti</div>
+          <div class="cb-tier-item" data-tier="2"><strong>Tier 2 (2+)</strong> 1x turno: Dimezza il danno da combattimento subìto</div>
+          <div class="cb-tier-item" data-tier="3"><strong>Tier 3 (3+)</strong> Manda 1 Cristallo al GY per annullare Magia/Trappola</div>
+          <div class="cb-tier-item" data-tier="4"><strong>Tier 4 (4+)</strong> 1x turno: Pesca 1 carta</div>
+          <div class="cb-tier-item" data-tier="5"><strong>Tier 5 (5)</strong> 1x turno: Evoca Specialmente 1 Bestia Cristallo da M&amp;T</div>
+        </div>
+      </div>
+
+      <div class="inspector-actions">
+        <button type="button" class="field-remove-btn" id="inspectorDestroyBtn" style="flex: 1;">
+          💥 Distruggi Terreno
+        </button>
+        <button type="button" class="secondary-btn" id="inspectorChangeFieldBtn" style="flex: 1;">
+          🔄 Gestisci / Cambia
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ====================================================================== -->
   <!-- MODAL 7: RESET CONFIRMATION DIALOG (PREVENTS ACCIDENTAL DATA LOSS)     -->
   <!-- ====================================================================== -->
   <dialog class="duel-dialog" id="resetConfirmDialog" closedby="any" aria-labelledby="resetConfirmTitle">
@@ -750,6 +857,6 @@
   <!-- TOAST NOTIFICATION -->
   <div class="duel-toast" id="duelToast" role="status" aria-live="polite"></div>
 
-  <script src="app.js?v=2.3"></script>
+  <script src="app.js?v=2.4"></script>
 </body>
 </html>

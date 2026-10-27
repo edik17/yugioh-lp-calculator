@@ -482,7 +482,9 @@ body.duel-app-body {
   position: relative;
   width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 0.2rem;
 }
 
 .cbar-scroll-indicator {
@@ -1671,62 +1673,95 @@ dialog#calcDialog.tabletop-p2 .dialog-inner {
 }
 
 /* ========================================================================= */
-/* 11. ANIME FIELD SPELL ACTIVATION BANNER                                   */
+/* 11. ANIME FIELD SPELL ACTIVATION BANNER (CINEMATIC CUT-IN)                */
 /* ========================================================================= */
 .field-activation-banner {
   position: fixed;
   inset: 0;
-  z-index: 120;
+  z-index: 150;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at center, rgba(16, 185, 129, 0.25) 0%, rgba(6, 9, 17, 0.88) 75%);
+  background: radial-gradient(circle at center, rgba(16, 185, 129, 0.35) 0%, rgba(6, 9, 17, 0.92) 80%);
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s;
+  backdrop-filter: blur(6px);
 }
 
 .field-activation-banner.show-banner {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .field-activation-card-frame {
-  background: rgba(10, 16, 28, 0.95);
+  background: linear-gradient(180deg, rgba(12, 22, 38, 0.98), rgba(7, 12, 22, 0.98));
   border: 2px solid #10b981;
-  border-radius: 16px;
-  padding: 1rem 1.4rem;
+  border-radius: 18px;
+  padding: 1.2rem 1.4rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.6rem;
-  box-shadow: 0 0 45px rgba(16, 185, 129, 0.6), inset 0 0 20px rgba(16, 185, 129, 0.2);
-  transform: scale(0.85);
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  max-width: 90vw;
+  gap: 0.65rem;
+  box-shadow: 0 0 55px rgba(16, 185, 129, 0.65), 0 10px 40px rgba(0, 0, 0, 0.9), inset 0 0 25px rgba(16, 185, 129, 0.2);
+  transform: scale(0.82) translateY(20px);
+  transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 92vw;
+  max-width: 440px;
 }
 
 .field-activation-banner.show-banner .field-activation-card-frame {
-  transform: scale(1);
+  transform: scale(1) translateY(0);
 }
 
 .field-activation-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   font-family: var(--font-display);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 900;
   letter-spacing: 0.12em;
   color: #34d399;
-  text-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
+  text-shadow: 0 0 14px rgba(16, 185, 129, 0.85);
+}
+
+.activation-magic-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #059669;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  box-shadow: 0 0 10px #10b981;
+}
+
+.field-activation-activator-pill {
+  font-family: var(--font-hud);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #e2e8f0;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
 }
 
 .field-activation-img-box {
-  width: 130px;
-  height: 130px;
-  border-radius: 10px;
+  width: 170px;
+  height: 170px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 2px solid rgba(16, 185, 129, 0.6);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+  border: 2px solid rgba(245, 183, 49, 0.8);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85), 0 0 20px rgba(16, 185, 129, 0.4);
 }
 
 .field-activation-card-img {
@@ -1737,11 +1772,322 @@ dialog#calcDialog.tabletop-p2 .dialog-inner {
 
 .field-activation-card-title {
   font-family: var(--font-display);
-  font-size: 1.12rem;
+  font-size: 1.18rem;
   font-weight: 900;
-  color: #f1f5f9;
+  color: #ffffff;
   text-align: center;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 16px rgba(245, 183, 49, 0.4);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9), 0 0 18px rgba(245, 183, 49, 0.5);
+  margin-top: 0.15rem;
+}
+
+.field-activation-card-desc {
+  font-size: 0.76rem;
+  color: #cbd5e1;
+  text-align: center;
+  line-height: 1.35;
+  background: rgba(6, 9, 17, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.45rem 0.65rem;
+  max-height: 72px;
+  overflow-y: auto;
+}
+
+.field-activation-dismiss-hint {
+  font-size: 0.7rem;
+  color: rgba(148, 163, 184, 0.7);
+  letter-spacing: 0.04em;
+  margin-top: 0.15rem;
+}
+
+/* ========================================================================= */
+/* PERSISTENT ARENA ACTIVE FIELD SPELL HUD CAPSULE                           */
+/* ========================================================================= */
+.active-field-hud-capsule {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.25rem;
+  z-index: 11;
+  animation: fieldCapsuleEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fieldCapsuleEnter {
+  from { opacity: 0; transform: translateY(-8px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.field-hud-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.32), rgba(6, 78, 59, 0.45));
+  border: 1px solid #10b981;
+  border-radius: 999px;
+  padding: 0.22rem 0.75rem 0.22rem 0.45rem;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s ease;
+  animation: fieldHudGlow 3s infinite ease-in-out;
+}
+
+@keyframes fieldHudGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); border-color: rgba(16, 185, 129, 0.6); }
+  50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.7); border-color: #34d399; }
+}
+
+.field-hud-chip:hover {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.48), rgba(6, 78, 59, 0.6));
+  transform: translateY(-1px);
+}
+
+.field-hud-spell-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #06121e;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.field-hud-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.field-hud-name {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  letter-spacing: 0.03em;
+  max-width: 175px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.field-hud-activator-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  color: #a7f3d0;
+}
+
+.field-hud-quick-remove-btn {
+  background: rgba(244, 63, 94, 0.18);
+  border: 1px solid rgba(244, 63, 94, 0.45);
+  color: #fda4af;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.field-hud-quick-remove-btn:hover {
+  background: #e11d48;
+  color: #ffffff;
+  border-color: #f43f5e;
+}
+
+/* ========================================================================= */
+/* DEDICATED CRYSTAL BEAST ZONE TRACKER                                      */
+/* ========================================================================= */
+.crystal-beast-tracker {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.14), rgba(168, 85, 247, 0.14));
+  border: 1px solid rgba(6, 182, 212, 0.45);
+  border-radius: 10px;
+  padding: 0.35rem 0.5rem;
+  margin: 0.3rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.18);
+}
+
+.cb-tracker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+
+.cb-tracker-title {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #38bdf8;
+}
+
+.cb-tier-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  background: rgba(6, 9, 17, 0.65);
+  border: 1px solid rgba(245, 183, 49, 0.3);
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 170px;
+}
+
+.cb-gems-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.3rem;
+}
+
+.cb-gem-btn {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  background: rgba(18, 26, 46, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 6px;
+  color: #94a3b8;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cb-gem-btn:hover {
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+.cb-gem-btn.active {
+  color: #ffffff;
+  border-color: #06b6d4;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.5), inset 0 0 6px rgba(6, 182, 212, 0.3);
+}
+
+.cb-gem-btn.active[data-gem="1"] { background: linear-gradient(135deg, rgba(244, 63, 94, 0.4), rgba(244, 63, 94, 0.8)); border-color: #f43f5e; box-shadow: 0 0 12px rgba(244, 63, 94, 0.6); }
+.cb-gem-btn.active[data-gem="2"] { background: linear-gradient(135deg, rgba(234, 179, 8, 0.4), rgba(234, 179, 8, 0.8)); border-color: #eab308; box-shadow: 0 0 12px rgba(234, 179, 8, 0.6); color: #000; }
+.cb-gem-btn.active[data-gem="3"] { background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(16, 185, 129, 0.8)); border-color: #10b981; box-shadow: 0 0 12px rgba(16, 185, 129, 0.6); }
+.cb-gem-btn.active[data-gem="4"] { background: linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(6, 182, 212, 0.8)); border-color: #06b6d4; box-shadow: 0 0 12px rgba(6, 182, 212, 0.6); }
+.cb-gem-btn.active[data-gem="5"] { background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(168, 85, 247, 0.8)); border-color: #8b5cf6; box-shadow: 0 0 14px rgba(139, 92, 246, 0.7); }
+
+/* ========================================================================= */
+/* FIELD INSPECTOR MODAL STYLES                                              */
+/* ========================================================================= */
+.inspector-card-preview {
+  display: flex;
+  gap: 0.85rem;
+  background: rgba(18, 26, 46, 0.85);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  border-radius: 12px;
+  padding: 0.75rem;
+  align-items: center;
+}
+
+.inspector-img-box {
+  width: 90px;
+  height: 120px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--gold);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+}
+
+.inspector-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.inspector-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.inspector-activator-badge {
+  font-family: var(--font-hud);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #34d399;
+  letter-spacing: 0.05em;
+}
+
+.inspector-card-title {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.inspector-card-desc {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+.inspector-cb-panel {
+  background: rgba(6, 182, 212, 0.08);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  border-radius: 10px;
+  padding: 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cb-tiers-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background: rgba(6, 9, 17, 0.6);
+  border-radius: 6px;
+  padding: 0.45rem;
+}
+
+.cb-tier-item {
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+}
+
+.cb-tier-item strong {
+  color: #38bdf8;
+  margin-right: 0.3rem;
+}
+
+.cb-tier-item.unlocked {
+  background: rgba(16, 185, 129, 0.18);
+  color: #a7f3d0;
+  font-weight: 700;
+}
+
+.inspector-actions {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: 0.35rem;
 }
 
 /* ========================================================================= */
@@ -2195,8 +2541,34 @@ body.duel-app-body {
     align-self: center;
     height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 0.45rem;
+  }
+
+  .active-field-hud-capsule {
+    width: auto;
+    max-width: 260px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    margin-bottom: 0;
+  }
+
+  .field-hud-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.28rem 0.65rem;
+    border-radius: 999px;
+  }
+
+  .field-hud-name {
+    max-width: 145px;
+    font-size: 0.72rem;
   }
 
   .center-duel-bar {

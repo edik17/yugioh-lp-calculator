@@ -22,6 +22,20 @@ const ARCHETYPES = {
     glowColor: 'rgba(245, 158, 11, 0.3)',
     particleType: 'lightning_monarch'
   },
+  crystalbeast: {
+    id: 'crystalbeast',
+    name: 'Bestia Cristallo',
+    icon: '💎',
+    fieldSpellName: 'Città Antica - Rovine dell\'Arcobaleno',
+    fieldCardCode: '34487429',
+    artUrl: './images/fields/crystal.jpg',
+    cardUrl: './images/fields/crystal_card.jpg',
+    desc: 'Questa carta guadagna effetti in base al numero di carte "Bestia Cristallo" nelle tue Zone Magie & Trappole:\n● 1+: Non può essere distrutta dagli effetti delle carte.\n● 2+: Una volta per turno: puoi dimezzare il danno da combattimento che subisci.\n● 3+: Quando viene attivata una Carta Magia/Trappola: puoi mandare 1 mostro "Bestia Cristallo" che controlli al Cimitero; annulla l\'attivazione e distruggila.\n● 4+: Una volta per turno: puoi pescare 1 carta.\n● 5+: Una volta per turno: puoi Evocare Specialmente 1 carta "Bestia Cristallo" dalla tua Zona Magie & Trappole.',
+    accentColor: '#06b6d4',
+    borderColor: 'rgba(6, 182, 212, 0.65)',
+    glowColor: 'rgba(168, 85, 247, 0.4)',
+    particleType: 'rainbow_crystals'
+  },
   blueeyes: {
     id: 'blueeyes',
     name: 'Occhi Blu',
@@ -173,13 +187,15 @@ function createDefaultState(startLp = 8000) {
         lp: startLp,
         stars: 0,
         archetype: 'monarch',
+        crystalGems: 0,
         markers: []
       },
       2: {
         name: 'Giocatore 2',
         lp: startLp,
         stars: 0,
-        archetype: 'blueeyes',
+        archetype: 'crystalbeast',
+        crystalGems: 0,
         markers: []
       }
     },
@@ -532,6 +548,32 @@ function playUiBeep(freq = 740, duration = 0.06) {
   osc.stop(now + duration);
 }
 
+function playCrystalChime(tier = 1) {
+  if (!state.soundEnabled) return;
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  const vol = getMasterVolume();
+  const now = ctx.currentTime;
+
+  const scale = [587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51];
+  const root = scale[Math.min(tier, scale.length - 1)] || 880.00;
+  const harmonics = [root, root * 2.01, root * 3.16];
+
+  harmonics.forEach((freq, idx) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = idx === 0 ? 'sine' : 'triangle';
+    osc.frequency.setValueAtTime(freq, now);
+    const g = (0.12 / (idx + 1)) * vol;
+    gain.gain.setValueAtTime(g, now);
+    gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.48);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.5);
+  });
+}
+
 // ============================================================================
 // 2. MODERN TOP-LAYER DIALOGS & FALLBACKS (modern-web-guidance)
 // ============================================================================
@@ -630,7 +672,9 @@ function loadState() {
         if (parsed.fieldActivator === undefined) parsed.fieldActivator = 1;
         if (parsed.particlesEnabled === undefined) parsed.particlesEnabled = true;
         if (parsed.players[1] && !parsed.players[1].archetype) parsed.players[1].archetype = 'monarch';
-        if (parsed.players[2] && !parsed.players[2].archetype) parsed.players[2].archetype = 'blueeyes';
+        if (parsed.players[2] && !parsed.players[2].archetype) parsed.players[2].archetype = 'crystalbeast';
+        if (parsed.players[1] && parsed.players[1].crystalGems === undefined) parsed.players[1].crystalGems = 0;
+        if (parsed.players[2] && parsed.players[2].crystalGems === undefined) parsed.players[2].crystalGems = 0;
         return parsed;
       }
     }
@@ -1393,21 +1437,90 @@ function renderField() {
     }
   }
 
-  // 4. Player Cards Archetype Badges
+  // 4. Player Cards Archetype Badges & Field Spell Aura
   const p1Arch = ARCHETYPES[state.players[1]?.archetype] || ARCHETYPES.monarch;
-  const p2Arch = ARCHETYPES[state.players[2]?.archetype] || ARCHETYPES.blueeyes;
+  const p2Arch = ARCHETYPES[state.players[2]?.archetype] || ARCHETYPES.crystalbeast;
 
   const p1Icon = document.getElementById('p1ArchetypeIcon');
   const p1Name = document.getElementById('p1ArchetypeName');
+  const p1Btn = document.getElementById('p1ArchetypeBtn');
   if (p1Icon) p1Icon.textContent = p1Arch.icon;
   if (p1Name) p1Name.textContent = p1Arch.name;
+  if (p1Btn) {
+    p1Btn.classList.toggle('field-controller-tag', isFieldActive && state.fieldActivator === 1);
+  }
 
   const p2Icon = document.getElementById('p2ArchetypeIcon');
   const p2Name = document.getElementById('p2ArchetypeName');
+  const p2Btn = document.getElementById('p2ArchetypeBtn');
   if (p2Icon) p2Icon.textContent = p2Arch.icon;
   if (p2Name) p2Name.textContent = p2Arch.name;
+  if (p2Btn) {
+    p2Btn.classList.toggle('field-controller-tag', isFieldActive && state.fieldActivator === 2);
+  }
 
-  // 5. Field Dialog Status Box
+  // 5. Persistent Arena Active Field Spell HUD Capsule
+  const hudCapsule = document.getElementById('activeFieldHudCapsule');
+  const hudIcon = document.getElementById('hudFieldIcon');
+  const hudName = document.getElementById('hudFieldName');
+  const hudActivator = document.getElementById('hudFieldActivator');
+
+  if (hudCapsule) {
+    hudCapsule.style.display = isFieldActive ? 'flex' : 'none';
+    if (isFieldActive) {
+      if (hudIcon) hudIcon.textContent = currentArch.icon;
+      const actNum = state.fieldActivator || 1;
+      const actName = state.players[actNum]?.name || `G${actNum}`;
+      if (hudActivator) {
+        hudActivator.textContent = `P${actNum}`;
+        hudActivator.title = `Controllore Terreno: P${actNum} (${actName})`;
+      }
+
+      if (currentArch.id === 'crystalbeast') {
+        const gems = state.players[actNum]?.crystalGems || 0;
+        if (hudName) hudName.textContent = `Rovine Arcobaleno (${gems}/5 💎)`;
+      } else {
+        if (hudName) hudName.textContent = currentArch.fieldSpellName;
+      }
+    }
+  }
+
+  // 6. Crystal Beast Zone Trackers (on both Player Cards)
+  [1, 2].forEach((pNum) => {
+    const tracker = document.getElementById(`p${pNum}CrystalTracker`);
+    if (!tracker) return;
+
+    const pArch = state.players[pNum]?.archetype;
+    const isCb = pArch === 'crystalbeast' || (isFieldActive && state.activeField === 'crystalbeast' && state.fieldActivator === pNum);
+
+    tracker.style.display = isCb ? 'flex' : 'none';
+    if (isCb) {
+      const gemCount = Math.max(0, Math.min(5, state.players[pNum]?.crystalGems || 0));
+      const badge = document.getElementById(`p${pNum}CbTierBadge`);
+      if (badge) {
+        const tierDescs = [
+          '0 Cristalli (Nessun Effetto)',
+          '💎 1/5: 🛡️ Indistruttibile',
+          '💎 2/5: ⚔️ Dimezza Danno [Dimezza]',
+          '💎 3/5: 🚫 Annulla Magia/Trappola',
+          '💎 4/5: 🃏 Pesca 1 Carta',
+          '💎 5/5: ⚡ Evoca Speciale da M&T'
+        ];
+        badge.textContent = tierDescs[gemCount] || `${gemCount}/5 Cristalli`;
+        badge.style.color = gemCount > 0 ? '#38bdf8' : '#94a3b8';
+      }
+
+      const row = document.getElementById(`p${pNum}CbGemsRow`);
+      if (row) {
+        row.querySelectorAll('.cb-gem-btn').forEach((btn) => {
+          const gVal = parseInt(btn.getAttribute('data-gem'), 10);
+          btn.classList.toggle('active', gVal <= gemCount);
+        });
+      }
+    }
+  });
+
+  // 7. Field Dialog Status Box
   const statusThumb = document.getElementById('fieldStatusThumb');
   const statusPill = document.getElementById('fieldStatusPill');
   const statusTitle = document.getElementById('fieldStatusCardName');
@@ -1444,7 +1557,7 @@ function renderField() {
     particlesCheck.checked = Boolean(state.particlesEnabled);
   }
 
-  // 6. Highlight active archetype in modal grid
+  // 8. Highlight active archetype in modal grid
   renderArchetypesSelectionGrid();
 }
 
@@ -1454,34 +1567,64 @@ function activateFieldSpell(archetypeKey, activatorPlayer = 1, showBanner = true
   state.activeField = arch.id;
   state.fieldActivator = activatorPlayer;
 
-  // Play official card activation sound effect
+  // Auto-close open modal dialogs so players immediately see the arena transform!
+  const fieldDlg = document.getElementById('fieldDialog');
+  if (fieldDlg && fieldDlg.open) closeTopLayer(fieldDlg);
+  const inspectorDlg = document.getElementById('fieldInspectorDialog');
+  if (inspectorDlg && inspectorDlg.open) closeTopLayer(inspectorDlg);
+
+  // Play card activation sound effect & crystal chime
   playOriginalSound('activate') || playTrapChainSfx();
+  if (arch.id === 'crystalbeast') {
+    playCrystalChime(5);
+  }
 
   // Show Anime Activation Banner
   if (showBanner) {
     const banner = document.getElementById('fieldActivationBanner');
     const bannerImg = document.getElementById('bannerCardImg');
     const bannerName = document.getElementById('bannerCardName');
+    const bannerDesc = document.getElementById('bannerCardDesc');
+    const bannerActivator = document.getElementById('bannerActivator');
+
+    const actPlayerName = state.players[activatorPlayer]?.name || (activatorPlayer === 1 ? 'Giocatore 1' : 'Giocatore 2');
 
     if (bannerImg) bannerImg.src = arch.cardUrl || arch.artUrl || './images/fields/monarch.jpg';
     if (bannerName) bannerName.textContent = arch.fieldSpellName;
+    if (bannerDesc) bannerDesc.textContent = arch.desc.replace(/\n/g, ' ');
+    if (bannerActivator) bannerActivator.textContent = `ATTIVATA DA: ${actPlayerName} (P${activatorPlayer})`;
+
+    // Trigger visual energy lightning flash
+    const flashEl = document.getElementById('fieldLightningFlash');
+    if (flashEl) {
+      flashEl.style.background = arch.accentColor || '#10b981';
+      flashEl.classList.remove('flash-active');
+      void flashEl.offsetWidth;
+      flashEl.classList.add('flash-active');
+      setTimeout(() => { flashEl.classList.remove('flash-active'); }, 120);
+    }
 
     if (banner) {
       banner.style.display = 'flex';
       void banner.offsetWidth;
       banner.classList.add('show-banner');
-      setTimeout(() => {
+
+      let bannerTimer = null;
+      const dismissBanner = () => {
+        if (bannerTimer) clearTimeout(bannerTimer);
         banner.classList.remove('show-banner');
-        setTimeout(() => {
-          banner.style.display = 'none';
-        }, 320);
-      }, 1900);
+        setTimeout(() => { banner.style.display = 'none'; }, 280);
+        banner.onclick = null;
+      };
+
+      banner.onclick = dismissBanner;
+      bannerTimer = setTimeout(dismissBanner, 2800);
     }
   }
 
   const actPlayerName = state.players[activatorPlayer]?.name || `Giocatore ${activatorPlayer}`;
-  addLogEntry(activatorPlayer, `🏟️ Magia Terreno Inserita: ${arch.fieldSpellName} (${actPlayerName})`);
-  showToast(`✨ Magia Terreno: ${arch.fieldSpellName} Attiva!`);
+  addLogEntry(activatorPlayer, `🏟️ [MAGIA TERRENO] ${actPlayerName} ha attivato "${arch.fieldSpellName}"!`);
+  showToast(`✨ Magia Terreno: ${arch.fieldSpellName} Attivata!`);
 
   renderField();
   saveState();
@@ -1490,6 +1633,9 @@ function activateFieldSpell(archetypeKey, activatorPlayer = 1, showBanner = true
 function deactivateFieldSpell() {
   state.fieldSpellActive = false;
   playUiBeep(440, 0.08);
+
+  const inspectorDlg = document.getElementById('fieldInspectorDialog');
+  if (inspectorDlg && inspectorDlg.open) closeTopLayer(inspectorDlg);
 
   addLogEntry(0, `💥 Magia Terreno Rimossa / Distrutta dal Terreno`);
   showToast(`💥 Magia Terreno Rimossa dal Campo`);
@@ -1525,6 +1671,103 @@ function renderArchetypesSelectionGrid() {
       `;
     })
     .join('');
+}
+
+function openFieldInspector() {
+  if (!state.fieldSpellActive) {
+    openFieldDialog(state.fieldActivator || 1);
+    return;
+  }
+  const currentArch = ARCHETYPES[state.activeField] || ARCHETYPES.monarch;
+  const actNum = state.fieldActivator || 1;
+  const actName = state.players[actNum]?.name || `Giocatore ${actNum}`;
+
+  const img = document.getElementById('inspectorCardImg');
+  const title = document.getElementById('inspectorCardTitle');
+  const desc = document.getElementById('inspectorCardDesc');
+  const act = document.getElementById('inspectorActivator');
+
+  if (img) img.src = currentArch.cardUrl || currentArch.artUrl || './images/fields/monarch_card.jpg';
+  if (title) title.textContent = currentArch.fieldSpellName;
+  if (desc) desc.textContent = currentArch.desc;
+  if (act) act.textContent = `Controllore Terreno: ${actName} (P${actNum})`;
+
+  const cbPanel = document.getElementById('inspectorCbPanel');
+  if (cbPanel) {
+    const isCb = currentArch.id === 'crystalbeast';
+    cbPanel.style.display = isCb ? 'flex' : 'none';
+    if (isCb) {
+      updateInspectorCbGems(actNum);
+    }
+  }
+
+  const dlg = document.getElementById('fieldInspectorDialog');
+  if (dlg && !dlg.open) dlg.showModal();
+}
+
+function updateInspectorCbGems(actNum) {
+  const gemCount = Math.max(0, Math.min(5, state.players[actNum]?.crystalGems || 0));
+  const countEl = document.getElementById('inspectorCbCount');
+  const tierEl = document.getElementById('inspectorCbTier');
+  if (countEl) countEl.textContent = `${gemCount}/5`;
+
+  const tierDescs = [
+    'Nessun Effetto Attivo (0 Cristalli)',
+    'Tier 1: 🛡️ Rovine Indistruttibili dagli effetti',
+    'Tier 2: ⚔️ Dimezza Danno da Combattimento',
+    'Tier 3: 🚫 Annulla Magia/Trappola (-1 Cristallo)',
+    'Tier 4: 🃏 Pesca 1 Carta dal Deck',
+    'Tier 5: ⚡ Evoca Speciale 1 Bestia Cristallo da M&T'
+  ];
+  if (tierEl) {
+    tierEl.textContent = tierDescs[gemCount] || `${gemCount}/5 Cristalli`;
+    tierEl.style.color = gemCount > 0 ? '#38bdf8' : '#94a3b8';
+  }
+
+  const row = document.getElementById('inspectorCbGemsRow');
+  if (row) {
+    row.querySelectorAll('.cb-gem-btn').forEach((btn) => {
+      const g = parseInt(btn.getAttribute('data-gem'), 10);
+      btn.classList.toggle('active', g <= gemCount);
+    });
+  }
+
+  document.querySelectorAll('.cb-tier-item').forEach((item) => {
+    const t = parseInt(item.getAttribute('data-tier'), 10);
+    item.classList.toggle('unlocked', t <= gemCount);
+  });
+}
+
+function handleGemClick(playerTarget, gemVal) {
+  let pNum = playerTarget;
+  if (playerTarget === 'activator') {
+    pNum = state.fieldActivator || 1;
+  } else {
+    pNum = parseInt(playerTarget, 10);
+  }
+  if (!state.players[pNum]) return;
+
+  const current = state.players[pNum].crystalGems || 0;
+  const newCount = current === gemVal ? gemVal - 1 : gemVal;
+  state.players[pNum].crystalGems = Math.max(0, Math.min(5, newCount));
+
+  playCrystalChime(state.players[pNum].crystalGems || 1);
+  saveState();
+  renderField();
+
+  const actNum = state.fieldActivator || 1;
+  updateInspectorCbGems(actNum);
+
+  const pName = state.players[pNum].name;
+  const tiers = [
+    '0 Cristalli',
+    'Tier 1 (Indistruttibile)',
+    'Tier 2 (Dimezza Danno)',
+    'Tier 3 (Annulla M/T)',
+    'Tier 4 (Pesca 1)',
+    'Tier 5 (Evoca Speciale)'
+  ];
+  showToast(`💎 ${pName}: ${newCount}/5 Cristalli [${tiers[newCount]}]`);
 }
 
 // ============================================================================
@@ -1766,6 +2009,52 @@ function startAnimationLoop() {
         canvasCtx.stroke();
         canvasCtx.restore();
       });
+    } else if (pType === 'rainbow_crystals') {
+      const rainbowColors = [
+        '#f43f5e', '#a855f7', '#10b981', '#eab308', '#06b6d4', '#f97316', '#3b82f6'
+      ];
+      particles.forEach((p, idx) => {
+        p.sineAngle += 0.025;
+        p.x += Math.sin(p.sineAngle + idx) * 0.7 + p.speedX;
+        p.y += p.speedY * 0.85;
+        if (p.y < -15) {
+          p.y = h + 15;
+          p.x = Math.random() * w;
+        }
+
+        const color = rainbowColors[idx % rainbowColors.length];
+        const rot = tick * 0.02 + idx;
+        const s = p.size * (isFieldActive ? 1.4 : 1.0);
+
+        canvasCtx.save();
+        canvasCtx.translate(p.x, p.y);
+        canvasCtx.rotate(rot);
+
+        // Draw diamond gemstone shard
+        canvasCtx.beginPath();
+        canvasCtx.moveTo(0, -s * 2);
+        canvasCtx.lineTo(s * 1.3, 0);
+        canvasCtx.lineTo(0, s * 2);
+        canvasCtx.lineTo(-s * 1.3, 0);
+        canvasCtx.closePath();
+
+        canvasCtx.fillStyle = color;
+        canvasCtx.globalAlpha = Math.sin(tick * p.pulseSpeed + idx) * 0.25 + 0.55;
+        canvasCtx.shadowColor = color;
+        canvasCtx.shadowBlur = isFieldActive ? 14 : 6;
+        canvasCtx.fill();
+
+        // Facet reflection highlight
+        canvasCtx.beginPath();
+        canvasCtx.moveTo(0, -s * 1.6);
+        canvasCtx.lineTo(s * 0.8, 0);
+        canvasCtx.lineTo(0, 0);
+        canvasCtx.closePath();
+        canvasCtx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+        canvasCtx.fill();
+
+        canvasCtx.restore();
+      });
     } else {
       particles.forEach((p) => {
         p.y += p.speedY * 0.6;
@@ -1980,6 +2269,46 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast(state.particlesEnabled ? 'Effetti Particellari Attivati ⚡' : 'Effetti Particellari Disattivati');
     });
   }
+
+  // Persistent Field HUD Capsule & Inspector Wiring
+  const openInspectorBtn = document.getElementById('openActiveFieldInspectorBtn');
+  if (openInspectorBtn) {
+    openInspectorBtn.addEventListener('click', openFieldInspector);
+  }
+
+  const hudQuickRemove = document.getElementById('hudFieldQuickRemoveBtn');
+  if (hudQuickRemove) {
+    hudQuickRemove.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deactivateFieldSpell();
+    });
+  }
+
+  const inspectorDestroy = document.getElementById('inspectorDestroyBtn');
+  if (inspectorDestroy) {
+    inspectorDestroy.addEventListener('click', () => {
+      deactivateFieldSpell();
+    });
+  }
+
+  const inspectorChange = document.getElementById('inspectorChangeFieldBtn');
+  if (inspectorChange) {
+    inspectorChange.addEventListener('click', () => {
+      const inspDlg = document.getElementById('fieldInspectorDialog');
+      if (inspDlg) closeTopLayer(inspDlg);
+      openFieldDialog(state.fieldActivator || 1);
+    });
+  }
+
+  // Global Crystal Beast Gem Buttons (Player 1, Player 2, and Inspector)
+  document.addEventListener('click', (e) => {
+    const gemBtn = e.target.closest('.cb-gem-btn');
+    if (gemBtn) {
+      const pTarget = gemBtn.getAttribute('data-player');
+      const gVal = parseInt(gemBtn.getAttribute('data-gem'), 10);
+      handleGemClick(pTarget, gVal);
+    }
+  });
 
   // Player Names
   ['1', '2'].forEach((pNum) => {
@@ -2463,6 +2792,26 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // URL Test Parameters for Testing & Automated Verification
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('test') === 'crystal') {
+    state.fieldSpellActive = true;
+    state.activeField = 'crystalbeast';
+    state.fieldActivator = 1;
+    state.players[1].crystalGems = 3;
+    state.players[2].crystalGems = 2;
+    renderField();
+  } else if (urlParams.get('test') === 'banner') {
+    activateFieldSpell('crystalbeast', 1, true);
+  } else if (urlParams.get('test') === 'inspector') {
+    state.fieldSpellActive = true;
+    state.activeField = 'crystalbeast';
+    state.fieldActivator = 1;
+    state.players[1].crystalGems = 3;
+    renderField();
+    setTimeout(openFieldInspector, 200);
+  }
 
   // Register Service Worker for 100% Offline PWA on Smartphones
   if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
