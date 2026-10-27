@@ -2818,15 +2818,21 @@ function findSummonMonster(cardOrArchKey) {
   return ALL_SUMMON_MONSTERS.be_blueeyes;
 }
 
-// 6. 3D Ace Monster Summon Cut-In
+// 6. 3D Ace Monster Summon Cut-In (Classic Yu-Gi-Oh! Anime Solid Vision Sequence)
 function triggerAnimeSummon3D(cardOrArchKey, playerNum = 1) {
   const pArch = state.players[playerNum]?.archetype || 'blueeyes';
   const monster = findSummonMonster(cardOrArchKey || pArch);
   const pName = state.players[playerNum]?.name || `Giocatore ${playerNum}`;
 
+  // 1. Initial Solid Vision Beam Audio & Speedlines
   playOriginalSound('summon') || playUiBeep(880, 0.15);
   triggerAnimeSpeedlines(850);
   triggerFieldSummonCircle();
+
+  // 2. Flip Reveal Audio Sync (detonates at ~650ms when card flips to front)
+  setTimeout(() => {
+    playOriginalSound('activate') || playCrystalChime(4);
+  }, 650);
 
   const modal = document.getElementById('animeSummonModal');
   const cardImg = document.getElementById('summonMonsterImg');
@@ -2839,7 +2845,9 @@ function triggerAnimeSummon3D(cardOrArchKey, playerNum = 1) {
   const defEl = document.getElementById('summonDefVal');
   const chantEl = document.getElementById('summonChant');
   const pillEl = document.getElementById('summonerPill');
-  const cardWrap = document.getElementById('summonCard3dWrap');
+  const pillarEl = document.getElementById('summonLightPillar');
+  const flipperEl = document.getElementById('summonCardFlipper');
+  const burstEl = document.getElementById('summonEnergyBurst');
   const auraFx = document.getElementById('summonAuraFx');
 
   if (cardImg) cardImg.src = monster.cardImg;
@@ -2855,35 +2863,55 @@ function triggerAnimeSummon3D(cardOrArchKey, playerNum = 1) {
   if (chantEl) chantEl.textContent = `"${monster.summonChant}"`;
   if (pillEl) pillEl.textContent = `Evocato da: ${pName} (P${playerNum})`;
 
+  // Configure Solid Vision Light Beam Archetype Color
+  if (pillarEl) {
+    const archName = monster.archetypeId || 'blueeyes';
+    pillarEl.className = 'summon-light-pillar';
+    pillarEl.classList.add(`pillar-${archName}`);
+    pillarEl.style.animation = 'none';
+    void pillarEl.offsetWidth;
+    pillarEl.style.animation = 'pillarIgnite 0.45s ease-out forwards';
+  }
+
+  // Configure Archetype Aura FX
   if (auraFx) {
     auraFx.className = 'summon-aura-fx';
     const auraName = monster.archetypeId || 'blueeyes';
     auraFx.classList.add(`aura-${auraName}`);
   }
 
+  // Stat Counter rolling starts right after the card flip reveals front face (~700ms)
   if (atkEl && defEl) {
     atkEl.textContent = '0';
     defEl.textContent = '0';
-    let start = performance.now();
-    let duration = 750;
-    function countStats(now) {
-      let progress = Math.min((now - start) / duration, 1);
-      let curAtk = Math.round(monster.atk * progress);
-      let curDef = Math.round(monster.def * progress);
-      atkEl.textContent = curAtk;
-      defEl.textContent = curDef;
-      if (progress < 1) requestAnimationFrame(countStats);
-    }
-    requestAnimationFrame(countStats);
+    setTimeout(() => {
+      let start = performance.now();
+      let duration = 650;
+      function countStats(now) {
+        let progress = Math.min((now - start) / duration, 1);
+        let curAtk = Math.round(monster.atk * progress);
+        let curDef = Math.round(monster.def * progress);
+        atkEl.textContent = curAtk;
+        defEl.textContent = curDef;
+        if (progress < 1) requestAnimationFrame(countStats);
+      }
+      requestAnimationFrame(countStats);
+    }, 700);
   }
 
   if (modal) {
     modal.style.display = 'flex';
-    if (cardWrap) {
-      cardWrap.style.animation = 'none';
-      cardWrap.style.transform = '';
-      void cardWrap.offsetWidth;
-      cardWrap.style.animation = 'summonCard3dBurst 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+
+    // Trigger Double-Sided 3D Card Flip & Burst Flash
+    if (flipperEl) {
+      flipperEl.style.animation = 'none';
+      void flipperEl.offsetWidth;
+      flipperEl.style.animation = 'classicAnimeCardFlip 1.25s cubic-bezier(0.18, 0.89, 0.28, 1) forwards';
+    }
+    if (burstEl) {
+      burstEl.style.animation = 'none';
+      void burstEl.offsetWidth;
+      burstEl.style.animation = 'summonBurstFlash 1.25s ease-out forwards';
     }
 
     let dismissTimer = null;
@@ -2891,10 +2919,10 @@ function triggerAnimeSummon3D(cardOrArchKey, playerNum = 1) {
       if (dismissTimer) clearTimeout(dismissTimer);
       modal.style.display = 'none';
       modal.onclick = null;
-      if (cardWrap) cardWrap.style.transform = '';
+      if (flipperEl) flipperEl.style.transform = '';
     };
     modal.onclick = dismissSummon;
-    dismissTimer = setTimeout(dismissSummon, 4200);
+    dismissTimer = setTimeout(dismissSummon, 4800);
   }
 
   addLogEntry(playerNum, `⚡ [EVOCAZIONE ASSO 3D] ${pName} ha evocato "${monster.name}" (ATK: ${monster.atk} / DEF: ${monster.def})!`);
@@ -3855,6 +3883,66 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       triggerAnimeSummon3D(cardKey, 1);
     }, 150);
+  } else if (urlParams.get('test') === 'summon_final') {
+    const cardKey = urlParams.get('card') || 'be_blueeyes';
+    const monster = findSummonMonster(cardKey);
+    renderField();
+    const modal = document.getElementById('animeSummonModal');
+    const flipper = document.getElementById('summonCardFlipper');
+    const pillar = document.getElementById('summonLightPillar');
+    const cardImg = document.getElementById('summonMonsterImg');
+    const nameEl = document.getElementById('summonMonsterName');
+    const jpBadge = document.getElementById('summonJpName');
+    const starsEl = document.getElementById('summonStars');
+    const attrEl = document.getElementById('summonAttrPill');
+    const typeEl = document.getElementById('summonTypePill');
+    const atkEl = document.getElementById('summonAtkVal');
+    const defEl = document.getElementById('summonDefVal');
+    const chantEl = document.getElementById('summonChant');
+    const pillEl = document.getElementById('summonerPill');
+    const auraFx = document.getElementById('summonAuraFx');
+
+    if (cardImg) cardImg.src = monster.cardImg;
+    if (jpBadge) jpBadge.textContent = monster.jpName;
+    if (starsEl) starsEl.textContent = '★'.repeat(monster.rank || monster.level || 8);
+    if (nameEl) nameEl.textContent = monster.name;
+    if (attrEl) attrEl.textContent = monster.attribute || 'LUCE';
+    if (typeEl) typeEl.textContent = monster.type || 'Drago / Normale';
+    if (chantEl) chantEl.textContent = `"${monster.summonChant}"`;
+    if (pillEl) pillEl.textContent = `Evocato da: Giocatore 1 (P1)`;
+    if (atkEl) atkEl.textContent = monster.atk;
+    if (defEl) defEl.textContent = monster.def;
+
+    if (pillar) {
+      pillar.className = 'summon-light-pillar';
+      pillar.classList.add(`pillar-${monster.archetypeId || 'blueeyes'}`);
+    }
+    if (auraFx) {
+      auraFx.className = 'summon-aura-fx';
+      auraFx.classList.add(`aura-${monster.archetypeId || 'blueeyes'}`);
+    }
+    if (modal) modal.style.display = 'flex';
+    if (flipper) {
+      flipper.style.animation = 'none';
+      flipper.style.transform = 'scale(1) rotateY(-8deg) rotateX(6deg) translateY(0) translateZ(40px)';
+    }
+  } else if (urlParams.get('test') === 'summon_back') {
+    renderField();
+    const modal = document.getElementById('animeSummonModal');
+    const flipper = document.getElementById('summonCardFlipper');
+    const pillar = document.getElementById('summonLightPillar');
+    const hud = document.getElementById('summonHudPanel');
+    if (modal) modal.style.display = 'flex';
+    if (pillar) {
+      pillar.className = 'summon-light-pillar pillar-blueeyes';
+    }
+    if (flipper) {
+      flipper.style.animation = 'none';
+      flipper.style.transform = 'scale(1.05) rotateY(180deg) translateZ(20px)';
+    }
+    if (hud) {
+      hud.style.opacity = '0.5';
+    }
   } else if (urlParams.get('test') === 'picker') {
     renderField();
     setTimeout(() => {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dueldisk-cache-v18';
+const CACHE_NAME = 'dueldisk-cache-v19';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const ASSETS_TO_CACHE = [
   './app.js',
   './manifest.json',
   './icon.svg',
+  './images/card_back.svg',
   './sounds/damage.mp3',
   './sounds/lp_count_loop.mp3',
   './sounds/lp_stop.mp3',

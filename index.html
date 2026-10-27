@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2.4" />
+  <link rel="stylesheet" href="styles.css?v=2.5" />
 </head>
 <body class="duel-app-body">
   <!-- DYNAMIC FIELD SPELL & ANIMATED BACKGROUND CONTAINER (SUPPORTS SPLIT DUAL FIELDS) -->
@@ -88,20 +88,39 @@
     </div>
   </div>
 
-  <!-- 3D ANIME ACE MONSTER SUMMON CUT-IN (MASTER DUEL / DUEL LINKS STYLE) -->
+  <!-- 3D ANIME ACE MONSTER SUMMON CUT-IN (CLASSIC ANIME / SOLID VISION STYLE) -->
   <div class="anime-summon-modal" id="animeSummonModal" style="display: none;" role="dialog" aria-label="Evocazione Mostro Asso">
     <div class="summon-modal-backdrop" id="summonModalBackdrop"></div>
     <div class="summon-aura-fx" id="summonAuraFx"></div>
+    <div class="summon-light-pillar" id="summonLightPillar">
+      <div class="pillar-beam"></div>
+      <div class="pillar-rings"></div>
+    </div>
+    <div class="summon-ground-circle" id="summonGroundCircle"></div>
     <div class="summon-viewport" id="summonViewport">
-      <!-- 3D Floating Action Card Container -->
+      <!-- 3D Double-Sided Action Card Container with Classic Flip -->
       <div class="summon-card-3d-wrap" id="summonCard3dWrap">
-        <div class="summon-card-hologram" id="summonCardHolo">
-          <img class="summon-card-img" id="summonMonsterImg" src="./images/monsters/be_blueeyes.jpg" alt="Mostro Asso Evocato" />
-          <div class="summon-foil-sheen"></div>
+        <div class="summon-card-flipper" id="summonCardFlipper">
+          <!-- Back Face: Classic Brown Yu-Gi-Oh! Vortex Card Back -->
+          <div class="summon-card-face card-back">
+            <img class="summon-card-back-img" src="./images/card_back.svg" alt="Retro Carta Yu-Gi-Oh!" />
+            <div class="summon-back-aura"></div>
+          </div>
+          <!-- Front Face: Monster Hologram with Foil Sheen & Scanlines -->
+          <div class="summon-card-face card-front">
+            <div class="summon-card-hologram" id="summonCardHolo">
+              <img class="summon-card-img" id="summonMonsterImg" src="./images/monsters/be_blueeyes.jpg" alt="Mostro Asso Evocato" />
+              <div class="summon-foil-sheen"></div>
+              <div class="summon-scanlines"></div>
+            </div>
+          </div>
         </div>
+        <!-- Holographic Flip Shockwave Burst -->
+        <div class="summon-energy-burst" id="summonEnergyBurst"></div>
       </div>
-      <!-- Anime Summon HUD Box -->
+      <!-- Anime Summon HUD Box (KaibaCorp Solid Vision Style) -->
       <div class="summon-hud-panel" id="summonHudPanel">
+        <div class="summon-kc-brand">KAIBA CORP • SOLID VISION SYSTEM</div>
         <div class="summon-header-row">
           <span class="summon-jp-badge" id="summonJpName">DRAGO BIANCO OCCHI BLU</span>
           <span class="summon-stars-row" id="summonStars">★★★★★★★★</span>
@@ -1146,6 +1165,6 @@
   <!-- TOAST NOTIFICATION -->
   <div class="duel-toast" id="duelToast" role="status" aria-live="polite"></div>
 
-  <script src="app.js?v=3.0"></script>
+  <script src="app.js?v=3.1"></script>
 </body>
 </html>
