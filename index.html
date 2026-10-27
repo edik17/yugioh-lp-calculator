@@ -244,17 +244,8 @@
       </div>
 
       <nav class="center-duel-bar" id="centerDuelBar" aria-label="Console Tattica Centrale">
-        <!-- Left: Round Timer & Turn -->
+        <!-- Left: Turn Counter (Tap to advance turn) -->
         <div class="cbar-cluster cbar-left">
-          <div class="cbar-timer" id="timerWidget">
-            <button class="cbar-icon-btn" id="timerPlayPauseBtn" title="Avvia/Pausa Timer Torneo" aria-label="Timer">
-              <span id="timerPlayIcon">▶</span>
-            </button>
-            <div class="cbar-timer-text" id="timerDisplayWrap" title="Clicca per modificare durata timer">
-              <span class="timer-digits" id="timerDigits">45:00</span>
-            </div>
-            <button class="cbar-icon-btn" id="timerResetBtn" title="Resetta Timer" aria-label="Reset Timer">↺</button>
-          </div>
           <button class="cbar-turn-badge" id="turnCounterBtn" title="Avanza Turno (Tocca per passare il turno)">
             <span class="turn-label">TURNO</span>
             <span class="turn-num" id="turnNumber">1</span>
@@ -715,15 +706,6 @@
       </div>
 
       <div class="settings-section">
-        <h3>Durata Timer Torneo</h3>
-        <div class="timer-presets-row">
-          <button class="secondary-btn timer-preset-btn" data-minutes="40">40 Min</button>
-          <button class="secondary-btn timer-preset-btn" data-minutes="45">45 Min (TCG)</button>
-          <button class="secondary-btn timer-preset-btn" data-minutes="50">50 Min</button>
-        </div>
-      </div>
-
-      <div class="settings-section">
         <h3>Audio &amp; Effetti Sonori Yu-Gi-Oh!</h3>
         <div class="custom-lp-row">
           <label for="volumeSlider">Volume Audio:</label>
@@ -979,6 +961,6 @@
   <!-- TOAST NOTIFICATION -->
   <div class="duel-toast" id="duelToast" role="status" aria-live="polite"></div>
 
-  <script src="app.js?v=2.6"></script>
+  <script src="app.js?v=2.7"></script>
 </body>
 </html>

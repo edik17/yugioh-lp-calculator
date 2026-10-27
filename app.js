@@ -1632,14 +1632,15 @@ function advanceTurn() {
 
 
 // ============================================================================
-// 9. TOURNAMENT ROUND TIMER (45:00 DEFAULT)
+// 9. TOURNAMENT ROUND TIMER (OPTIONAL)
 // ============================================================================
 function renderTimer() {
+  const digitsEl = document.getElementById('timerDigits');
+  if (!digitsEl) return;
   const mins = Math.floor(state.timerRemainingSec / 60);
   const secs = state.timerRemainingSec % 60;
   const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  const digitsEl = document.getElementById('timerDigits');
-  if (digitsEl) digitsEl.textContent = formatted;
+  digitsEl.textContent = formatted;
 
   const widget = document.getElementById('timerWidget');
   if (widget) {
@@ -3494,25 +3495,29 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') || ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z')) {
         e.preventDefault();
         redoLpChange();
-      } else if (e.code === 'Space') {
-        e.preventDefault();
-        toggleTimer();
-      } else if (e.key.toLowerCase() === 't') {
+      } else if (e.code === 'Space' || e.key.toLowerCase() === 't') {
         e.preventDefault();
         nextTurn();
       }
     }
   });
 
-  // Timer Controls
-  document.getElementById('timerPlayPauseBtn').addEventListener('click', toggleTimer);
-  document.getElementById('timerResetBtn').addEventListener('click', () => {
-    resetTimer();
-    showToast('⏱️ Timer Torneo Resettato');
-  });
-  document.getElementById('timerDisplayWrap').addEventListener('click', () => {
-    document.getElementById('settingsDialog').showModal();
-  });
+  // Timer Controls (guarded if present)
+  const timerPlayBtn = document.getElementById('timerPlayPauseBtn');
+  if (timerPlayBtn) timerPlayBtn.addEventListener('click', toggleTimer);
+  const timerResetBtn = document.getElementById('timerResetBtn');
+  if (timerResetBtn) {
+    timerResetBtn.addEventListener('click', () => {
+      resetTimer();
+      showToast('⏱️ Timer Resettato');
+    });
+  }
+  const timerDisplayWrap = document.getElementById('timerDisplayWrap');
+  if (timerDisplayWrap) {
+    timerDisplayWrap.addEventListener('click', () => {
+      document.getElementById('settingsDialog').showModal();
+    });
+  }
 
   // Settings Modal
   document.getElementById('settingsOpenBtn').addEventListener('click', () => {

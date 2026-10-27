@@ -585,17 +585,24 @@ body.duel-app-body {
 /* TURN BADGE */
 .cbar-turn-badge {
   display: flex;
-  align-items: baseline;
-  gap: 0.25rem;
-  background: linear-gradient(135deg, rgba(245, 183, 49, 0.2), rgba(184, 122, 8, 0.15));
+  align-items: center;
+  gap: 0.35rem;
+  background: linear-gradient(135deg, rgba(245, 183, 49, 0.22), rgba(184, 122, 8, 0.18));
   border: 1px solid var(--gold);
   color: var(--gold-bright);
-  padding: 0.22rem 0.45rem;
-  border-radius: 7px;
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
   cursor: pointer;
   font-family: var(--font-display);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 800;
+  transition: all 0.2s ease;
+}
+
+.cbar-turn-badge:hover {
+  background: linear-gradient(135deg, rgba(245, 183, 49, 0.35), rgba(184, 122, 8, 0.28));
+  box-shadow: 0 0 12px rgba(245, 183, 49, 0.3);
+  transform: translateY(-1px);
 }
 
 .turn-label {
