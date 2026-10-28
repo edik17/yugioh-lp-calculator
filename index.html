@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2.5" />
+  <link rel="stylesheet" href="styles.css?v=2.6" />
 </head>
 <body class="duel-app-body">
   <!-- DYNAMIC FIELD SPELL & ANIMATED BACKGROUND CONTAINER (SUPPORTS SPLIT DUAL FIELDS) -->
@@ -33,10 +33,109 @@
       <div class="circle-inner-ring"></div>
       <div class="circle-hexagram"></div>
     </div>
+
+    <!-- REALISTIC 3D DUEL ARENA FIELD (PC & FULLSCREEN MAT) -->
+    <div class="pc-3d-arena-field" id="pc3dArenaField" aria-hidden="true">
+      <!-- Sweeping Stadium Spotlight Floodlights -->
+      <div class="arena-spotlight spotlight-left"></div>
+      <div class="arena-spotlight spotlight-right"></div>
+
+      <!-- 3D Perspective Duel Stage -->
+      <div class="arena-3d-stage" id="arena3dStage">
+        <div class="arena-3d-mat" id="arena3dMat">
+          <!-- Cyber Hex Grid Texture & Metallic Perimeter -->
+          <div class="mat-surface-grid"></div>
+          <div class="mat-perimeter-frame">
+            <span class="perimeter-corner c-tl"></span>
+            <span class="perimeter-corner c-tr"></span>
+            <span class="perimeter-corner c-bl"></span>
+            <span class="perimeter-corner c-br"></span>
+          </div>
+
+          <!-- Player 1 Half (North Arena Mat) -->
+          <div class="mat-half mat-half-p1" id="matHalfP1">
+            <div class="mat-half-header">
+              <span class="mat-kc-tag">KAIBA CORP</span>
+              <span class="mat-player-title" id="matPlayer1Title">GIOCATORE 1 • ARENA NORD</span>
+            </div>
+            <!-- 5 Monster Card Zones -->
+            <div class="mat-row monster-row">
+              <div class="mat-card-zone mz" title="Zona Mostri 1"><span class="zone-bracket"></span><span class="zone-num">1</span><span class="zone-type">MOSTRO</span></div>
+              <div class="mat-card-zone mz" title="Zona Mostri 2"><span class="zone-bracket"></span><span class="zone-num">2</span><span class="zone-type">MOSTRO</span></div>
+              <div class="mat-card-zone mz" title="Zona Mostri 3"><span class="zone-bracket"></span><span class="zone-num">3</span><span class="zone-type">MOSTRO</span></div>
+              <div class="mat-card-zone mz" title="Zona Mostri 4"><span class="zone-bracket"></span><span class="zone-num">4</span><span class="zone-type">MOSTRO</span></div>
+              <div class="mat-card-zone mz" title="Zona Mostri 5"><span class="zone-bracket"></span><span class="zone-num">5</span><span class="zone-type">MOSTRO</span></div>
+            </div>
+            <!-- 5 Spell / Trap Zones -->
+            <div class="mat-row st-row">
+              <div class="mat-card-zone stz" title="Zona Magie / Trappole 1"><span class="zone-bracket"></span><span class="zone-num">1</span><span class="zone-type">MAGIA/TRAPPOLA</span></div>
+              <div class="mat-card-zone stz" title="Zona Magie / Trappole 2"><span class="zone-bracket"></span><span class="zone-num">2</span><span class="zone-type">MAGIA/TRAPPOLA</span></div>
+              <div class="mat-card-zone stz" title="Zona Magie / Trappole 3"><span class="zone-bracket"></span><span class="zone-num">3</span><span class="zone-type">MAGIA/TRAPPOLA</span></div>
+              <div class="mat-card-zone stz" title="Zona Magie / Trappole 4"><span class="zone-bracket"></span><span class="zone-num">4</span><span class="zone-type">MAGIA/TRAPPOLA</span></div>
+              <div class="mat-card-zone stz" title="Zona Magie / Trappole 5"><span class="zone-bracket"></span><span class="zone-num">5</span><span class="zone-type">MAGIA/TRAPPOLA</span></div>
+            </div>
+            <!-- Utility Slots: Field, GY, Extra Deck -->
+            <div class="mat-utility-row">
+              <div class="mat-card-zone fz" title="Zona Terreno"><span class="zone-bracket"></span><span class="zone-type">TERRENO</span></div>
+              <div class="mat-card-zone gy" title="Cimitero"><span class="zone-bracket"></span><span class="zone-type">CIMITERO</span></div>
+              <div class="mat-card-zone ed" title="Extra Deck"><span class="zone-bracket"></span><span class="zone-type">EXTRA DECK</span></div>
+            </div>
+          </div>
+
+          <!-- Center Solid Vision Divide Seam -->
+          <div class="mat-center-divide" id="matCenterDivide">
+            <div class="divide-neon-line"></div>
+            <div class="divide-pulse-runner"></div>
+            <div class="divide-hologram-crest">
+              <div class="crest-rune-ring"></div>
+              <span class="crest-kc-symbol">KC</span>
+              <span class="crest-solid-vision">SOLID VISION</span>
+            </div>
+          </div>
+
+          <!-- Player 2 Half (South Arena Mat) -->
+          <div class="mat-half mat-half-p2" id="matHalfP2">
+            <div class="mat-half-header">
+              <span class="mat-kc-tag">KAIBA CORP</span>
+              <span class="mat-player-title" id="matPlayer2Title">GIOCATORE 2 • ARENA SUD</span>
+            </div>
+            <!-- 5 Monster Card Zones -->
+            <div class="mat-row monster-row">
+              <div class="mat-card-zone mz" title="Zona Mostri 1"><span class="zone-bracket"></span><span class="zone-num">1</span><span class="zone-type">MOSTRO</span></div>
+              <div class="mat-card-zone mz" title="Zona Mostri 2"><span class="zone-bracket"></span><span class="zone-num">2</span><span class="zone-type">MOSTRO</span></div>
+              <div class="mat-card-zone mz" title="Zona Mostri 3"><span class="zone-bracket"></span><span class="zone-num">3</span><span class="zone-type">MOSTRO</span></div>
+              <div class="mat-card-zone mz" title="Zona Mostri 4"><span class="zone-bracket"></span><span class="zone-num">4</span><span class="zone-type">MOSTRO</span></div>
+              <div class="mat-card-zone mz" title="Zona Mostri 5"><span class="zone-bracket"></span><span class="zone-num">5</span><span class="zone-type">MOSTRO</span></div>
+            </div>
+            <!-- 5 Spell / Trap Zones -->
+            <div class="mat-row st-row">
+              <div class="mat-card-zone stz" title="Zona Magie / Trappole 1"><span class="zone-bracket"></span><span class="zone-num">1</span><span class="zone-type">MAGIA/TRAPPOLA</span></div>
+              <div class="mat-card-zone stz" title="Zona Magie / Trappole 2"><span class="zone-bracket"></span><span class="zone-num">2</span><span class="zone-type">MAGIA/TRAPPOLA</span></div>
+              <div class="mat-card-zone stz" title="Zona Magie / Trappole 3"><span class="zone-bracket"></span><span class="zone-num">3</span><span class="zone-type">MAGIA/TRAPPOLA</span></div>
+              <div class="mat-card-zone stz" title="Zona Magie / Trappole 4"><span class="zone-bracket"></span><span class="zone-num">4</span><span class="zone-type">MAGIA/TRAPPOLA</span></div>
+              <div class="mat-card-zone stz" title="Zona Magie / Trappole 5"><span class="zone-bracket"></span><span class="zone-num">5</span><span class="zone-type">MAGIA/TRAPPOLA</span></div>
+            </div>
+            <!-- Utility Slots: Field, GY, Extra Deck -->
+            <div class="mat-utility-row">
+              <div class="mat-card-zone fz" title="Zona Terreno"><span class="zone-bracket"></span><span class="zone-type">TERRENO</span></div>
+              <div class="mat-card-zone gy" title="Cimitero"><span class="zone-bracket"></span><span class="zone-type">CIMITERO</span></div>
+              <div class="mat-card-zone ed" title="Extra Deck"><span class="zone-bracket"></span><span class="zone-type">EXTRA DECK</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="field-vignette-layer"></div>
     <canvas class="field-particles-canvas" id="fieldCanvas"></canvas>
     <div class="field-lightning-flash" id="fieldLightningFlash"></div>
   </div>
+
+  <!-- Floating Fullscreen PC Quick Toggle Button -->
+  <button class="pc-fullscreen-float-btn" id="pcFullscreenFloatBtn" title="Schermo Intero PC (Tasto rapido: F)">
+    <span class="fs-icon">⛶</span>
+    <span class="fs-lbl">Schermo Intero</span>
+  </button>
 
   <div class="bg-grid" aria-hidden="true"></div>
   <div class="bg-glow bg-glow-p1" aria-hidden="true"></div>
@@ -387,6 +486,19 @@
 
         <!-- Right: System, Audio & Reset -->
         <div class="cbar-cluster cbar-right">
+          <button class="cbar-tool-btn" id="openBgmBtn" title="Musiche Epiche da Battaglia (Tocca per gestire)">
+            <span class="btn-icon">🎵</span>
+            <span class="btn-lbl">Musica</span>
+            <div class="bgm-mini-eq" id="bgmMiniEq" aria-hidden="true">
+              <span class="eq-b b1"></span>
+              <span class="eq-b b2"></span>
+              <span class="eq-b b3"></span>
+            </div>
+          </button>
+          <button class="cbar-tool-btn" id="fullscreenToggleBtn" title="Schermo Intero PC (Tasto rapido: F)">
+            <span class="btn-icon" id="fullscreenIcon">⛶</span>
+            <span class="btn-lbl">Schermo</span>
+          </button>
           <button class="cbar-tool-btn active-chip" id="tabletopModeBtn" title="Modalità Fronte a Fronte (Ruota G2 di 180°)">
             <span class="btn-icon">⇅</span>
             <span class="btn-lbl">Tavolo</span>
@@ -813,6 +925,81 @@
   </dialog>
 
   <!-- ====================================================================== -->
+  <!-- MODAL: EPIC BATTLE MUSIC (BGM ENGINE) & SOUNDTRACK PLAYER              -->
+  <!-- ====================================================================== -->
+  <dialog class="duel-dialog wide-dialog" id="bgmDialog" closedby="any" aria-labelledby="bgmDialogTitle">
+    <div class="dialog-inner">
+      <div class="dialog-header">
+        <h2 id="bgmDialogTitle">
+          <span style="color: #38bdf8;">🎵 Musiche Epiche da Battaglia</span>
+        </h2>
+        <button class="dialog-close-btn" data-close-dialog="bgmDialog" aria-label="Chiudi finestra">✕</button>
+      </div>
+
+      <div class="bgm-player-panel">
+        <div class="bgm-status-row">
+          <div class="bgm-track-info">
+            <span class="bgm-track-state-badge" id="bgmStateBadge">IN PAUSA</span>
+            <div class="bgm-current-track-name" id="bgmCurrentTrackName">Passione del Duellante (Tema Classico)</div>
+            <div class="bgm-current-tempo" id="bgmCurrentTempo">134 BPM • Orchestrale Anime</div>
+          </div>
+          <button type="button" class="bgm-master-play-btn" id="bgmMasterPlayBtn" title="Riproduci / Metti in Pausa Musica">
+            <span id="bgmPlayIcon">▶</span>
+          </button>
+        </div>
+
+        <div class="bgm-volume-block">
+          <div class="bgm-vol-header">
+            <span>🔊 Volume Colonna Sonora</span>
+            <span id="bgmVolumeValText">65%</span>
+          </div>
+          <input type="range" class="bgm-slider" id="bgmVolumeSlider" min="0" max="100" value="65" />
+        </div>
+
+        <div class="bgm-tracks-list">
+          <div class="bgm-tracks-header">SELEZIONA COLONNA SONORA DI BATTAGLIA</div>
+          
+          <button type="button" class="bgm-track-option active" data-track="auto" id="bgmTrackAuto">
+            <span class="track-opt-icon">🔄</span>
+            <div class="track-opt-details">
+              <span class="track-opt-title">Rotazione Automatica Intelligente</span>
+              <span class="track-opt-desc">Adatta la musica al turno, alla Battle Phase e ai Life Points critici (≤ 2000 LP)</span>
+            </div>
+            <span class="track-active-check">✓</span>
+          </button>
+
+          <button type="button" class="bgm-track-option" data-track="passionate" id="bgmTrackPassionate">
+            <span class="track-opt-icon">⚔️</span>
+            <div class="track-opt-details">
+              <span class="track-opt-title">Passione del Duellante (Tema Classico Anime)</span>
+              <span class="track-opt-desc">Marcia epica trionfale in stile "Passionate Duelist" (134 BPM, Gm, fiati & archi)</span>
+            </div>
+            <span class="track-active-check">✓</span>
+          </button>
+
+          <button type="button" class="bgm-track-option" data-track="battle" id="bgmTrackBattle">
+            <span class="track-opt-icon">🔥</span>
+            <div class="track-opt-details">
+              <span class="track-opt-title">Assalto Finale (Battle Phase Climax)</span>
+              <span class="track-opt-desc">Ritmo incalzante a 148 BPM, archi da combattimento staccato e tamburi di guerra</span>
+            </div>
+            <span class="track-active-check">✓</span>
+          </button>
+
+          <button type="button" class="bgm-track-option" data-track="climax" id="bgmTrackClimax">
+            <span class="track-opt-icon">⚡</span>
+            <div class="track-opt-details">
+              <span class="track-opt-title">Sull'Orlo del Baratro (Punto Critico ≤ 2000 LP)</span>
+              <span class="track-opt-desc">Tensione pura con battito cardiaco sub-bass, archi sospesi e contrattacco decisivo</span>
+            </div>
+            <span class="track-active-check">✓</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ====================================================================== -->
   <!-- MODAL 4: SETTINGS & FORMATS (8000 / 4000 / TIMER)                      -->
   <!-- ====================================================================== -->
   <dialog class="duel-dialog" id="settingsDialog" closedby="any" aria-labelledby="settingsDialogTitle">
@@ -1165,6 +1352,6 @@
   <!-- TOAST NOTIFICATION -->
   <div class="duel-toast" id="duelToast" role="status" aria-live="polite"></div>
 
-  <script src="app.js?v=3.1"></script>
+  <script src="app.js?v=3.2"></script>
 </body>
 </html>

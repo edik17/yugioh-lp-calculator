@@ -890,8 +890,475 @@ function playCrystalChime(tier = 1) {
 }
 
 // ============================================================================
-// 2. MODERN TOP-LAYER DIALOGS & FALLBACKS (modern-web-guidance)
+// 1G. EPIC ANIME BATTLE MUSIC SYNTHESIZER & SOUNDTRACK ENGINE (BGM)
 // ============================================================================
+const DuelBgmEngine = {
+  masterGain: null,
+  delayNode: null,
+  isPlaying: false,
+  selectedTrack: 'auto', // 'auto' | 'passionate' | 'battle' | 'climax'
+  activeTrackId: 'passionate',
+  timerId: null,
+  stepIndex: 0,
+  nextStepTime: 0,
+  lookaheadMs: 25,
+  scheduleAheadSec: 0.12,
+
+  // Notes frequencies lookup
+  NF: {
+    C2: 65.41, D2: 73.42, Eb2: 77.78, E2: 82.41, F2: 87.31, Fs2: 92.50, G2: 98.00, A2: 110.00, Bb2: 116.54, B2: 123.47,
+    C3: 130.81, D3: 146.83, Eb3: 155.56, E3: 164.81, F3: 174.61, Fs3: 185.00, G3: 196.00, A3: 220.00, Bb3: 233.08, B3: 246.94,
+    C4: 261.63, D4: 293.66, Eb4: 311.13, E4: 329.63, F4: 349.23, Fs4: 369.99, G4: 392.00, A4: 440.00, Bb4: 466.16, B4: 493.88,
+    C5: 523.25, D5: 587.33, Eb5: 622.25, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, Bb5: 932.33, C6: 1046.50
+  },
+
+  // 3 Iconic Yu-Gi-Oh! Anime Battle Tracks
+  tracks: {
+    passionate: {
+      id: 'passionate',
+      name: 'Passione del Duellante (Tema Classico)',
+      desc: '134 BPM • Marcia Epica Orchestrale KaibaCorp',
+      tempo: 134,
+      totalSteps: 64, // 4 bars of 16th notes
+      getBass(step, NF) {
+        const bar = Math.floor(step / 16);
+        const sub = step % 16;
+        if (sub % 2 !== 0) return null;
+        if (bar === 0 || bar === 1) {
+          return sub === 0 || sub === 4 || sub === 8 || sub === 12 ? NF.G2 : (sub === 6 || sub === 14 ? NF.G3 : NF.Bb2);
+        } else if (bar === 2) {
+          return sub === 0 || sub === 4 || sub === 8 || sub === 12 ? NF.Eb2 : (sub === 6 ? NF.Eb3 : NF.G2);
+        } else {
+          return sub < 8 ? (sub === 0 || sub === 4 ? NF.F2 : NF.F3) : (sub === 8 || sub === 12 ? NF.D2 : NF.Fs2);
+        }
+      },
+      getChord(step, NF) {
+        const bar = Math.floor(step / 16);
+        const sub = step % 16;
+        if (sub !== 0 && sub !== 6 && sub !== 12) return null;
+        if (bar === 0 || bar === 1) return [NF.G3, NF.Bb3, NF.D4];
+        if (bar === 2) return [NF.Eb3, NF.G3, NF.Bb3];
+        return sub < 8 ? [NF.F3, NF.A3, NF.C4] : [NF.D3, NF.Fs3, NF.C4];
+      },
+      getLead(step, NF) {
+        const m = {
+          0: NF.D4, 2: NF.G4, 4: NF.Bb4, 6: NF.D5, 8: NF.C5, 10: NF.Bb4, 12: NF.A4, 14: NF.G4,
+          16: NF.F4, 18: NF.G4, 20: NF.Bb4, 22: NF.C5, 24: NF.D5, 26: NF.F5, 28: NF.D5, 30: NF.C5,
+          32: NF.Eb5, 34: NF.D5, 36: NF.C5, 38: NF.Bb4, 40: NF.C5, 42: NF.D5, 44: NF.Eb5, 46: NF.F5,
+          48: NF.G5, 50: NF.F5, 52: NF.D5, 54: NF.Bb4, 56: NF.C5, 58: NF.D5, 60: NF.G4, 62: NF.A4
+        };
+        return m[step] || null;
+      },
+      getDrums(step) {
+        const sub = step % 16;
+        const kick = (sub === 0 || sub === 6 || sub === 8 || sub === 10);
+        const snare = (sub === 4 || sub === 12);
+        const hat = true;
+        const openHat = (sub === 2 || sub === 6 || sub === 10 || sub === 14);
+        const crash = (step === 0);
+        return { kick, snare, hat, openHat, crash };
+      }
+    },
+
+    battle: {
+      id: 'battle',
+      name: 'Assalto Finale (Battle Phase Climax)',
+      desc: '148 BPM • Ritmo di Combattimento & Archi Staccato',
+      tempo: 148,
+      totalSteps: 64,
+      getBass(step, NF) {
+        const bar = Math.floor(step / 16);
+        const sub = step % 16;
+        if (sub % 2 !== 0 && sub % 4 !== 2) return null;
+        if (bar === 0 || bar === 1) {
+          return sub % 4 === 0 ? NF.D2 : NF.D3;
+        } else if (bar === 2) {
+          return sub % 4 === 0 ? NF.Bb2 : NF.F2;
+        } else {
+          return sub % 4 === 0 ? NF.A2 : NF.Fs2;
+        }
+      },
+      getChord(step, NF) {
+        const bar = Math.floor(step / 16);
+        const sub = step % 16;
+        if (sub !== 0 && sub !== 4 && sub !== 8 && sub !== 12) return null;
+        if (bar === 0 || bar === 1) return [NF.D3, NF.F3, NF.A3];
+        if (bar === 2) return [NF.Bb2, NF.D3, NF.F3];
+        return [NF.A2, NF.D3, NF.E3];
+      },
+      getLead(step, NF) {
+        const m = {
+          0: NF.D5, 2: NF.D5, 4: NF.F5, 6: NF.E5, 8: NF.D5, 10: NF.A4, 12: NF.C5, 14: NF.D5,
+          16: NF.F5, 18: NF.G5, 20: NF.A5, 22: NF.G5, 24: NF.F5, 26: NF.E5, 28: NF.F5, 30: NF.E5,
+          32: NF.D5, 34: NF.F5, 36: NF.A5, 38: NF.Bb5, 40: NF.A5, 42: NF.G5, 44: NF.A5, 46: NF.G5,
+          48: NF.F5, 50: NF.E5, 52: NF.D5, 54: NF.C5, 56: NF.D5, 58: NF.E5, 60: NF.D5, 62: NF.A4
+        };
+        return m[step] || null;
+      },
+      getDrums(step) {
+        const sub = step % 16;
+        const kick = (sub === 0 || sub === 2 || sub === 8 || sub === 10);
+        const snare = (sub === 4 || sub === 12);
+        const hat = true;
+        const openHat = (sub === 6 || sub === 14);
+        const crash = (step === 0 || step === 32);
+        return { kick, snare, hat, openHat, crash };
+      }
+    },
+
+    climax: {
+      id: 'climax',
+      name: "Sull'Orlo del Baratro (Punto Critico ≤ 2000 LP)",
+      desc: '126 BPM • Tensione & Battito Cardiaco Drammatico',
+      tempo: 126,
+      totalSteps: 64,
+      getBass(step, NF) {
+        const bar = Math.floor(step / 16);
+        const sub = step % 16;
+        if (sub !== 0 && sub !== 2 && sub !== 8 && sub !== 10) return null;
+        if (bar === 0 || bar === 1) return NF.C2;
+        if (bar === 2) return NF.Ab2 || NF.G2;
+        return NF.G2;
+      },
+      getChord(step, NF) {
+        const bar = Math.floor(step / 16);
+        const sub = step % 16;
+        if (sub !== 4 && sub !== 12) return null;
+        if (bar === 0 || bar === 1) return [NF.C3, NF.Eb3, NF.G3];
+        if (bar === 2) return [NF.Ab2, NF.C3, NF.Eb3];
+        return [NF.G2, NF.B2, NF.D3];
+      },
+      getLead(step, NF) {
+        const m = {
+          0: NF.C4, 4: NF.Eb4, 8: NF.G4, 12: NF.Ab4,
+          16: NF.G4, 20: NF.F4, 24: NF.Eb4, 28: NF.D4,
+          32: NF.C4, 36: NF.Eb4, 40: NF.G4, 44: NF.C5,
+          48: NF.B4, 52: NF.G4, 56: NF.Ab4, 60: NF.B4
+        };
+        return m[step] || null;
+      },
+      getDrums(step) {
+        const sub = step % 16;
+        const kick = (sub === 0 || sub === 2 || sub === 8 || sub === 10);
+        const snare = (sub === 12);
+        const hat = (sub % 4 === 0);
+        const openHat = false;
+        const crash = (step === 0);
+        return { kick, snare, hat, openHat, crash };
+      }
+    }
+  },
+
+  ensureNodes() {
+    const ctx = getAudioCtx();
+    if (!ctx) return false;
+    if (!this.masterGain) {
+      this.masterGain = ctx.createGain();
+      const vol = typeof state.bgmVolume === 'number' ? state.bgmVolume : 0.65;
+      this.masterGain.gain.setValueAtTime(state.soundEnabled ? vol : 0, ctx.currentTime);
+
+      // Stereo Delay Line for Epic Echo Effect on Melody
+      this.delayNode = ctx.createDelay();
+      this.delayNode.delayTime.setValueAtTime(0.22, ctx.currentTime);
+      const delayFeedback = ctx.createGain();
+      delayFeedback.gain.setValueAtTime(0.32, ctx.currentTime);
+
+      this.delayNode.connect(delayFeedback);
+      delayFeedback.connect(this.delayNode);
+      this.delayNode.connect(this.masterGain);
+
+      this.masterGain.connect(ctx.destination);
+    }
+    return true;
+  },
+
+  playSynthKick(ctx, dest, time) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.setValueAtTime(145, time);
+    osc.frequency.exponentialRampToValueAtTime(36, time + 0.12);
+    gain.gain.setValueAtTime(0.75, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.16);
+    osc.connect(gain);
+    gain.connect(dest);
+    osc.start(time);
+    osc.stop(time + 0.18);
+  },
+
+  playSynthSnare(ctx, dest, time) {
+    const bufferSize = Math.floor(ctx.sampleRate * 0.12);
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(1400, time);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.38, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(dest);
+    noise.start(time);
+    noise.stop(time + 0.13);
+
+    const osc = ctx.createOscillator();
+    const oscGain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(190, time);
+    osc.frequency.exponentialRampToValueAtTime(80, time + 0.07);
+    oscGain.gain.setValueAtTime(0.35, time);
+    oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.09);
+    osc.connect(oscGain);
+    oscGain.connect(dest);
+    osc.start(time);
+    osc.stop(time + 0.1);
+  },
+
+  playSynthHiHat(ctx, dest, time, open = false) {
+    const dur = open ? 0.22 : 0.045;
+    const bufferSize = Math.floor(ctx.sampleRate * dur);
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(7000, time);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(open ? 0.22 : 0.14, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(dest);
+    noise.start(time);
+    noise.stop(time + dur + 0.01);
+  },
+
+  playSynthBass(ctx, dest, time, freq, dur = 0.16) {
+    if (!freq) return;
+    const osc = ctx.createOscillator();
+    const filter = ctx.createBiquadFilter();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(freq, time);
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(680, time);
+    filter.frequency.exponentialRampToValueAtTime(200, time + dur);
+    filter.Q.setValueAtTime(2.5, time);
+    gain.gain.setValueAtTime(0.42, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(dest);
+    osc.start(time);
+    osc.stop(time + dur + 0.02);
+  },
+
+  playSynthChord(ctx, dest, time, freqs, dur = 0.32) {
+    if (!freqs || !freqs.length) return;
+    freqs.forEach((f) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(f, time);
+      gain.gain.setValueAtTime(0.11, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+      osc.connect(gain);
+      gain.connect(dest);
+      osc.start(time);
+      osc.stop(time + dur + 0.02);
+    });
+  },
+
+  playSynthLead(ctx, dest, time, freq, dur = 0.22) {
+    if (!freq) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(freq, time);
+
+    const lfo = ctx.createOscillator();
+    const lfoGain = ctx.createGain();
+    lfo.frequency.setValueAtTime(5.5, time);
+    lfoGain.gain.setValueAtTime(freq * 0.015, time);
+    lfo.connect(osc.frequency);
+
+    gain.gain.setValueAtTime(0.24, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+
+    osc.connect(gain);
+    gain.connect(dest);
+    if (this.delayNode) gain.connect(this.delayNode);
+
+    lfo.start(time + 0.04);
+    lfo.stop(time + dur);
+    osc.start(time);
+    osc.stop(time + dur + 0.02);
+  },
+
+  scheduleStep(time) {
+    const ctx = getAudioCtx();
+    if (!ctx || !this.masterGain) return;
+    const track = this.tracks[this.activeTrackId] || this.tracks.passionate;
+    const step = this.stepIndex % track.totalSteps;
+
+    // Drums
+    const drums = track.getDrums(step);
+    if (drums.kick) this.playSynthKick(ctx, this.masterGain, time);
+    if (drums.snare) this.playSynthSnare(ctx, this.masterGain, time);
+    if (drums.hat) this.playSynthHiHat(ctx, this.masterGain, time, drums.openHat);
+
+    // Bass
+    const bassFreq = track.getBass(step, this.NF);
+    if (bassFreq) this.playSynthBass(ctx, this.masterGain, time, bassFreq);
+
+    // Chords
+    const chordFreqs = track.getChord(step, this.NF);
+    if (chordFreqs) this.playSynthChord(ctx, this.masterGain, time, chordFreqs);
+
+    // Lead Melody
+    const leadFreq = track.getLead(step, this.NF);
+    if (leadFreq) this.playSynthLead(ctx, this.masterGain, time, leadFreq);
+  },
+
+  schedulerLoop() {
+    const ctx = getAudioCtx();
+    if (!ctx || !this.isPlaying) return;
+
+    const track = this.tracks[this.activeTrackId] || this.tracks.passionate;
+    const secondsPerStep = (60 / track.tempo) / 4; // 16th note
+
+    while (this.nextStepTime < ctx.currentTime + this.scheduleAheadSec) {
+      this.scheduleStep(this.nextStepTime);
+      this.nextStepTime += secondsPerStep;
+      this.stepIndex++;
+    }
+
+    this.timerId = setTimeout(() => this.schedulerLoop(), this.lookaheadMs);
+  },
+
+  start() {
+    if (!this.ensureNodes()) return;
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+
+    this.checkGameStateChange();
+    this.isPlaying = true;
+    this.stepIndex = 0;
+    this.nextStepTime = ctx.currentTime + 0.05;
+
+    if (this.timerId) clearTimeout(this.timerId);
+    this.schedulerLoop();
+    this.updateHud();
+    showToast(`🎵 BGM Avviata: ${this.getCurrentTrackName()}`);
+  },
+
+  stop() {
+    this.isPlaying = false;
+    if (this.timerId) {
+      clearTimeout(this.timerId);
+      this.timerId = null;
+    }
+    this.updateHud();
+  },
+
+  toggle() {
+    if (this.isPlaying) {
+      this.stop();
+      showToast('⏸️ BGM in Pausa');
+    } else {
+      this.start();
+    }
+  },
+
+  setTrack(trackKey) {
+    this.selectedMode = trackKey;
+    if (trackKey === 'auto') {
+      this.checkGameStateChange(true);
+    } else if (this.tracks[trackKey]) {
+      this.activeTrackId = trackKey;
+    }
+    this.updateHud();
+    if (this.isPlaying) {
+      showToast(`🎵 Brano selezionato: ${this.getCurrentTrackName()}`);
+    }
+  },
+
+  setVolume(vol) {
+    state.bgmVolume = Math.max(0, Math.min(1, vol));
+    saveState();
+    if (this.masterGain && getAudioCtx()) {
+      const actual = state.soundEnabled ? state.bgmVolume : 0;
+      this.masterGain.gain.setValueAtTime(actual, getAudioCtx().currentTime);
+    }
+    const valText = document.getElementById('bgmVolumeValText');
+    if (valText) valText.textContent = `${Math.round(state.bgmVolume * 100)}%`;
+  },
+
+  checkGameStateChange(force = false) {
+    if (this.selectedMode !== 'auto') return;
+    let target = 'passionate';
+
+    const p1Lp = state.players[1]?.lp || 0;
+    const p2Lp = state.players[2]?.lp || 0;
+
+    // 1. Climax if either player in critical LP danger (<= 2000 and alive)
+    if ((p1Lp <= 2000 && p1Lp > 0) || (p2Lp <= 2000 && p2Lp > 0)) {
+      target = 'climax';
+    } else if (state.phase === 'BP') {
+      // 2. Battle Phase Climax
+      target = 'battle';
+    } else {
+      // 3. Normal Duel Battle March
+      target = 'passionate';
+    }
+
+    if (target !== this.activeTrackId || force) {
+      this.activeTrackId = target;
+      this.updateHud();
+    }
+  },
+
+  getCurrentTrackName() {
+    const t = this.tracks[this.activeTrackId];
+    return t ? t.name : 'Passione del Duellante';
+  },
+
+  updateHud() {
+    document.body.classList.toggle('bgm-playing', this.isPlaying);
+
+    const playBtn = document.getElementById('bgmMasterPlayBtn');
+    const playIcon = document.getElementById('bgmPlayIcon');
+    const stateBadge = document.getElementById('bgmStateBadge');
+    const nameEl = document.getElementById('bgmCurrentTrackName');
+    const tempoEl = document.getElementById('bgmCurrentTempo');
+
+    if (playIcon) playIcon.textContent = this.isPlaying ? '⏸' : '▶';
+    if (playBtn) playBtn.title = this.isPlaying ? 'Metti in Pausa BGM' : 'Riproduci BGM';
+    if (stateBadge) {
+      stateBadge.textContent = this.isPlaying ? 'IN RIPRODUZIONE' : 'IN PAUSA';
+      stateBadge.style.color = this.isPlaying ? '#10b981' : '#38bdf8';
+    }
+    if (nameEl) nameEl.textContent = this.getCurrentTrackName();
+    if (tempoEl) {
+      const cur = this.tracks[this.activeTrackId];
+      tempoEl.textContent = cur ? cur.desc : '134 BPM';
+    }
+
+    // Active button in modal
+    document.querySelectorAll('.bgm-track-option').forEach((opt) => {
+      const trk = opt.getAttribute('data-track');
+      opt.classList.toggle('active', trk === this.selectedMode);
+    });
+  }
+};
+
+
 let supportsDisplayTransition;
 function canTransitionDisplay() {
   if (supportsDisplayTransition !== undefined) return supportsDisplayTransition;
@@ -1987,6 +2454,59 @@ function renderField() {
 
   // 8. Highlight active archetype in modal grid
   renderArchetypesSelectionGrid();
+
+  // 9. Realistic 3D PC Arena Field Mat Synchronization
+  const pc3dField = document.getElementById('pc3dArenaField');
+  const matHalfP1 = document.getElementById('matHalfP1');
+  const matHalfP2 = document.getElementById('matHalfP2');
+  const p1Title = document.getElementById('matPlayer1Title');
+  const p2Title = document.getElementById('matPlayer2Title');
+
+  if (pc3dField) {
+    pc3dField.classList.toggle('active-p1', state.activePlayer === 1);
+    pc3dField.classList.toggle('active-p2', state.activePlayer === 2);
+
+    // Battle Phase & Danger Alerts on Arena Floor
+    document.body.classList.toggle('battle-phase-arena', state.phase === 'BP');
+    const isDanger = (state.players[1]?.lp <= 2000 && state.players[1]?.lp > 0) || 
+                     (state.players[2]?.lp <= 2000 && state.players[2]?.lp > 0);
+    document.body.classList.toggle('danger-lp-arena', isDanger);
+
+    if (p1Title) {
+      const p1Name = state.players[1]?.name || 'Giocatore 1';
+      const p1ArchName = ARCHETYPES[state.players[1]?.archetype]?.name || '';
+      p1Title.textContent = `${p1Name.toUpperCase()} • ${p1ArchName.toUpperCase()}`;
+    }
+    if (p2Title) {
+      const p2Name = state.players[2]?.name || 'Giocatore 2';
+      const p2ArchName = ARCHETYPES[state.players[2]?.archetype]?.name || '';
+      p2Title.textContent = `${p2Name.toUpperCase()} • ${p2ArchName.toUpperCase()}`;
+    }
+
+    if (matHalfP1) {
+      if (p1Arch) {
+        matHalfP1.style.backgroundImage = `radial-gradient(circle, rgba(15,23,42,0.4) 0%, rgba(7,11,20,0.85) 100%), url('${p1Arch.artUrl}')`;
+        matHalfP1.style.borderColor = p1Arch.borderColor || 'rgba(56, 189, 248, 0.4)';
+      } else {
+        matHalfP1.style.backgroundImage = 'none';
+        matHalfP1.style.borderColor = '';
+      }
+    }
+    if (matHalfP2) {
+      if (p2Arch) {
+        matHalfP2.style.backgroundImage = `radial-gradient(circle, rgba(15,23,42,0.4) 0%, rgba(7,11,20,0.85) 100%), url('${p2Arch.artUrl}')`;
+        matHalfP2.style.borderColor = p2Arch.borderColor || 'rgba(16, 185, 129, 0.4)';
+      } else {
+        matHalfP2.style.backgroundImage = 'none';
+        matHalfP2.style.borderColor = '';
+      }
+    }
+  }
+
+  // Notify BGM engine of turn/phase/LP changes
+  if (typeof DuelBgmEngine !== 'undefined') {
+    DuelBgmEngine.checkGameStateChange();
+  }
 }
 
 function activateFieldSpell(archetypeKey, activatorPlayer = 1, showBanner = true) {
@@ -3742,8 +4262,94 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (e.code === 'Space' || e.key.toLowerCase() === 't') {
         e.preventDefault();
         nextTurn();
+      } else if (e.key.toLowerCase() === 'f' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        togglePcFullscreen();
+      } else if (e.key.toLowerCase() === 'm' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        DuelBgmEngine.toggle();
+      } else if (e.key.toLowerCase() === 'b' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        showAnimeCutin('battle', { playerNum: state.activePlayer });
+        triggerAnimeSpeedlines(600);
+        state.phase = 'BP';
+        renderField();
+        renderTurnAndPhase();
+        showToast(`⚔️ BATTLE PHASE di ${state.players[state.activePlayer].name}!`);
       }
     }
+  });
+
+  // PC Fullscreen Toggle Functionality
+  function togglePcFullscreen() {
+    if (!document.fullscreenElement) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch((err) => {
+          console.warn('Fullscreen err:', err);
+        });
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  }
+
+  document.addEventListener('fullscreenchange', () => {
+    const isFs = Boolean(document.fullscreenElement);
+    document.body.classList.toggle('pc-fullscreen-active', isFs);
+    const floatBtn = document.getElementById('pcFullscreenFloatBtn');
+    const barIcon = document.getElementById('fullscreenIcon');
+    if (floatBtn) {
+      floatBtn.innerHTML = isFs 
+        ? '<span class="fs-icon">⛷</span><span class="fs-lbl">Esci Intero</span>'
+        : '<span class="fs-icon">⛶</span><span class="fs-lbl">Schermo Intero</span>';
+    }
+    if (barIcon) {
+      barIcon.textContent = isFs ? '⛷' : '⛶';
+    }
+    showToast(isFs ? '⛶ Modalità Schermo Intero PC Attivata' : '⛶ Uscito da Schermo Intero');
+  });
+
+  // Fullscreen Buttons
+  const fsBtn = document.getElementById('fullscreenToggleBtn');
+  if (fsBtn) fsBtn.addEventListener('click', togglePcFullscreen);
+  const fsFloatBtn = document.getElementById('pcFullscreenFloatBtn');
+  if (fsFloatBtn) fsFloatBtn.addEventListener('click', togglePcFullscreen);
+
+  // Epic Battle Music (BGM) Controls
+  const openBgmBtn = document.getElementById('openBgmBtn');
+  if (openBgmBtn) {
+    openBgmBtn.addEventListener('click', () => {
+      document.getElementById('bgmDialog').showModal();
+      DuelBgmEngine.updateHud();
+    });
+  }
+
+  const bgmMasterPlayBtn = document.getElementById('bgmMasterPlayBtn');
+  if (bgmMasterPlayBtn) {
+    bgmMasterPlayBtn.addEventListener('click', () => {
+      DuelBgmEngine.toggle();
+    });
+  }
+
+  const bgmVolumeSlider = document.getElementById('bgmVolumeSlider');
+  if (bgmVolumeSlider) {
+    bgmVolumeSlider.value = Math.round((state.bgmVolume || 0.65) * 100);
+    bgmVolumeSlider.addEventListener('input', () => {
+      const val = parseInt(bgmVolumeSlider.value, 10);
+      DuelBgmEngine.setVolume(val / 100);
+    });
+  }
+
+  document.querySelectorAll('.bgm-track-option').forEach((opt) => {
+    opt.addEventListener('click', () => {
+      const trk = opt.getAttribute('data-track');
+      DuelBgmEngine.setTrack(trk);
+      if (!DuelBgmEngine.isPlaying) {
+        DuelBgmEngine.start();
+      }
+    });
   });
 
   // Timer Controls (guarded if present)
@@ -4000,6 +4606,18 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       openDirectAttackDialog(1);
     }, 150);
+  } else if (urlParams.get('test') === 'arena_pc') {
+    renderField();
+    document.body.classList.add('pc-fullscreen-active');
+  } else if (urlParams.get('test') === 'bgm') {
+    renderField();
+    document.getElementById('bgmDialog').showModal();
+    DuelBgmEngine.updateHud();
+  } else if (urlParams.get('test') === 'battle_pc') {
+    state.phase = 'BP';
+    renderField();
+    renderTurnAndPhase();
+    document.body.classList.add('pc-fullscreen-active', 'battle-phase-arena');
   }
 
   // Register Service Worker for 100% Offline PWA on Smartphones
